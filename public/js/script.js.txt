@@ -1,0 +1,63 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const AVATAR_COUNT = 50; // Number of generic faces you downloaded
+    const avatarPaths = [];
+    for (let i = 1; i <= AVATAR_COUNT; i++) {
+        avatarPaths.push(`/images/avatars/face_${i}.jpg`); // Adjust if your naming is different (e.g., face_ (1).jpg)
+    }
+
+    function getRandomAvatar() {
+        const randomIndex = Math.floor(Math.random() * AVATAR_COUNT);
+        return avatarPaths[randomIndex];
+    }
+
+    // 1. Assign avatars to Contact List
+    const contactItems = document.querySelectorAll('.contact-item');
+    contactItems.forEach(item => {
+        const avatarImg = item.querySelector('.contact-avatar');
+        if (avatarImg) {
+            avatarImg.src = getRandomAvatar();
+        }
+    });
+
+    // 2. Assign avatar to Chat Header
+    const headerAvatar = document.querySelector('.chat-header .header-avatar');
+    if (headerAvatar) {
+        headerAvatar.src = getRandomAvatar();
+    }
+
+    // 3. Assign avatars to Incoming Messages and set initial read receipt states
+    const messageBubbles = document.querySelectorAll('.message-area .message-bubble');
+    messageBubbles.forEach(bubble => {
+        if (bubble.classList.contains('incoming')) {
+            const avatarImg = bubble.querySelector('.message-sender-avatar');
+            if (avatarImg) {
+                avatarImg.src = getRandomAvatar();
+            }
+        } else if (bubble.classList.contains('outgoing')) {
+            // Simulate read receipt status
+            const statusIconsContainer = bubble.querySelector('.message-status-icons');
+            if (statusIconsContainer) {
+                // Randomly assign a status for demonstration
+                const statuses = ['show-sent', 'show-delivered', 'show-read'];
+                const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+                statusIconsContainer.classList.add(randomStatus);
+
+                // You would replace this random logic with actual
+                // WebSocket/server-driven updates in a real app:
+                // Example: messageElement.querySelector('.message-status-icons').classList.add('show-read');
+            }
+        }
+    });
+
+    // Optional: Simulate sending a message and updating status
+    const messageInput = document.querySelector('.message-input');
+    const sendButton = document.querySelector('.send-button');
+    const messageArea = document.querySelector('.message-area');
+
+    sendButton.addEventListener('click', () => {
+        const messageText = messageInput.value.trim();
+        if (messageText) {
+            const newMessageBubble = document.createElement('div');
+            newMessageBubble.classList.add('message-bubble', 'outgoing');
+            newMessageBubble.innerHTML = `
+                <p><span class="math-inline">\{messageText\}</p\>
