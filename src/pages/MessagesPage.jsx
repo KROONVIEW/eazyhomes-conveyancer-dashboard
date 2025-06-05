@@ -1025,7 +1025,7 @@ const MessagesPage = () => {
           onSendBroadcast={handleSendBroadcast}
         />
       </div>
-      
+
       {/* Right Panel: Enhanced Chat Window */}
       <div className="flex-1 h-full min-w-0 flex flex-col bg-white relative">
         <ChatWindow 
