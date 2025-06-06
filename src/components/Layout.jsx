@@ -112,8 +112,8 @@ const Layout = ({ children }) => {
   const afterDocs = navLinks.slice(docsIdx + 1);
 
   return (
-    <>
-      {/* Sidebar with icons, text, navigation links, and profile section */}
+    <div className="relative min-h-screen">
+      {/* Desktop Sidebar */}
       {isDesktop && (
         <div
           className="fixed top-0 left-0 h-full z-40 bg-white border-r-2 border-gray-200 shadow-sm transition-all duration-300 flex flex-col items-center py-4"
@@ -128,6 +128,8 @@ const Layout = ({ children }) => {
           <Sidebar isCollapsed={isSidebarCollapsed} />
         </div>
       )}
+      
+      {/* Mobile Sidebar */}
       {!isDesktop && isMobileSidebarOpen && (
         <Sidebar
           isMobileOpen={true}
@@ -135,6 +137,8 @@ const Layout = ({ children }) => {
           isCollapsed={false}
         />
       )}
+      
+      {/* Main Content */}
       <div
         className="app-container min-h-screen bg-gray-50 transition-all duration-300"
         style={{
@@ -146,7 +150,7 @@ const Layout = ({ children }) => {
           {children}
         </main>
       </div>
-    </>
+    </div>
   );
 };
 

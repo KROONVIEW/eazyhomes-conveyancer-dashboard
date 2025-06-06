@@ -50,12 +50,28 @@ export default function SearchBar() {
   const inputRef = useRef();
   const wrapperRef = useRef();
 
-  // Debounced search
+  // Optimized debounced search with abort controller
+  const abortControllerRef = useRef();
   const doSearch = debounce(async (q) => {
-    setLoading(true);
-    const res = await mockSearch(q);
-    setResults(res);
-    setLoading(false);
+    // Cancel previous search
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    abortControllerRef.current = new AbortController();
+    
+    try {
+      setLoading(true);
+      const res = await mockSearch(q, { signal: abortControllerRef.current.signal });
+      setResults(res);
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        console.error('Search error:', error);
+        setResults({ matters: [], clients: [], tasks: [], documents: [] });
+      }
+    } finally {
+      setLoading(false);
+    }
   }, 300);
 
   useEffect(() => {

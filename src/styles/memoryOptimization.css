@@ -1,0 +1,298 @@
+/* Memory Optimization CSS */
+/* Comprehensive performance and memory optimizations */
+
+/* GPU Acceleration for all interactive elements */
+.memory-optimized,
+.memory-optimized * {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: auto;
+}
+
+/* Optimize rendering for frequently updated elements */
+.memory-optimized-container {
+  contain: layout style paint;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: scroll-position;
+}
+
+/* Image optimization */
+.memory-optimized-image {
+  contain: layout style;
+  image-rendering: optimizeSpeed;
+  transform: translateZ(0);
+}
+
+.memory-optimized-image img {
+  will-change: opacity;
+  backface-visibility: hidden;
+}
+
+/* Form optimization */
+.memory-optimized-form {
+  contain: layout style;
+  transform: translateZ(0);
+}
+
+.memory-optimized-input {
+  will-change: contents;
+  contain: layout style;
+}
+
+/* Virtual list optimization */
+.memory-optimized-virtual-list {
+  contain: strict;
+  transform: translateZ(0);
+  will-change: scroll-position;
+}
+
+.memory-optimized-virtual-list .virtual-item {
+  contain: layout style paint;
+  will-change: transform;
+}
+
+/* Modal optimization */
+.memory-optimized-modal {
+  contain: layout style paint;
+  transform: translateZ(0);
+  backdrop-filter: blur(4px);
+  will-change: opacity;
+}
+
+/* Scroll optimization enhancements */
+.conversation-list-container {
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: scroll-position;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: auto; /* Disable smooth scrolling for performance */
+}
+
+/* Performance optimizations during scrolling */
+.conversation-list-container.scrolling * {
+  pointer-events: none;
+  will-change: transform;
+}
+
+.conversation-list-container.scrolling img {
+  image-rendering: optimizeSpeed;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .memory-optimized,
+  .memory-optimized * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode optimizations */
+@media (prefers-contrast: high) {
+  .memory-optimized-image {
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  .memory-optimized-container {
+    color-scheme: dark;
+  }
+}
+
+/* Memory-efficient animations */
+.memory-optimized-fade-in {
+  animation: memoryOptimizedFadeIn 0.2s ease-out;
+}
+
+.memory-optimized-fade-out {
+  animation: memoryOptimizedFadeOut 0.2s ease-out;
+}
+
+@keyframes memoryOptimizedFadeIn {
+  from {
+    opacity: 0;
+    transform: translateZ(0) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateZ(0) scale(1);
+  }
+}
+
+@keyframes memoryOptimizedFadeOut {
+  from {
+    opacity: 1;
+    transform: translateZ(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateZ(0) scale(0.95);
+  }
+}
+
+/* Optimize text rendering */
+.memory-optimized-text {
+  text-rendering: optimizeSpeed;
+  font-smooth: never;
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: auto;
+}
+
+/* Optimize table rendering */
+.memory-optimized-table {
+  table-layout: fixed;
+  contain: layout style;
+}
+
+/* Optimize grid layouts */
+.memory-optimized-grid {
+  contain: layout style;
+  will-change: contents;
+}
+
+/* Optimize flexbox layouts */
+.memory-optimized-flex {
+  contain: layout style;
+  will-change: contents;
+}
+
+/* Emergency memory optimization mode */
+.emergency-memory-mode * {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  will-change: auto !important;
+}
+
+.emergency-memory-mode img {
+  image-rendering: pixelated;
+  max-width: 100px;
+  max-height: 100px;
+}
+
+/* Critical memory optimization */
+.critical-memory-mode {
+  contain: strict;
+}
+
+.critical-memory-mode * {
+  contain: layout style paint;
+  will-change: auto;
+}
+
+/* Low memory device optimizations */
+@media (max-device-memory: 2) {
+  .memory-optimized-container {
+    contain: strict;
+  }
+  
+  .memory-optimized-image img {
+    max-width: 200px;
+    max-height: 200px;
+  }
+  
+  .memory-optimized-virtual-list {
+    contain: strict;
+  }
+}
+
+/* Very low memory device optimizations */
+@media (max-device-memory: 1) {
+  .memory-optimized * {
+    animation: none !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+  
+  .memory-optimized-image img {
+    max-width: 100px;
+    max-height: 100px;
+    image-rendering: pixelated;
+  }
+}
+
+/* Print optimizations */
+@media print {
+  .memory-optimized * {
+    background: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+  }
+}
+
+/* Focus optimizations */
+.memory-optimized :focus {
+  contain: layout style;
+  will-change: box-shadow;
+}
+
+/* Hover optimizations */
+.memory-optimized :hover {
+  contain: layout style;
+  will-change: background-color, color;
+}
+
+/* Active state optimizations */
+.memory-optimized :active {
+  contain: layout style;
+  will-change: transform;
+}
+
+/* Selection optimizations */
+.memory-optimized ::selection {
+  contain: style;
+}
+
+/* Placeholder optimizations */
+.memory-optimized ::placeholder {
+  contain: style;
+  will-change: auto;
+}
+
+/* Scrollbar optimizations */
+.memory-optimized::-webkit-scrollbar {
+  contain: layout style;
+}
+
+.memory-optimized::-webkit-scrollbar-track {
+  contain: layout style;
+}
+
+.memory-optimized::-webkit-scrollbar-thumb {
+  contain: layout style;
+  will-change: background-color;
+}
+
+/* Performance monitoring styles */
+.performance-monitor {
+  contain: layout style paint;
+  will-change: contents;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Memory usage indicator */
+.memory-usage-indicator {
+  contain: layout style;
+  will-change: width, background-color;
+}
+
+/* Render time indicator */
+.render-time-indicator {
+  contain: layout style;
+  will-change: contents;
+  font-variant-numeric: tabular-nums;
+} 

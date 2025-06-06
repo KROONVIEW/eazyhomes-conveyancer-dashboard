@@ -1,14 +1,256 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Performance Optimizations for 60 FPS */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   margin: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Hardware acceleration for smooth scrolling */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
   background-color: #f9fafb;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Optimized scrolling for messaging components */
+.messages-container {
+  /* Enable hardware acceleration */
+  transform: translateZ(0);
+  will-change: scroll-position;
+  /* Smooth momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Optimize scrolling performance */
+  scroll-behavior: smooth;
+  /* Reduce repaints during scroll */
+  contain: layout style paint;
+}
+
+/* Message bubble optimizations */
+.message-bubble {
+  /* Hardware acceleration for animations */
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  /* Reduce layout thrashing */
+  contain: layout style paint;
+}
+
+/* Smooth transitions for interactive elements */
+.transition-optimized {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Optimized hover effects */
+.hover-scale:hover {
+  transform: scale(1.05) translateZ(0);
+}
+
+.hover-scale:active {
+  transform: scale(0.95) translateZ(0);
+}
+
+/* Optimized animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%) translateZ(0);
+  }
+  to {
+    transform: translateX(0) translateZ(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Optimized emoji picker */
+.emoji-picker {
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  /* Smooth animations */
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Optimized file attachment preview */
+.file-preview {
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform;
+  /* Smooth hover effects */
+  transition: transform 0.2s ease-out;
+}
+
+.file-preview:hover {
+  transform: scale(1.02) translateZ(0);
+}
+
+/* Optimized conversation list */
+.conversation-item {
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, background-color;
+  /* Smooth transitions */
+  transition: all 0.15s ease-out;
+}
+
+.conversation-item:hover {
+  transform: translateX(2px) translateZ(0);
+}
+
+/* Optimized call modal */
+.call-modal {
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  /* Smooth backdrop blur */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Reduce paint complexity for avatars */
+.avatar-optimized {
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform;
+  /* Optimize image rendering */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Optimized input fields */
+.input-optimized {
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: border-color, box-shadow;
+  /* Smooth focus transitions */
+  transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+
+/* Optimized buttons */
+.button-optimized {
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform, background-color;
+  /* Smooth interactions */
+  transition: all 0.15s ease-out;
+  /* Prevent text selection */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.button-optimized:hover {
+  transform: translateY(-1px) translateZ(0);
+}
+
+.button-optimized:active {
+  transform: translateY(0) translateZ(0);
+}
+
+/* Optimized loading states */
+.loading-spinner {
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Reduce layout shifts */
+.layout-stable {
+  contain: layout style paint;
+}
+
+/* Optimized text rendering */
+.text-optimized {
+  /* Improve text rendering performance */
+  text-rendering: optimizeSpeed;
+  /* Prevent layout shifts */
+  font-display: swap;
+}
+
+/* Optimized shadows */
+.shadow-optimized {
+  /* Use transform instead of box-shadow for better performance */
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.1));
+}
+
+/* Performance monitoring styles */
+.fps-counter {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* Optimized scrollbars */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

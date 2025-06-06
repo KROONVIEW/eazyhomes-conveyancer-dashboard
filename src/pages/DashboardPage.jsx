@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 // import Layout from "../components/Layout"; // Remove Layout import
 import StatCard from "../components/StatCard";
 import DashboardCard from "../components/DashboardCard";
@@ -8,6 +8,14 @@ import LineGraph from "../components/LineGraph";
 import PieChart from "../components/PieChart";
 import QuickActions from "../components/QuickActions";
 import RecentTransactions from "../components/RecentTransactions";
+import FinancialMetrics from '../components/FinancialMetrics';
+import FinancialChart from '../components/FinancialChart';
+import { 
+  usePaymentTrends, 
+  useRevenueByMatterType, 
+  useInvoiceAging,
+  useFinancialAnalytics 
+} from '../hooks/useFinancialAnalytics';
 import {
   Chart as ChartJS,
   LineElement,
@@ -20,13 +28,13 @@ import {
 import TeamBroadcastCard from '../components/TeamBroadcastCard';
 import PerformanceInsights from '../components/Dashboard/Insights/PerformanceInsights';
 import WorkloadOverview from '../components/Dashboard/Insights/WorkloadOverview';
-import FinancialInsights from '../components/Dashboard/Insights/FinancialInsights';
+import FinancialInsightsFAB from '../components/FinancialInsightsFAB';
 import ClientInsights from '../components/Dashboard/Insights/ClientInsights';
 import ComplianceSnapshot from '../components/Dashboard/Insights/ComplianceSnapshot';
 import NotificationBell from '../components/Notifications/NotificationBell';
 import NotificationDrawer from '../components/Notifications/NotificationDrawer';
 import NotificationToast from '../components/Notifications/NotificationToast';
-import { FiMoreHorizontal, FiBell } from 'react-icons/fi';
+import { FiMoreHorizontal, FiBell, FiChevronDown, FiChevronRight } from 'react-icons/fi';
 import SearchBar from '../components/SearchBar';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -34,6 +42,7 @@ import {
 } from 'recharts';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import HamburgerMenu from '../components/HamburgerMenu';
+import { useState } from 'react';
 
 ChartJS.register(
   LineElement,
@@ -192,12 +201,95 @@ const DonutCustomTooltip = ({ active, payload }) => {
   return null;
 };
 
+function OtherAnalyticsSection() {
+  const [open, setOpen] = useState(false);
+  const { chartData: paymentTrendData, loading: paymentLoading, error: paymentError } = usePaymentTrends();
+  const { chartData: revenueData, loading: revenueLoading, error: revenueError } = useRevenueByMatterType();
+  const { chartData: invoiceData, loading: invoiceLoading, error: invoiceError } = useInvoiceAging();
+  const { data: profitabilityData, loading: profitLoading } = useFinancialAnalytics('profitability');
+
+  return (
+    <>
+      <hr className="border-t border-gray-200 my-2" />
+      <div className="other-analytics-section">
+        <button
+          className={`flex items-center justify-between w-full mb-4 px-2 py-4 rounded-lg transition-colors ${open ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
+          onClick={() => setOpen(o => !o)}
+          aria-expanded={open}
+          style={{ cursor: 'pointer' }}
+        >
+          <span
+            className="font-semibold"
+            style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 500, fontSize: '20px', color: '#222' }}
+          >
+            Other
+          </span>
+          {open ? <FiChevronDown className="w-6 h-6" /> : <FiChevronRight className="w-6 h-6" />}
+        </button>
+        {open && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FinancialChart
+              type="line"
+              data={paymentTrendData?.labels ? paymentTrendData.labels.map((label, index) => ({
+                month: label,
+                paymentsReceived: paymentTrendData.datasets[0]?.data[index] || 0,
+                netPayments: paymentTrendData.datasets[1]?.data[index] || 0
+              })) : []}
+              loading={paymentLoading}
+              error={paymentError}
+              title="Payment Trends"
+              height={350}
+            />
+            <FinancialChart
+              type="bar"
+              data={revenueData?.labels ? revenueData.labels.map((label, index) => ({
+                type: label,
+                revenue: revenueData.datasets[0]?.data[index] || 0
+              })) : []}
+              loading={revenueLoading}
+              error={revenueError}
+              title="Revenue by Matter Type"
+              height={350}
+            />
+            <FinancialChart
+              type="pie"
+              data={invoiceData?.labels ? invoiceData.labels.map((label, index) => ({
+                range: label,
+                amount: invoiceData.datasets[0]?.data[index] || 0,
+                color: invoiceData.datasets[0]?.backgroundColor[index]
+              })) : []}
+              loading={invoiceLoading}
+              error={invoiceError}
+              title="Invoice Aging Analysis"
+              height={350}
+            />
+            <FinancialChart
+              type="multiline"
+              data={profitabilityData || []}
+              loading={profitLoading}
+              error={null}
+              title="Profitability Analysis"
+              height={350}
+            />
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
 const Dashboard = () => {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [toast, setToast] = React.useState(null);
   const [unreadCount, setUnreadCount] = React.useState(2); // mock
   const [showTransferModal, setShowTransferModal] = React.useState(false);
   const [showUploadModal, setShowUploadModal] = React.useState(false);
+
+  // Financial analytics hooks
+  const { chartData: paymentTrendData, loading: paymentLoading, error: paymentError } = usePaymentTrends();
+  const { chartData: revenueData, loading: revenueLoading, error: revenueError } = useRevenueByMatterType();
+  const { chartData: invoiceData, loading: invoiceLoading, error: invoiceError } = useInvoiceAging();
+  const { data: profitabilityData, loading: profitLoading } = useFinancialAnalytics('profitability');
   const [transferForm, setTransferForm] = React.useState({ client: '', property: '', type: '' });
   const [transferLoading, setTransferLoading] = React.useState(false);
   const [transferError, setTransferError] = React.useState('');
@@ -207,15 +299,21 @@ const Dashboard = () => {
   const [uploadError, setUploadError] = React.useState('');
   const [uploadSuccess, setUploadSuccess] = React.useState(false);
   const navigate = useNavigate();
+  
+  // Memoized calculations and data
+  const memoizedDashboardData = useMemo(() => dashboardData, []);
+  const memoizedTransferVolumeData = useMemo(() => transferVolumeData, []);
+  const memoizedTransferStatusData = useMemo(() => transferStatusData, []);
+  
   // Hybrid donut center state
   const [activeIndex, setActiveIndex] = React.useState(null);
-  const total = transferStatusData.reduce((sum, d) => sum + d.value, 0);
+  const total = useMemo(() => memoizedTransferStatusData.reduce((sum, d) => sum + d.value, 0), [memoizedTransferStatusData]);
 
-  // Handler for marking notification as read (simulate toast)
-  const handleMarkAsRead = (msg) => {
+  // Optimized handler for marking notification as read (simulate toast)
+  const handleMarkAsRead = useCallback((msg) => {
     setToast({ message: msg, type: 'info' });
     setUnreadCount((c) => Math.max(0, c - 1));
-  };
+  }, []);
 
   return (
     <>
@@ -250,7 +348,7 @@ const Dashboard = () => {
                 <Icons.FiActivity className='w-6 h-6' data-tooltip-id="icon-tooltip" data-tooltip-content="Active transfers" />
               </div>
             </div>
-            <p className="text-4xl font-bold text-gray-800 mb-1">{dashboardData.activeTransfers}</p>
+            <p className="text-4xl font-bold text-gray-800 mb-1">{memoizedDashboardData.activeTransfers}</p>
             <p className="text-sm text-gray-500">Active Transfers</p>
           </DashboardCard>
           <DashboardCard
@@ -263,7 +361,7 @@ const Dashboard = () => {
                 <Icons.FiCheckCircle className='w-6 h-6' />
               </div>
             </div>
-            <p className="text-4xl font-bold text-gray-800 mb-1">{dashboardData.dealsClosed}</p>
+            <p className="text-4xl font-bold text-gray-800 mb-1">{memoizedDashboardData.dealsClosed}</p>
             <p className="text-sm text-gray-500">Deals Closed</p>
           </DashboardCard>
           <DashboardCard
@@ -276,7 +374,7 @@ const Dashboard = () => {
                 <Icons.FiFileText className='w-6 h-6' />
               </div>
             </div>
-            <p className="text-4xl font-bold text-gray-800 mb-1">{dashboardData.docsOutstanding}</p>
+            <p className="text-4xl font-bold text-gray-800 mb-1">{memoizedDashboardData.docsOutstanding}</p>
             <p className="text-sm text-gray-500">Docs Outstanding</p>
           </DashboardCard>
           <DashboardCard
@@ -289,7 +387,7 @@ const Dashboard = () => {
                 <Icons.FiClock className='w-6 h-6' />
               </div>
             </div>
-            <p className="text-4xl font-bold text-gray-800 mb-1">{dashboardData.awaitingBank}</p>
+            <p className="text-4xl font-bold text-gray-800 mb-1">{memoizedDashboardData.awaitingBank}</p>
             <p className="text-sm text-gray-500">Awaiting Bank</p>
           </DashboardCard>
 
@@ -300,7 +398,7 @@ const Dashboard = () => {
           <DashboardCard title="Transfer Volume" className="sm:col-span-2 lg:col-span-2 xl:col-span-2">
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={transferVolumeData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                <LineChart data={memoizedTransferVolumeData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorTransfers" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8}/>
@@ -324,7 +422,7 @@ const Dashboard = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <RePieChart>
                   <Pie
-                    data={transferStatusData}
+                    data={memoizedTransferStatusData}
                     dataKey="value"
                     nameKey="name"
                     cx="50%"
@@ -335,7 +433,7 @@ const Dashboard = () => {
                     onMouseEnter={(_, idx) => setActiveIndex(idx)}
                     onMouseLeave={() => setActiveIndex(null)}
                   >
-                    {transferStatusData.map((entry, idx) => (
+                    {memoizedTransferStatusData.map((entry, idx) => (
                       <Cell key={`cell-${idx}`} fill={entry.color} />
                     ))}
                   </Pie>
@@ -348,8 +446,8 @@ const Dashboard = () => {
                   <span className="text-2xl font-bold text-gray-800">{total}%</span>
                 ) : (
                   <>
-                    <span className="text-xl font-bold text-gray-800">{transferStatusData[activeIndex].value}%</span>
-                    <span className="text-xs text-gray-500">{transferStatusData[activeIndex].name}</span>
+                    <span className="text-xl font-bold text-gray-800">{memoizedTransferStatusData[activeIndex].value}%</span>
+                    <span className="text-xs text-gray-500">{memoizedTransferStatusData[activeIndex].name}</span>
                   </>
                 )}
               </div>
@@ -370,7 +468,7 @@ const Dashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
-                  {dashboardData.recentTransactions.map((transaction, index) => (
+                  {memoizedDashboardData.recentTransactions.map((transaction, index) => (
                     <tr key={index}>
                       <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900" data-tooltip-id="client-tooltip" data-tooltip-content={`Client: ${transaction.client}`}>{transaction.client}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{transaction.property}</td>
@@ -425,17 +523,17 @@ const Dashboard = () => {
                 <Icons.FiCheckCircle className="w-5 h-5 text-green-500 mr-2" /> All Required FICA Docs Verified
               </li>
               <li className="flex items-center text-sm text-gray-700">
-                <Icons.FiClock className="w-5 h-5 text-yellow-500 mr-2" /> {dashboardData.ficaStatus.awaitingUploads} Transfers Awaiting FICA Uploads
+                <Icons.FiClock className="w-5 h-5 text-yellow-500 mr-2" /> {memoizedDashboardData.ficaStatus.awaitingUploads} Transfers Awaiting FICA Uploads
               </li>
               <li className="flex items-center text-sm text-gray-700">
-                <Icons.FiActivity className="w-5 h-5 text-red-500 mr-2" /> {dashboardData.ficaStatus.expiredDocs} FICA Document Expired (Action Needed)
+                <Icons.FiActivity className="w-5 h-5 text-red-500 mr-2" /> {memoizedDashboardData.ficaStatus.expiredDocs} FICA Document Expired (Action Needed)
               </li>
             </ul>
           </DashboardCard>
 
           <DashboardCard title="Upcoming Deadlines">
             <ul className="space-y-3">
-              {dashboardData.upcomingDeadlines.map((item, index) => (
+              {memoizedDashboardData.upcomingDeadlines.map((item, index) => (
                 <li key={index} className="text-sm text-gray-700">
                   <span className="font-semibold text-blue-600">{item.date}:</span> {item.description}
                 </li>
@@ -445,7 +543,7 @@ const Dashboard = () => {
 
           <DashboardCard title="AI Insights">
             <ul className="space-y-3">
-              {dashboardData.aiInsights.map((insight, index) => (
+              {memoizedDashboardData.aiInsights.map((insight, index) => (
                 <li key={index} className="flex items-start text-sm text-gray-700">
                   <Icons.FiActivity className="w-5 h-5 text-purple-500 mr-2 flex-shrink-0 mt-1" /> {insight}
                 </li>
@@ -456,9 +554,14 @@ const Dashboard = () => {
           <div className="col-span-full space-y-8">
             <PerformanceInsights />
             <WorkloadOverview />
-            <FinancialInsights />
             <ClientInsights />
             <ComplianceSnapshot />
+          </div>
+
+          {/* New Financial Analytics Section */}
+          <div className="col-span-full space-y-8">
+            <FinancialMetrics />
+            <OtherAnalyticsSection />
           </div>
         </div>
       </div>
@@ -640,6 +743,11 @@ const Dashboard = () => {
         style={{ background: '#fff', border: '1px solid #e0e0e0', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', padding: 15, fontSize: '0.9em', color: '#333', maxWidth: 250, zIndex: 9999 }}
         arrowColor="#fff"
       />
+      
+      {/* Financial Analytics Diagnostic - Removed as requested */}
+      
+      {/* Financial Insights FAB */}
+      <FinancialInsightsFAB />
     </>
   );
 };

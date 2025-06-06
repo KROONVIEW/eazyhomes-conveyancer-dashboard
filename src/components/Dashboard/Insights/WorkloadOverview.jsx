@@ -106,47 +106,55 @@ export default function WorkloadOverview() {
   };
 
   return (
-    <div className="workload-overview-section flex flex-col gap-6">
-      <button
-        className={`flex items-center justify-between w-full mb-4 px-2 py-4 rounded-lg transition-colors ${open ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
-        onClick={() => setOpen(o => !o)}
-        aria-expanded={open}
-        style={{ cursor: 'pointer' }}
-      >
-        <h2 className="text-xl font-bold text-left">Workload Overview</h2>
-        {open ? <FiChevronDown className="w-6 h-6" /> : <FiChevronRight className="w-6 h-6" />}
-      </button>
-      {open && (
-        <>
-          <div className="workload-per-staff-member-widget">
-            <div className="bg-white rounded-xl shadow p-6 mb-0">
-              <h3 className="font-semibold text-lg mb-3 flex items-center gap-2"><FiUsers className="w-5 h-5 text-blue-500" /> Workload per Staff Member</h3>
-              <ul className="space-y-4">
-                {staffWorkload.map((staff, idx) => (
-                  <li key={idx} className="flex items-center gap-4">
-                    <span className={`inline-block w-9 h-9 rounded-full ${staff.color} bg-opacity-20 flex items-center justify-center font-bold text-lg text-gray-800`}>{staff.name.split(' ').map(n => n[0]).join('')}</span>
-                    <span className="font-medium text-gray-800 w-32">{staff.name}</span>
-                    <div className="flex-1">
-                      <div className="w-full bg-gray-100 rounded-full h-3">
-                        <div className={`${staff.color} h-3 rounded-full`} style={{ width: `${(staff.matters / maxMatters) * 100}%` }}></div>
+    <>
+      <hr className="border-t border-gray-200 my-2" />
+      <div className="workload-overview-section flex flex-col gap-6">
+        <button
+          className={`flex items-center justify-between w-full mb-4 px-2 py-4 rounded-lg transition-colors ${open ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
+          onClick={() => setOpen(o => !o)}
+          aria-expanded={open}
+          style={{ cursor: 'pointer' }}
+        >
+          <span
+            className="font-semibold"
+            style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 500, fontSize: '20px', color: '#222' }}
+          >
+            Workload Overview
+          </span>
+          {open ? <FiChevronDown className="w-6 h-6" /> : <FiChevronRight className="w-6 h-6" />}
+        </button>
+        {open && (
+          <>
+            <div className="workload-per-staff-member-widget">
+              <div className="bg-white rounded-xl shadow p-6 mb-0">
+                <h3 className="font-semibold text-lg mb-3 flex items-center gap-2"><FiUsers className="w-5 h-5 text-blue-500" /> Workload per Staff Member</h3>
+                <ul className="space-y-4">
+                  {staffWorkload.map((staff, idx) => (
+                    <li key={idx} className="flex items-center gap-4">
+                      <span className={`inline-block w-9 h-9 rounded-full ${staff.color} bg-opacity-20 flex items-center justify-center font-bold text-lg text-gray-800`}>{staff.name.split(' ').map(n => n[0]).join('')}</span>
+                      <span className="font-medium text-gray-800 w-32">{staff.name}</span>
+                      <div className="flex-1">
+                        <div className="w-full bg-gray-100 rounded-full h-3">
+                          <div className={`${staff.color} h-3 rounded-full`} style={{ width: `${(staff.matters / maxMatters) * 100}%` }}></div>
+                        </div>
                       </div>
-                    </div>
-                    <span className="ml-2 text-xs text-gray-500">{staff.matters} matters</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <div className="distribution-chart-widget flex justify-start">
-            <div className="bg-white rounded-xl shadow p-4 w-1/2">
-              <h3 className="font-semibold text-lg mb-2">Distribution Chart</h3>
-              <div className="h-32 w-full">
-                <Bar data={modernBarData} options={{ ...modernBarOptions, maintainAspectRatio: false }} />
+                      <span className="ml-2 text-xs text-gray-500">{staff.matters} matters</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
-          </div>
-        </>
-      )}
-    </div>
+            <div className="distribution-chart-widget flex justify-start">
+              <div className="bg-white rounded-xl shadow p-4 w-1/2">
+                <h3 className="font-semibold text-lg mb-2">Distribution Chart</h3>
+                <div className="h-32 w-full">
+                  <Bar data={modernBarData} options={{ ...modernBarOptions, maintainAspectRatio: false }} />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </>
   );
 } 

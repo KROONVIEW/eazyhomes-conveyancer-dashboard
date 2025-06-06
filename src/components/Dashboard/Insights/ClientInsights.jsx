@@ -114,61 +114,69 @@ export default function ClientInsights() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="space-y-6">
-      <button
-        className={`flex items-center justify-between w-full mb-4 px-2 py-4 rounded-lg transition-colors ${open ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
-        onClick={() => setOpen(o => !o)}
-        aria-expanded={open}
-        style={{ cursor: 'pointer' }}
-      >
-        <h2 className="text-xl font-bold text-left">Client Insights</h2>
-        {open ? <FiChevronDown className="w-6 h-6" /> : <FiChevronRight className="w-6 h-6" />}
-      </button>
-      {open && (
-        <div className="flex gap-6">
-          {/* Top 5 Clients by Volume */}
-          <div className="bg-white rounded-xl shadow p-6 flex-1 min-w-0">
-            <h3 className="font-semibold text-lg mb-3 flex items-center gap-2"><FiUsers className="w-5 h-5 text-green-500" /> Top 5 Clients by Volume</h3>
-            <div className="h-56">
-              <Bar data={topClientsData} options={topClientsOptions} />
+    <>
+      <hr className="border-t border-gray-200 my-2" />
+      <div className="space-y-6">
+        <button
+          className={`flex items-center justify-between w-full mb-4 px-2 py-4 rounded-lg transition-colors ${open ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
+          onClick={() => setOpen(o => !o)}
+          aria-expanded={open}
+          style={{ cursor: 'pointer' }}
+        >
+          <span
+            className="font-semibold"
+            style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 500, fontSize: '20px', color: '#222' }}
+          >
+            Client Insights
+          </span>
+          {open ? <FiChevronDown className="w-6 h-6" /> : <FiChevronRight className="w-6 h-6" />}
+        </button>
+        {open && (
+          <div className="flex gap-6">
+            {/* Top 5 Clients by Volume */}
+            <div className="bg-white rounded-xl shadow p-6 flex-1 min-w-0">
+              <h3 className="font-semibold text-lg mb-3 flex items-center gap-2"><FiUsers className="w-5 h-5 text-green-500" /> Top 5 Clients by Volume</h3>
+              <div className="h-56">
+                <Bar data={topClientsData} options={topClientsOptions} />
+              </div>
+            </div>
+            {/* Client Contribution */}
+            <div className="bg-white rounded-xl shadow p-6 flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-lg flex items-center gap-2"><FiPieChart className="w-5 h-5 text-blue-500" /> Client Contribution</h3>
+                <div className="flex space-x-2">
+                  {contributionTypes.map((type) => (
+                    <button
+                      key={type.key}
+                      className={`px-3 py-1 rounded text-sm font-medium border transition-colors focus:outline-none ${
+                        contributionType === type.key
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                      }`}
+                      onClick={() => setContributionType(type.key)}
+                    >
+                      {type.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-col items-center justify-center h-72">
+                <div className="h-48 w-48 flex items-center justify-center">
+                  <Doughnut data={contributionDataMap[contributionType]} options={contributionOptions} />
+                </div>
+                <div className="flex flex-wrap justify-center mt-4 space-x-4">
+                  {legendLabels.map((item, idx) => (
+                    <div key={idx} className="flex items-center space-x-1 mb-2">
+                      <span className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></span>
+                      <span className="text-xs text-gray-700">{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-          {/* Client Contribution */}
-          <div className="bg-white rounded-xl shadow p-6 flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-lg flex items-center gap-2"><FiPieChart className="w-5 h-5 text-blue-500" /> Client Contribution</h3>
-              <div className="flex space-x-2">
-                {contributionTypes.map((type) => (
-                  <button
-                    key={type.key}
-                    className={`px-3 py-1 rounded text-sm font-medium border transition-colors focus:outline-none ${
-                      contributionType === type.key
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                    }`}
-                    onClick={() => setContributionType(type.key)}
-                  >
-                    {type.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="flex flex-col items-center justify-center h-72">
-              <div className="h-48 w-48 flex items-center justify-center">
-                <Doughnut data={contributionDataMap[contributionType]} options={contributionOptions} />
-              </div>
-              <div className="flex flex-wrap justify-center mt-4 space-x-4">
-                {legendLabels.map((item, idx) => (
-                  <div key={idx} className="flex items-center space-x-1 mb-2">
-                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></span>
-                    <span className="text-xs text-gray-700">{item.label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 } 

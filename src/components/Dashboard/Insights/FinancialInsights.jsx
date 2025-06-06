@@ -121,48 +121,56 @@ const paymentTrendOptions = {
 export default function FinancialInsights() {
   const [open, setOpen] = useState(false);
   return (
-    <div className="financial-insights-section">
-      <button
-        className={`flex items-center justify-between w-full mb-4 px-2 py-4 rounded-lg transition-colors ${open ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
-        onClick={() => setOpen(o => !o)}
-        aria-expanded={open}
-        style={{ cursor: 'pointer' }}
-      >
-        <h2 className="text-xl font-bold text-left">Financial Insights</h2>
-        {open ? <FiChevronDown className="w-6 h-6" /> : <FiChevronRight className="w-6 h-6" />}
-      </button>
-      {open && (
-        <div className="financial-charts-layout flex flex-col gap-5">
-          {/* Payment Trend Graph - full width */}
-          <div className="payment-trend-graph-widget w-full">
-            <div className="bg-white rounded shadow p-4 mb-0">
-              <h3 className="font-semibold text-lg mb-2">Payment Trend Graph</h3>
-              <div className="h-80 w-full p-0 m-0" style={{margin:0,padding:0}}>
-                <Line data={paymentTrendData} options={{ ...paymentTrendOptions, maintainAspectRatio: false }} />
-              </div>
-            </div>
-          </div>
-          {/* Bottom row: Revenue by Matter Type & Invoice Aging Chart */}
-          <div className="bottom-financial-charts-row flex gap-5">
-            <div className="revenue-by-matter-type-chart-widget flex-1 min-w-0">
-              <div className="bg-white rounded shadow p-4 h-full">
-                <h3 className="font-semibold text-lg mb-2">Revenue by Matter Type</h3>
-                <div className="h-56">
-                  <Bar data={revenueData} options={revenueOptions} />
+    <>
+      <hr className="border-t border-gray-200 my-2" />
+      <div className="financial-insights-section">
+        <button
+          className={`flex items-center justify-between w-full mb-4 px-2 py-4 rounded-lg transition-colors ${open ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
+          onClick={() => setOpen(o => !o)}
+          aria-expanded={open}
+          style={{ cursor: 'pointer' }}
+        >
+          <span
+            className="font-semibold"
+            style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 500, fontSize: '20px', color: '#222' }}
+          >
+            Financial Insights
+          </span>
+          {open ? <FiChevronDown className="w-6 h-6" /> : <FiChevronRight className="w-6 h-6" />}
+        </button>
+        {open && (
+          <div className="financial-charts-layout flex flex-col gap-5">
+            {/* Payment Trend Graph - full width */}
+            <div className="payment-trend-graph-widget w-full">
+              <div className="bg-white rounded shadow p-4 mb-0">
+                <h3 className="font-semibold text-lg mb-2">Payment Trend Graph</h3>
+                <div className="h-80 w-full p-0 m-0" style={{margin:0,padding:0}}>
+                  <Line data={paymentTrendData} options={{ ...paymentTrendOptions, maintainAspectRatio: false }} />
                 </div>
               </div>
             </div>
-            <div className="invoice-aging-chart-widget flex-1 min-w-0">
-              <div className="bg-white rounded shadow p-4 h-full">
-                <h3 className="font-semibold text-lg mb-2">Invoice Aging Chart</h3>
-                <div className="h-56 flex items-center justify-center">
-                  <Doughnut data={invoiceAgingData} options={invoiceAgingOptions} />
+            {/* Bottom row: Revenue by Matter Type & Invoice Aging Chart */}
+            <div className="bottom-financial-charts-row flex gap-5">
+              <div className="revenue-by-matter-type-chart-widget flex-1 min-w-0">
+                <div className="bg-white rounded shadow p-4 h-full">
+                  <h3 className="font-semibold text-lg mb-2">Revenue by Matter Type</h3>
+                  <div className="h-56">
+                    <Bar data={revenueData} options={revenueOptions} />
+                  </div>
+                </div>
+              </div>
+              <div className="invoice-aging-chart-widget flex-1 min-w-0">
+                <div className="bg-white rounded shadow p-4 h-full">
+                  <h3 className="font-semibold text-lg mb-2">Invoice Aging Chart</h3>
+                  <div className="h-56 flex items-center justify-center">
+                    <Doughnut data={invoiceAgingData} options={invoiceAgingOptions} />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 } 

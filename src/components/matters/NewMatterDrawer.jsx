@@ -54,6 +54,9 @@ const STAFF = [
 const ROLES = ["Conveyancer", "Admin", "Paralegal", "Clerk"];
 
 export default function NewMatterDrawer({ open, onClose, onNext }) {
+  // Debug log to check props
+  console.log('🔍 NewMatterDrawer - open prop:', open);
+  
   const [title, setTitle] = useState("");
   const [matterType, setMatterType] = useState("");
   const [status, setStatus] = useState("New");
@@ -199,44 +202,87 @@ export default function NewMatterDrawer({ open, onClose, onNext }) {
   }
 
   const isStep4Valid = assignment.staff.length > 0 && assignment.supervisor;
+  
+  // Don't render anything if not open
+  if (!open) {
+    return null;
+  }
+  
   return (
     <>
       {/* Overlay */}
-      <div className={`fixed inset-0 bg-black bg-opacity-30 z-40 transition-opacity duration-300 ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} onClick={onClose} aria-hidden="true" />
+      <div className="fixed inset-0 bg-black bg-opacity-30 z-40 transition-opacity duration-300 opacity-100 pointer-events-auto" onClick={onClose} aria-hidden="true" />
       {/* Drawer */}
-      <aside className={`fixed top-0 right-0 h-full w-full max-w-lg bg-white shadow-xl z-50 transition-transform duration-300 transform ${open ? 'translate-x-0' : 'translate-x-full'} rounded-l-lg flex flex-col`} tabIndex={-1} aria-modal="true" role="dialog">
-        {/* Stepper */}
-        <div className="flex items-center gap-3 px-6 pt-6 pb-2">
-          <div className="flex items-center gap-2">
-            <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${step === 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'}`}>1</span>
-            <span className={`font-semibold ${step === 1 ? 'text-blue-700' : 'text-gray-400'}`}>Matter Overview</span>
+      <aside className="fixed top-0 right-0 h-full w-full max-w-lg bg-white shadow-xl z-50 transition-transform duration-300 transform translate-x-0 rounded-l-lg flex flex-col" tabIndex={-1} aria-modal="true" role="dialog">
+        {/* Modern Progress Header */}
+        <div className="px-6 pt-6 pb-4 border-b border-gray-100">
+          {/* Step Title and Progress */}
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                {step === 1 && "Matter Overview"}
+                {step === 2 && "Client Information"}
+                {step === 3 && "Property Details"}
+                {step === 4 && "Assignment"}
+                {step === 5 && "Task Template"}
+                {step === 6 && "Review & Submit"}
+              </h2>
+              <p className="text-sm text-gray-500">Step {step} of 6</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              aria-label="Close"
+            >
+              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <span className="text-gray-400">→</span>
-          <div className="flex items-center gap-2">
-            <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${step === 2 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'}`}>2</span>
-            <span className={`font-semibold ${step === 2 ? 'text-blue-700' : 'text-gray-400'}`}>Client Information</span>
+          
+          {/* Progress Bar */}
+          <div className="relative">
+            <div className="flex items-center justify-between mb-2">
+              {[1, 2, 3, 4, 5, 6].map((stepNum) => (
+                <div
+                  key={stepNum}
+                  className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
+                    stepNum < step
+                      ? 'bg-green-500 text-white'
+                      : stepNum === step
+                      ? 'bg-blue-600 text-white ring-4 ring-blue-100'
+                      : 'bg-gray-200 text-gray-500'
+                  }`}
+                >
+                  {stepNum < step ? (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : (
+                    stepNum
+                  )}
           </div>
-          <span className="text-gray-400">→</span>
-          <div className="flex items-center gap-2">
-            <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${step === 3 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'}`}>3</span>
-            <span className={`font-semibold ${step === 3 ? 'text-blue-700' : 'text-gray-400'}`}>Property Details</span>
+              ))}
           </div>
-          <span className="text-gray-400">→</span>
-          <div className="flex items-center gap-2">
-            <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${step === 4 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'}`}>4</span>
-            <span className={`font-semibold ${step === 4 ? 'text-blue-700' : 'text-gray-400'}`}>Assignment</span>
+            
+            {/* Progress Line */}
+            <div className="absolute top-4 left-4 right-4 h-0.5 bg-gray-200 -z-10">
+              <div 
+                className="h-full bg-gradient-to-r from-green-500 to-blue-600 transition-all duration-500 ease-out"
+                style={{ width: `${((step - 1) / 5) * 100}%` }}
+              />
           </div>
-          <span className="text-gray-400">→</span>
-          <div className="flex items-center gap-2">
-            <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${step === 5 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'}`}>5</span>
-            <span className={`font-semibold ${step === 5 ? 'text-blue-700' : 'text-gray-400'}`}>Task Template</span>
           </div>
-          <span className="text-gray-400">→</span>
-          <div className="flex items-center gap-2">
-            <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${step === 6 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'}`}>6</span>
-            <span className={`font-semibold ${step === 6 ? 'text-blue-700' : 'text-gray-400'}`}>Review & Submit</span>
+          
+          {/* Step Labels */}
+          <div className="flex justify-between mt-3 text-xs text-gray-500">
+            <span className={step === 1 ? 'text-blue-600 font-medium' : ''}>Overview</span>
+            <span className={step === 2 ? 'text-blue-600 font-medium' : ''}>Client</span>
+            <span className={step === 3 ? 'text-blue-600 font-medium' : ''}>Property</span>
+            <span className={step === 4 ? 'text-blue-600 font-medium' : ''}>Assign</span>
+            <span className={step === 5 ? 'text-blue-600 font-medium' : ''}>Template</span>
+            <span className={step === 6 ? 'text-blue-600 font-medium' : ''}>Review</span>
           </div>
-          <span className="text-gray-400">/ 6 steps</span>
         </div>
         {/* Step 1: Matter Overview */}
         {step === 1 && (

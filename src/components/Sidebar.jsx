@@ -67,7 +67,7 @@ const Sidebar = ({ isMobileOpen, toggleSidebar, isCollapsed }) => {
   const [popoverPos, setPopoverPos] = useState({ top: 0, left: 0 });
   useEffect(() => {
     if (isDocsOpen && docsButtonRef.current) {
-      const rect = docsButtonRef.current.getBoundingClientRect();
+        const rect = docsButtonRef.current.getBoundingClientRect();
       setPopoverPos({
         top: rect.top + window.scrollY,
         left: rect.right + 8 + window.scrollX,
@@ -75,7 +75,7 @@ const Sidebar = ({ isMobileOpen, toggleSidebar, isCollapsed }) => {
     }
   }, [isDocsOpen]);
 
-  const mattersIdx = navLinks.findIndex(link => link.name === 'Matters');
+    const mattersIdx = navLinks.findIndex(link => link.name === 'Matters');
   const archiveIdx = navLinks.findIndex(link => link.name === 'Archive');
   const beforeDocs = navLinks.slice(0, mattersIdx + 1);
   const afterDocs = navLinks.slice(mattersIdx + 1);

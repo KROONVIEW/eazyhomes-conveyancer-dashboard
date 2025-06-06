@@ -1,0 +1,119 @@
+/* Scroll Optimization for Messaging Panel */
+
+/* Optimize the conversation list container */
+.conversation-list-container {
+  /* Enable hardware acceleration */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  
+  /* Optimize scrolling */
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: auto; /* Disable smooth scroll for performance */
+  
+  /* Prevent layout thrashing */
+  will-change: scroll-position;
+  contain: layout style paint;
+  
+  /* Custom scrollbar for better UX */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+/* WebKit scrollbar styling */
+.conversation-list-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.conversation-list-container::-webkit-scrollbar-track {
+  background: #f7fafc;
+  border-radius: 3px;
+}
+
+.conversation-list-container::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.conversation-list-container::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* Optimize conversation items */
+.conversation-item-optimized {
+  /* Enable hardware acceleration */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  
+  /* Optimize repaints */
+  will-change: background-color;
+  contain: layout style;
+  
+  /* Smooth transitions without affecting scroll */
+  transition: background-color 0.15s ease;
+}
+
+/* Optimize images in conversation items */
+.conversation-avatar-optimized {
+  /* Enable hardware acceleration for images */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  
+  /* Optimize image rendering */
+  image-rendering: optimizeSpeed;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimize-contrast;
+  
+  /* Prevent layout shifts */
+  contain: layout;
+}
+
+/* Disable animations during scroll for better performance */
+.conversation-list-container.scrolling * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Optimize text rendering */
+.conversation-text-optimized {
+  /* Optimize text rendering */
+  text-rendering: optimizeSpeed;
+  font-smooth: never;
+  -webkit-font-smoothing: subpixel-antialiased;
+  
+  /* Prevent text layout shifts */
+  contain: layout style;
+}
+
+/* Performance optimizations for mobile */
+@media (max-width: 768px) {
+  .conversation-list-container {
+    /* More aggressive optimizations for mobile */
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    perspective: 1000;
+  }
+  
+  .conversation-item-optimized {
+    /* Reduce complexity on mobile */
+    contain: strict;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .conversation-list-container {
+    scroll-behavior: auto;
+  }
+  
+  .conversation-item-optimized {
+    transition: none;
+  }
+} 
