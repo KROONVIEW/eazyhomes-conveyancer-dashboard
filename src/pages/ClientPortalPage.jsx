@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const mockClients = [
   {
@@ -67,6 +68,7 @@ const mockStatusTemplates = {
 };
 
 export default function ClientPortalPage() {
+  const navigate = useNavigate();
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState(mockMessages);
   const [statusLodged, setStatusLodged] = useState(mockStatusTemplates.lodged);
@@ -176,9 +178,12 @@ export default function ClientPortalPage() {
         </div>
         <div className="border-t pt-6 text-center">
           <p className="mb-2 text-gray-600">For detailed client interaction history, visit the Audit Trail.</p>
-          <a href="/audit-trail">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition">Go to Audit Trail</button>
-          </a>
+          <button 
+            onClick={() => navigate('/audit-trail')}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition"
+          >
+            Go to Audit Trail
+          </button>
         </div>
       </div>
 

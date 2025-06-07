@@ -1,7 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FiMessageSquare, FiBell } from 'react-icons/fi';
 
 const TeamBroadcastCard = () => {
+  const navigate = useNavigate();
   const recentMessages = [
     { id: 1, type: 'update', message: 'System update scheduled for 2 AM, June 2nd.', time: '5 min ago' },
     { id: 2, type: 'message', message: 'John Doe: Document for Transfer #1015 uploaded.', time: '30 min ago' },
@@ -35,9 +37,12 @@ const TeamBroadcastCard = () => {
         ))}
       </ul>
       <div className="mt-4 pt-4 border-t border-gray-100">
-        <a href="/messages" className="text-blue-600 hover:underline text-sm font-medium">
+        <button 
+          onClick={() => navigate('/messages')} 
+          className="text-blue-600 hover:underline text-sm font-medium cursor-pointer bg-transparent border-none p-0"
+        >
           View All Messages
-        </a>
+        </button>
       </div>
     </div>
   );
