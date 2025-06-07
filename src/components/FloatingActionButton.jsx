@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   FiPlus, 
   FiX, 
@@ -16,6 +16,7 @@ const FloatingActionButton = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const fabRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Handle click outside to close the menu
   useEffect(() => {
@@ -65,93 +66,42 @@ const FloatingActionButton = () => {
 
   // Quick action handlers with enhanced functionality
   const handleNewTransfer = () => {
-    console.log('🏠 Initiating New Property Transfer');
-    // Navigate to matters page with new matter modal
-    navigate('/matters?action=new');
+    console.log('🔄 Navigating to Transfers Page');
+    navigate('/transfers');
     setIsOpen(false);
   };
 
   const handleUploadDocument = () => {
-    console.log('📄 Opening Document Upload');
-    // Navigate to documents page with upload modal
-    navigate('/documents?action=upload');
+    console.log('📄 Navigating to Documents Upload');
+    navigate('/documents/upload');
     setIsOpen(false);
   };
 
   const handleInitiateChat = () => {
-    console.log('💬 Initiating Secure Chat');
-    // Navigate to messages page with new chat
-    navigate('/messages?action=new');
+    console.log('💬 Navigating to Messages');
+    navigate('/messages');
     setIsOpen(false);
   };
 
   const handleAddTask = () => {
-    console.log('✅ Creating New Task');
-    // Navigate to tasks page with new task modal
-    navigate('/tasks?action=new');
+    console.log('📅 Navigating to Calendar Page');
+    navigate('/calendar');
     setIsOpen(false);
   };
 
   const handleQuickClient = () => {
-    console.log('👥 Adding New Client');
-    // Navigate to clients page with new client modal
-    navigate('/clients?action=new');
+    console.log('👥 Navigating to Clients Page');
+    navigate('/clients');
     setIsOpen(false);
   };
 
   const handleQuickMatter = () => {
-    console.log('📋 Quick Matter View');
-    // Navigate to matters overview
+    console.log('📋 Navigating to All Matters');
     navigate('/matters');
     setIsOpen(false);
   };
 
   const quickActions = [
-    {
-      id: 'new-transfer',
-      label: 'Start New Transfer',
-      description: 'Initiate property transfer',
-      icon: FiHome,
-      onClick: handleNewTransfer,
-      color: 'bg-green-500 hover:bg-green-600',
-      delay: 0
-    },
-    {
-      id: 'new-chat',
-      label: 'Secure Message',
-      description: 'Start conversation',
-      icon: FiMessageCircle,
-      onClick: handleInitiateChat,
-      color: 'bg-blue-500 hover:bg-blue-600',
-      delay: 50
-    },
-    {
-      id: 'upload-doc',
-      label: 'Upload Document',
-      description: 'Add documents to matter',
-      icon: FiUpload,
-      onClick: handleUploadDocument,
-      color: 'bg-purple-500 hover:bg-purple-600',
-      delay: 100
-    },
-    {
-      id: 'add-task',
-      label: 'Create Task',
-      description: 'Add new task',
-      icon: FiClipboard,
-      onClick: handleAddTask,
-      color: 'bg-orange-500 hover:bg-orange-600',
-      delay: 150
-    },
-    {
-      id: 'new-client',
-      label: 'Add Client',
-      description: 'Register new client',
-      icon: FiUsers,
-      onClick: handleQuickClient,
-      color: 'bg-indigo-500 hover:bg-indigo-600',
-      delay: 200
-    },
     {
       id: 'view-matters',
       label: 'View Matters',
@@ -159,9 +109,59 @@ const FloatingActionButton = () => {
       icon: FiFileText,
       onClick: handleQuickMatter,
       color: 'bg-teal-500 hover:bg-teal-600',
+      delay: 0
+    },
+    {
+      id: 'add-client',
+      label: 'Add Client',
+      description: 'Client management',
+      icon: FiUsers,
+      onClick: handleQuickClient,
+      color: 'bg-indigo-500 hover:bg-indigo-600',
+      delay: 50
+    },
+    {
+      id: 'create-task',
+      label: 'Create Task',
+      description: 'Calendar & scheduling',
+      icon: FiClipboard,
+      onClick: handleAddTask,
+      color: 'bg-orange-500 hover:bg-orange-600',
+      delay: 100
+    },
+    {
+      id: 'upload-document',
+      label: 'Upload Document',
+      description: 'Document management',
+      icon: FiUpload,
+      onClick: handleUploadDocument,
+      color: 'bg-purple-500 hover:bg-purple-600',
+      delay: 150
+    },
+    {
+      id: 'secure-message',
+      label: 'Secure Message',
+      description: 'Communication hub',
+      icon: FiMessageCircle,
+      onClick: handleInitiateChat,
+      color: 'bg-blue-500 hover:bg-blue-600',
+      delay: 200
+    },
+    {
+      id: 'new-transfer',
+      label: 'New Transfer',
+      description: 'Transfer management',
+      icon: FiHome,
+      onClick: handleNewTransfer,
+      color: 'bg-green-500 hover:bg-green-600',
       delay: 250
     }
   ];
+
+  // Hide FAB on Messages page to avoid conflict with MessagesFAB
+  if (location.pathname === '/messages') {
+    return null;
+  }
 
   return (
     <div ref={fabRef} className="fixed bottom-6 right-6 z-50 group">

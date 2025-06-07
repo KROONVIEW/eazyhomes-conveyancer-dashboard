@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FiPlus, FiSearch, FiMoreHorizontal } from 'react-icons/fi';
 import BroadcastComposer from './BroadcastComposer';
+import '../../styles/optimized-scroll.css';
 
 const avatarList = [
   '/images/avatars/face_1 (1).jpg',
@@ -319,7 +320,18 @@ const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, us
       )}
 
       {/* Enhanced Conversation List or Broadcast Feed */}
-      <div className="flex-1 overflow-y-auto">
+      <div 
+        className="flex-1 overflow-y-auto conversation-list-container"
+        style={{
+          scrollBehavior: 'smooth',
+          WebkitOverflowScrolling: 'touch',
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
+          perspective: '1000px',
+          willChange: 'scroll-position',
+          contain: 'layout style paint'
+        }}
+      >
         {showBroadcastFeed ? (
           // Dedicated Broadcast Feed
           <div className="p-4 space-y-3">
@@ -368,11 +380,16 @@ const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, us
               <div
                 key={conv.id}
                 onClick={() => handleConversationClick(conv)}
-                className={`group relative p-4 rounded-xl cursor-pointer transition-all duration-200 transform hover:scale-[1.02] ${
+                className={`group relative p-4 rounded-xl cursor-pointer transition-all duration-200 transform hover:scale-[1.02] conversation-item ${
                   activeId === conv.id
                     ? 'bg-gradient-to-r from-blue-50 to-blue-100/50 border-l-4 border-blue-500 shadow-sm'
                     : 'hover:bg-gray-50 hover:shadow-sm'
                 }`}
+                style={{
+                  contain: 'layout style paint',
+                  transform: 'translateZ(0)',
+                  willChange: 'background-color'
+                }}
               >
                 {/* Pinned Indicator for Broadcast */}
                 {conv.isPinned && (
@@ -388,7 +405,12 @@ const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, us
                     <img
                       src={conv.avatarUrl}
                       alt={conv.name}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md"
+                      className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md conversation-avatar-optimized"
+                      style={{
+                        transform: 'translateZ(0)',
+                        backfaceVisibility: 'hidden',
+                        contain: 'layout'
+                      }}
                     />
                     {conv.online && (
                       <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-white rounded-full animate-pulse"></div>

@@ -7,6 +7,7 @@ const CalendarPage = () => {
   const [currentDate, setCurrentDate] = useState(new Date('2025-01-01T12:00:00'));
   const [currentView, setCurrentView] = useState('Month');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showEventModal, setShowEventModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedPerson, setSelectedPerson] = useState(null);
@@ -169,6 +170,57 @@ const CalendarPage = () => {
       color: '#3B82F6',
       description: '',
     });
+  };
+
+  const handleEditEvent = () => {
+    if (!modalFields.title || !modalFields.date || !selectedEvent) return;
+    
+    const updatedEvent = {
+      ...selectedEvent,
+      date: modalFields.date,
+      type: modalFields.type,
+      title: modalFields.title,
+      person: modalFields.person,
+      color: modalFields.color,
+      time: modalFields.time || 'All Day',
+      description: modalFields.description,
+    };
+    
+    // Update in userEvents if it's a user-created event
+    setUserEvents(prev => prev.map(event => 
+      event.id === selectedEvent.id ? updatedEvent : event
+    ));
+    
+    // Update the selectedEvent for the details modal
+    setSelectedEvent(updatedEvent);
+    
+    setShowEditModal(false);
+    setModalFields({
+      title: '',
+      date: '',
+      time: '',
+      person: '',
+      type: 'Meeting',
+      color: '#3B82F6',
+      description: '',
+    });
+  };
+
+  const handleEditButtonClick = () => {
+    if (!selectedEvent) return;
+    
+    // Populate modal fields with selected event data
+    setModalFields({
+      title: selectedEvent.title || '',
+      date: selectedEvent.date || '',
+      time: selectedEvent.time === 'All Day' ? '' : selectedEvent.time || '',
+      person: selectedEvent.person || '',
+      type: selectedEvent.type || 'Meeting',
+      color: selectedEvent.color || '#3B82F6',
+      description: selectedEvent.description || '',
+    });
+    
+    setShowEditModal(true);
   };
 
   const handleEventClick = (event) => {
@@ -342,6 +394,161 @@ const CalendarPage = () => {
         </div>
       )}
 
+      {/* Edit Event Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowEditModal(false)}>
+          <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 p-8 max-w-2xl w-full mx-6 relative transform transition-all duration-300 ease-out scale-100" onClick={e => e.stopPropagation()}>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Edit Schedule</h2>
+                <p className="text-gray-500 mt-1">Update your calendar event</p>
+            </div>
+              <button 
+                onClick={() => setShowEditModal(false)} 
+                className="p-3 hover:bg-gray-100/80 rounded-2xl transition-all duration-200 group"
+              >
+                <XMarkIcon className="h-6 w-6 text-gray-400 group-hover:text-gray-600 transition-colors" />
+              </button>
+            </div>
+            
+            <div className="space-y-8">
+              {/* Event Title */}
+              <div className="group">
+                <label className="block text-sm font-semibold text-gray-700 mb-3 group-focus-within:text-blue-600 transition-colors">
+                  Event Title
+                </label>
+                <input
+                  type="text" 
+                  className="w-full px-5 py-4 bg-gray-50/50 border-2 border-gray-200 rounded-2xl focus:ring-0 focus:border-blue-500 focus:bg-white transition-all duration-200 text-gray-900 placeholder-gray-400" 
+                  placeholder="What's the event about?"
+                  value={modalFields.title} 
+                  onChange={e => setModalFields(f => ({ ...f, title: e.target.value }))} 
+                />
+              </div>
+              
+                             {/* Date & Time */}
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div className="group">
+                   <label className="block text-sm font-semibold text-gray-700 mb-3 group-focus-within:text-blue-600 transition-colors">
+                     Date
+                   </label>
+                <input
+                  type="date"
+                     className="w-full px-5 py-4 bg-gray-50/50 border-2 border-gray-200 rounded-2xl focus:ring-0 focus:border-blue-500 focus:bg-white transition-all duration-200"
+                     value={modalFields.date}
+                     onChange={e => setModalFields(f => ({ ...f, date: e.target.value }))}
+                />
+              </div>
+                 <div className="group">
+                   <label className="block text-sm font-semibold text-gray-700 mb-3 group-focus-within:text-blue-600 transition-colors">
+                     Time
+                   </label>
+                <input
+                  type="time"
+                     className="w-full px-5 py-4 bg-gray-50/50 border-2 border-gray-200 rounded-2xl focus:ring-0 focus:border-blue-500 focus:bg-white transition-all duration-200"
+                     value={modalFields.time}
+                     onChange={e => setModalFields(f => ({ ...f, time: e.target.value }))}
+                />
+              </div>
+            </div>
+               
+               {/* Assigned To & Type */}
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div className="group">
+                   <label className="block text-sm font-semibold text-gray-700 mb-3 group-focus-within:text-blue-600 transition-colors">
+                     Assigned To
+                   </label>
+                   <select
+                     className="w-full px-5 py-4 bg-gray-50/50 border-2 border-gray-200 rounded-2xl focus:ring-0 focus:border-blue-500 focus:bg-white transition-all duration-200 appearance-none cursor-pointer"
+                     value={modalFields.person}
+                     onChange={e => setModalFields(f => ({ ...f, person: e.target.value }))}
+                   >
+                     <option value="">Choose a person...</option>
+                     {people.map(person => (
+                       <option key={person.name} value={person.name}>{person.name}</option>
+                     ))}
+                   </select>
+                 </div>
+                 <div className="group">
+                   <label className="block text-sm font-semibold text-gray-700 mb-3 group-focus-within:text-blue-600 transition-colors">
+                     Event Type
+                   </label>
+                   <select
+                     className="w-full px-5 py-4 bg-gray-50/50 border-2 border-gray-200 rounded-2xl focus:ring-0 focus:border-blue-500 focus:bg-white transition-all duration-200 appearance-none cursor-pointer"
+                     value={modalFields.type}
+                     onChange={e => {
+                       const selectedType = eventTypes.find(type => type.name === e.target.value);
+                       setModalFields(f => ({ 
+                         ...f, 
+                         type: e.target.value,
+                         color: selectedType ? selectedType.color : '#3B82F6'
+                       }));
+                     }}
+                   >
+                     {eventTypes.map(type => (
+                       <option key={type.name} value={type.name}>{type.name}</option>
+                     ))}
+                   </select>
+                 </div>
+               </div>
+               
+               {/* Color Selection */}
+               <div>
+                 <label className="block text-sm font-semibold text-gray-700 mb-4">
+                   Event Color
+                 </label>
+                 <div className="flex flex-wrap gap-3">
+                   {eventTypes.map(type => (
+                     <button
+                       key={type.color}
+                       className={`w-12 h-12 rounded-2xl border-3 transition-all duration-200 transform hover:scale-110 ${
+                         modalFields.color === type.color 
+                           ? 'border-gray-800 shadow-lg scale-110' 
+                           : 'border-gray-200 hover:border-gray-400'
+                       }`}
+                       style={{ backgroundColor: type.color }}
+                       onClick={() => setModalFields(f => ({ ...f, color: type.color }))}
+                       title={type.name}
+                     />
+                   ))}
+                 </div>
+               </div>
+               
+               {/* Description */}
+               <div className="group">
+                 <label className="block text-sm font-semibold text-gray-700 mb-3 group-focus-within:text-blue-600 transition-colors">
+                   Description
+                 </label>
+              <textarea
+                   className="w-full px-5 py-4 bg-gray-50/50 border-2 border-gray-200 rounded-2xl focus:ring-0 focus:border-blue-500 focus:bg-white transition-all duration-200 resize-none text-gray-900 placeholder-gray-400"
+                   rows="4"
+                   placeholder="Add any additional details about this event..."
+                value={modalFields.description}
+                onChange={e => setModalFields(f => ({ ...f, description: e.target.value }))}
+              />
+            </div>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-4 mt-10 pt-6 border-t border-gray-100">
+              <button 
+                className="px-8 py-4 bg-gray-100 text-gray-700 rounded-2xl font-semibold hover:bg-gray-200 transition-all duration-200 transform hover:scale-105" 
+                onClick={() => setShowEditModal(false)}
+              >
+                Cancel
+              </button>
+                             <button 
+                 className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                 onClick={handleEditEvent}
+               >
+                 Update Event
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Event Details Modal */}
       {showEventModal && selectedEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-end bg-black bg-opacity-50" onClick={() => setShowEventModal(false)}>
@@ -391,7 +598,10 @@ const CalendarPage = () => {
               )}
               
               <div className="pt-6 border-t border-gray-200">
-                <button className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                <button 
+                  className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                  onClick={handleEditButtonClick}
+                >
                   Edit Event
                 </button>
               </div>

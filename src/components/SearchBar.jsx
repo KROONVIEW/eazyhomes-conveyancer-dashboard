@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Combobox } from '@headlessui/react';
 import { FiSearch, FiFileText, FiUser, FiFolder, FiCheckCircle, FiLoader } from 'react-icons/fi';
 import debounce from 'lodash.debounce';
+import globalSearchService from '../services/globalSearchService';
 
 const ICONS = {
   matters: <FiFolder className="text-blue-500 w-5 h-5 mr-2" />,
@@ -10,27 +11,23 @@ const ICONS = {
   documents: <FiFileText className="text-purple-500 w-5 h-5 mr-2" />,
 };
 
-// Mock search function (replace with API call)
-const mockSearch = async (q) => {
-  if (!q || q.length < 2) return { matters: [], clients: [], tasks: [], documents: [] };
-  // Simulate network delay
-  await new Promise((r) => setTimeout(r, 400));
-  return {
-    matters: [
-      { id: 'EZT1001', title: '12 Oak Ave', type: 'matters', highlight: '12 Oak' },
-      { id: 'EZT1002', title: '78 Pine Rd', type: 'matters', highlight: 'Pine' },
-    ],
-    clients: [
-      { id: 'C001', title: 'Alice Smith', type: 'clients', highlight: 'Alice' },
-      { id: 'C002', title: 'John Doe', type: 'clients', highlight: 'John' },
-    ],
-    tasks: [
-      { id: 'T001', title: 'Send FICA Request', type: 'tasks', highlight: 'FICA' },
-    ],
-    documents: [
-      { id: 'D001', title: 'FICA.pdf', type: 'documents', highlight: 'FICA' },
-    ],
-  };
+// Enhanced global search function using the new service
+const performGlobalSearch = async (query, options = {}) => {
+  try {
+    console.log('🔍 SearchBar: Performing search for:', query);
+    const results = await globalSearchService.search(query, {
+      limit: 20,
+      categories: ['matters', 'clients', 'documents', 'tasks'],
+      includeRecent: true,
+      ...options
+    });
+    
+    console.log('✅ SearchBar: Search results:', results);
+    return results;
+  } catch (error) {
+    console.error('❌ SearchBar: Search error:', error);
+    return { matters: [], clients: [], documents: [], tasks: [], messages: [] };
+  }
 };
 
 function highlightMatch(text, match) {
@@ -42,17 +39,41 @@ function highlightMatch(text, match) {
 
 export default function SearchBar() {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState({ matters: [], clients: [], tasks: [], documents: [] });
+  const [results, setResults] = useState({ matters: [], clients: [], tasks: [], documents: [], messages: [] });
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [expanded, setExpanded] = useState(false);
+  const [initialized, setInitialized] = useState(false);
   const inputRef = useRef();
   const wrapperRef = useRef();
+
+  // Initialize global search service
+  useEffect(() => {
+    const initializeSearch = async () => {
+      try {
+        console.log('🚀 SearchBar: Initializing global search...');
+        await globalSearchService.initialize();
+        setInitialized(true);
+        console.log('✅ SearchBar: Global search initialized');
+      } catch (error) {
+        console.error('❌ SearchBar: Failed to initialize search:', error);
+        setInitialized(true); // Still allow search to work with fallback
+      }
+    };
+    
+    initializeSearch();
+  }, []);
 
   // Optimized debounced search with abort controller
   const abortControllerRef = useRef();
   const doSearch = debounce(async (q) => {
+    // Don't search if not initialized
+    if (!initialized) {
+      console.log('⏳ SearchBar: Waiting for initialization...');
+      return;
+    }
+    
     // Cancel previous search
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -62,12 +83,12 @@ export default function SearchBar() {
     
     try {
       setLoading(true);
-      const res = await mockSearch(q, { signal: abortControllerRef.current.signal });
+      const res = await performGlobalSearch(q, { signal: abortControllerRef.current.signal });
       setResults(res);
     } catch (error) {
       if (error.name !== 'AbortError') {
         console.error('Search error:', error);
-        setResults({ matters: [], clients: [], tasks: [], documents: [] });
+        setResults({ matters: [], clients: [], tasks: [], documents: [], messages: [] });
       }
     } finally {
       setLoading(false);
@@ -80,7 +101,7 @@ export default function SearchBar() {
       doSearch(query);
     } else {
       setOpen(false);
-      setResults({ matters: [], clients: [], tasks: [], documents: [] });
+      setResults({ matters: [], clients: [], tasks: [], documents: [], messages: [] });
     }
     return () => doSearch.cancel();
   }, [query]);
@@ -126,15 +147,63 @@ export default function SearchBar() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [expanded]);
 
-  // Navigation on select
+  // Enhanced navigation on select
   const handleSelect = (item) => {
     setSelected(item);
     setOpen(false);
+    setExpanded(false);
+    
     if (!item) return;
-    if (item.type === 'matters') window.location.href = `/matters/${item.id}`;
-    if (item.type === 'clients') window.location.href = `/clients/${item.id}`;
-    if (item.type === 'tasks') window.location.href = `/tasks/${item.id}`;
-    if (item.type === 'documents') window.location.href = `/documents/${item.id}`;
+    
+    console.log('🎯 SearchBar: Navigating to:', item);
+    
+    // Handle navigation based on item type and data
+    switch (item.type) {
+      case 'matters':
+        // Navigate to matters page with filter or specific matter
+        if (item.data && item.data.id) {
+          window.location.href = `/matters?highlight=${item.data.id}`;
+        } else {
+          window.location.href = '/matters';
+        }
+        break;
+        
+      case 'clients':
+        // Navigate to matters page filtered by client
+        if (item.data && item.data.name) {
+          window.location.href = `/matters?client=${encodeURIComponent(item.data.name)}`;
+        } else {
+          window.location.href = '/matters';
+        }
+        break;
+        
+      case 'documents':
+        // Navigate to matters page with document filter
+        if (item.data && item.data.matterId) {
+          window.location.href = `/matters?highlight=${item.data.matterId}&tab=documents`;
+        } else {
+          window.location.href = '/matters';
+        }
+        break;
+        
+      case 'tasks':
+        // Navigate to matters page with task filter
+        if (item.data && item.data.matterId) {
+          window.location.href = `/matters?highlight=${item.data.matterId}&tab=tasks`;
+        } else {
+          window.location.href = '/matters';
+        }
+        break;
+        
+      case 'messages':
+        // Navigate to messages page
+        window.location.href = '/messages';
+        break;
+        
+      default:
+        console.warn('Unknown item type:', item.type);
+        break;
+    }
   };
 
   // Flatten results for keyboard navigation
@@ -164,13 +233,14 @@ export default function SearchBar() {
               <Combobox.Input
                 ref={inputRef}
                 className="dashboard-search-input w-full bg-transparent text-base font-normal border-0 !border-none !shadow-none !outline-none ring-0 focus:ring-0 appearance-none"
-                placeholder="Search matters, clients, tasks, documents... (Ctrl+K)"
+                placeholder={initialized ? "Search matters, clients, tasks, documents... (Ctrl+K)" : "Initializing search..."}
                 style={{ fontFamily: 'Poppins, sans-serif', boxShadow: 'none', border: 'none', outline: 'none' }}
                 onChange={e => setQuery(e.target.value)}
                 onFocus={() => query.length >= 2 && setOpen(true)}
                 displayValue={item => item?.title || ''}
+                disabled={!initialized}
               />
-              {loading && <FiLoader className="animate-spin text-blue-500 ml-2 w-5 h-5" />}
+              {(loading || !initialized) && <FiLoader className="animate-spin text-blue-500 ml-2 w-5 h-5" />}
             </div>
             {open && (
               <Combobox.Options static className="absolute z-50 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-80 overflow-auto">

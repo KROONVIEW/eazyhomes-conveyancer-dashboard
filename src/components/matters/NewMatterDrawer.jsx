@@ -53,7 +53,7 @@ const STAFF = [
 ];
 const ROLES = ["Conveyancer", "Admin", "Paralegal", "Clerk"];
 
-export default function NewMatterDrawer({ open, onClose, onNext }) {
+export default function NewMatterDrawer({ open, onClose, onNext, onCreateMatter }) {
   // Debug log to check props
   console.log('🔍 NewMatterDrawer - open prop:', open);
   
@@ -120,7 +120,7 @@ export default function NewMatterDrawer({ open, onClose, onNext }) {
   const isStep3Valid = propertyStep.address && propertyStep.propertyType && propertyStep.erf && propertyStep.deedsOffice;
   const isStep5Valid = !!selectedTemplate;
 
-  function handleNext(e) {
+  async function handleNext(e) {
     e.preventDefault();
     if (step === 1) {
       setTouched({ title: true, matterType: true, status: true });
@@ -152,10 +152,79 @@ export default function NewMatterDrawer({ open, onClose, onNext }) {
       setStep(6);
     } else if (step === 6) {
       setSubmitting(true);
+      
+      // Create the complete matter data with proper UI structure
+      const primaryClient = clients.find(c => c.primary) || clients[0];
+      const assignedStaff = assignment.staff.length > 0 ? 
+        STAFF.find(s => s.id === assignment.staff[0])?.name || 'Unassigned' : 
+        'Unassigned';
+      
+      const completeMatterData = {
+        // Core matter data
+        title: matterData.title,
+        matterType: matterData.matterType,
+        status: matterData.status,
+        urgent: matterData.urgent,
+        
+        // UI display fields (matching MatterCard expectations)
+        address: propertyStep.address,
+        client: primaryClient?.name || 'Unknown Client',
+        type: matterData.matterType,
+        assignedTo: assignedStaff,
+        progress: 0,
+        stage: 'Initial Consultation',
+        
+        // Detailed data
+        clients,
+        property: propertyStep,
+        assignment,
+        template: selectedTemplate,
+        
+        // Timestamps
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        
+        // Additional fields
+        documents: [],
+        communications: [],
+        tasks: [],
+        ficaStatus: {
+          buyer: { completed: false, documents: [] },
+          seller: { completed: false, documents: [] }
+        }
+      };
+
+      try {
+        // Call the backend to create the matter
+        if (onCreateMatter) {
+          console.log('🔄 Creating new matter:', completeMatterData);
+          await onCreateMatter(completeMatterData);
+          console.log('✅ Matter created successfully');
+        }
+        
+        // Close the drawer and reset form
       setTimeout(() => {
+          setSubmitting(false);
+          onClose(); // Close the drawer
+          // Reset form state
+          setStep(1);
+          setTitle('');
+          setMatterType('');
+          setStatus('Registered');
+          setUrgent(false);
+          setClients([]);
+          setPropertyStep({ address: '', propertyType: '', erf: '', deedsOffice: '', titleDeed: '' });
+          setAssignment({ staff: [], supervisor: '', roles: [] });
+          setSelectedTemplate('');
+          setMatterData({});
+        }, 1000);
+        
+      } catch (error) {
+        console.error('❌ Error creating matter:', error);
         setSubmitting(false);
-        onNext && onNext({ ...matterData, clients, property: propertyStep, assignment, template: selectedTemplate });
-      }, 1200);
+        // You could add error handling UI here
+        alert('Failed to create matter. Please try again.');
+      }
     }
   }
 

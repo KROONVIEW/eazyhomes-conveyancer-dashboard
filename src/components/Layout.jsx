@@ -18,6 +18,7 @@ import {
 import { FiArchive } from "react-icons/fi";
 import HamburgerMenu from './HamburgerMenu';
 import { NavLink } from "react-router-dom";
+import FloatingActionButton from './FloatingActionButton';
 
 function useIsDesktop() {
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
@@ -150,6 +151,9 @@ const Layout = ({ children }) => {
           {children}
         </main>
       </div>
+
+      {/* Global Floating Action Button */}
+      <FloatingActionButton />
     </div>
   );
 };

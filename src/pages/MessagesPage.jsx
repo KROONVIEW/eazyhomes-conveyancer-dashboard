@@ -2,7 +2,9 @@ import React, { useState, useCallback } from "react";
 import ConversationList from "../components/messaging/ConversationList.jsx";
 import ChatWindow from "../components/messaging/ChatWindow.js";
 import CallModal from "../components/messaging/CallModal";
+import MessagesFAB from "../components/messaging/MessagesFAB";
 import broadcastService from "../services/broadcastService";
+import audioManager from "../utils/audioUtils";
 
 // Enhanced avatar list with better quality placeholders
 const avatarList = [
@@ -883,20 +885,35 @@ const MessagesPage = () => {
   // User role for broadcast permissions (in real app, this would come from auth context)
   const userRole = 'admin'; // or 'user', 'conveyancer', etc.
 
-  // Enhanced call handlers with better UX feedback
+  // Enhanced call handlers with better UX feedback and iOS ringing sound
   const handleVideoCall = useCallback((chat) => {
-    console.log('Initiating video call with:', chat?.name);
+    console.log('📹 Initiating video call with:', chat?.name);
+    console.log('🔊 Starting iOS ringing sound for video call...');
+    
+    // Start iOS ringing sound immediately when call is initiated
+    audioManager.startIOSRinging();
+    
     setSelectedUserData(chat);
     setShowVideoCall(true);
   }, []);
 
   const handleVoiceCall = useCallback((chat) => {
-    console.log('Initiating voice call with:', chat?.name);
+    console.log('📞 Initiating voice call with:', chat?.name);
+    console.log('🔊 Starting iOS ringing sound for voice call...');
+    
+    // Start iOS ringing sound immediately when call is initiated
+    audioManager.startIOSRinging();
+    
     setSelectedUserData(chat);
     setShowVoiceCall(true);
   }, []);
 
   const handleCallEnd = useCallback(() => {
+    console.log('📞 Ending call and stopping ringing sound...');
+    
+    // Stop any ringing sound when call ends
+    audioManager.stopRinging();
+    
     setShowVideoCall(false);
     setShowVoiceCall(false);
     setSelectedUserData(null);
@@ -1158,6 +1175,13 @@ const MessagesPage = () => {
           </div>
         </div>
       )}
+
+      {/* Messages FAB for quick messaging actions */}
+      <MessagesFAB 
+        activeChat={dynamicChatData[activeConversationId]}
+        onVideoCall={handleVideoCall}
+        onVoiceCall={handleVoiceCall}
+      />
     </div>
   );
 };

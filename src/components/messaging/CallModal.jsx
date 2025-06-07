@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiPhone, FiVideo, FiMic, FiMicOff, FiVideoOff, FiX, FiUsers, FiClock } from 'react-icons/fi';
+import audioManager from '../../utils/audioUtils';
 
 const CallModal = ({ 
   isOpen, 
@@ -15,15 +16,23 @@ const CallModal = ({
   const [callDuration, setCallDuration] = useState(0);
   const [connectionStatus, setConnectionStatus] = useState('Connecting...');
 
-  // Simulate call connection process
+  // Simulate call connection process with iOS ringing sound
   useEffect(() => {
     if (isOpen && callState === 'initiating') {
+      // Start iOS ringing sound immediately when call is initiated
+      console.log('📞 Call initiated - starting iOS ringing sound');
+      audioManager.startIOSRinging();
+      
       const timer = setTimeout(() => {
         setCallState('connecting');
         setConnectionStatus('Ringing...');
         
         // Simulate connection after 3 seconds
         const connectTimer = setTimeout(() => {
+          // Stop ringing and play connection sound
+          audioManager.stopRinging();
+          audioManager.playCallConnectedSound();
+          
           setCallState('connected');
           setConnectionStatus('Connected');
           onCallStart?.(contact, callType);
@@ -47,9 +56,12 @@ const CallModal = ({
     return () => clearInterval(interval);
   }, [callState]);
 
-  // Reset state when modal closes
+  // Reset state when modal closes and stop any audio
   useEffect(() => {
     if (!isOpen) {
+      // Stop any ringing sound when modal closes
+      audioManager.stopRinging();
+      
       setCallState('initiating');
       setCallDuration(0);
       setIsMuted(false);
@@ -59,6 +71,10 @@ const CallModal = ({
   }, [isOpen]);
 
   const handleEndCall = () => {
+    // Stop ringing and play call ended sound
+    audioManager.stopRinging();
+    audioManager.playCallEndedSound();
+    
     setCallState('ended');
     onCallEnd?.(contact, callType, callDuration);
     setTimeout(() => {

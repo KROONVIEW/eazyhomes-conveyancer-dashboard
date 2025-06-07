@@ -306,7 +306,11 @@ const ChatWindow = ({ chat, onVideoCall, onVoiceCall, onUserProfileClick }) => {
 
   // Optimized emoji handler
   const handleEmojiClick = useCallback((emojiData) => {
-    setInput(prev => prev + emojiData.emoji);
+    console.log('🔍 Emoji data received:', emojiData);
+    // Handle both emoji string and emoji object formats
+    const emoji = typeof emojiData === 'string' ? emojiData : emojiData.emoji;
+    console.log('😊 Adding emoji:', emoji);
+    setInput(prev => prev + emoji);
     setShowEmojiPicker(false);
   }, []);
 
@@ -673,11 +677,13 @@ const ChatWindow = ({ chat, onVideoCall, onVoiceCall, onUserProfileClick }) => {
         </form>
 
         {/* Enhanced Emoji Picker */}
-        {showEmojiPicker && (
-          <div className="absolute bottom-20 right-6 z-20">
-            <IOSEmojiPicker onEmojiClick={handleEmojiClick} />
-          </div>
-          )}
+        <IOSEmojiPicker
+          isOpen={showEmojiPicker}
+          onClose={() => setShowEmojiPicker(false)}
+          onEmojiSelect={handleEmojiClick}
+          position="top-right"
+          theme="light"
+        />
         </div>
 
       {/* Hidden File Inputs */}
