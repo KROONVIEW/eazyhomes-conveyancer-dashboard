@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import authService from '../services/authService';
+import LazyImage from '../components/LazyImage';
 
 export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -465,17 +466,12 @@ export default function LoginPage() {
       {/* Right Side - Illustration */}
       <div className="hidden lg:block relative w-0 flex-1">
         <div className="absolute inset-0">
-          <img 
-                            src={`/images/${currentImage.type}/${currentImage.type === 'Signin' ? 'signin' : currentImage.type} (${currentImage.number}).jpg`}
+          <LazyImage
+            src={`/images/${currentImage.type}/${currentImage.type === 'Signin' ? 'signin' : currentImage.type} (${currentImage.number}).jpg`}
+            webpSrc={`/images/${currentImage.type}/${currentImage.type === 'Signin' ? 'signin' : currentImage.type} (${currentImage.number}).webp`}
             alt="Login Illustration"
-            className="w-full h-full object-cover transition-all duration-1000 ease-in-out"
-                          onError={(e) => {
-                // Fallback to a different image if current one fails to load
-                const fallbackImage = availableImages.find(img => 
-                  img.type !== currentImage.type || img.number !== currentImage.number
-                ) || { type: 'Signup', number: 1 };
-                e.target.src = `/images/${fallbackImage.type}/${fallbackImage.type === 'Signin' ? 'signin' : fallbackImage.type} (${fallbackImage.number}).jpg`;
-              }}
+            className="w-full h-full transition-all duration-1000 ease-in-out"
+            fallbackSrc={`/images/Signup/Signup (1).jpg`}
           />
           
           {/* Overlay with content */}
