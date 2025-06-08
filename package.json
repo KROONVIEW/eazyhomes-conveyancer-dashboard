@@ -2,20 +2,15 @@
   "name": "easyhomes-dashboard",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
   "scripts": {
     "start": "react-scripts start",
-    "start:craco": "craco start",
-    "build": "craco build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "vercel-build": "craco build",
-    "preinstall": "npx npm-force-resolutions",
-    "check:react": "npm ls react",
-    "postinstall": "npm run check:react",
-    "optimize:images": "node scripts/resize-images.js",
-    "optimize:webp": "node scripts/convert-to-webp.js",
-    "security:audit": "npm audit --audit-level=moderate",
-    "analyze": "npm run build && npx webpack-bundle-analyzer build/static/js/*.js"
+    "eject": "react-scripts eject"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
@@ -41,18 +36,10 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@craco/craco": "^7.1.0",
+    "@testing-library/jest-dom": "^6.6.3",
     "autoprefixer": "^10.4.21",
-    "imagemin": "^9.0.1",
-    "imagemin-mozjpeg": "^10.0.0",
-    "imagemin-webp": "^8.0.0",
-    "npm-force-resolutions": "^0.0.10",
     "postcss": "^8.4.31",
-    "react-window": "^1.8.11",
-    "sharp": "^0.34.2",
-    "tailwindcss": "^3.4.17",
-    "webpack-bundle-analyzer": "^4.10.2",
-    "workbox-webpack-plugin": "^7.3.0"
+    "tailwindcss": "^3.4.17"
   },
   "browserslist": {
     "production": [
@@ -65,9 +52,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "resolutions": {
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
   }
 }
