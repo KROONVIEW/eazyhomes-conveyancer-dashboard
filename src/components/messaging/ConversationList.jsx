@@ -112,7 +112,7 @@ const conversations = [
   }
 ];
 
-const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, userRole = 'admin', onSendBroadcast }) => {
+const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, userRole = 'admin', onSendBroadcast, unreadCounts = {}, newMessageCounters = {} }) => {
   const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [showNewChatMenu, setShowNewChatMenu] = useState(false);
@@ -123,23 +123,46 @@ const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, us
   console.log('ConversationList - chatData:', chatData);
   console.log('ConversationList - activeId:', activeId);
 
-  // Convert chatData to conversations format
+  // Convert chatData to conversations format with proper sorting
   const conversationsFromChatData = Object.values(chatData || {}).map(chat => ({
     id: chat.id,
     name: chat.name,
     avatarUrl: chat.avatarUrl,
     lastMessage: chat.messages && chat.messages.length > 0 
-      ? chat.messages[chat.messages.length - 1].text 
+      ? chat.messages[0].text  // Use first message (newest) since we're adding to beginning
       : 'No messages yet',
     timestamp: chat.messages && chat.messages.length > 0 
-      ? chat.messages[chat.messages.length - 1].timestamp 
+      ? chat.messages[0].timestamp  // Use first message timestamp
       : '',
-    unreadCount: 0, // You can calculate this based on read status
+    unreadCount: unreadCounts[chat.id] || 0, // Use dynamic unread counts
     online: chat.online,
     role: chat.role,
     isBroadcast: chat.isBroadcast || false,
-    isPinned: chat.isPinned || false
-  }));
+    isPinned: chat.isPinned || false,
+    newMessageCount: newMessageCounters[chat.id] || 0,
+    lastActivity: chat.lastActivity || 0
+  })).sort((a, b) => {
+    // First: Pinned items (Firm Broadcast) always at top
+    if (a.isPinned && !b.isPinned) return -1;
+    if (!a.isPinned && b.isPinned) return 1;
+    
+    // Then: Sort by last activity (newest first)
+    if (a.lastActivity !== b.lastActivity) {
+      return b.lastActivity - a.lastActivity;
+    }
+    
+    // Finally: Sort by unread count (more unread first)
+    return b.unreadCount - a.unreadCount;
+  });
+
+  // Calculate unread counts for tabs
+  const personalUnreadCount = conversationsFromChatData
+    .filter(conv => !conv.name.includes('Team') && !conv.name.includes('Project') && !conv.isBroadcast)
+    .reduce((total, conv) => total + conv.unreadCount, 0);
+    
+  const teamsUnreadCount = conversationsFromChatData
+    .filter(conv => conv.name.includes('Team') || conv.name.includes('Project') || conv.isBroadcast)
+    .reduce((total, conv) => total + conv.unreadCount, 0);
 
   // Filter conversations based on active tab and search
   const filteredConversations = conversationsFromChatData.filter(conv => {
@@ -263,30 +286,40 @@ const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, us
         </div>
       </div>
 
-      {/* Enhanced Tabs with Better Active Indicator */}
+      {/* Enhanced Tabs with Unread Count Badges */}
       <div className="px-6 py-4 border-b border-gray-100">
         <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
-          {['All', 'Personal', 'Teams'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => {
-                setActiveTab(tab);
-                setShowBroadcastFeed(false);
-              }}
-              className={`flex-1 py-2.5 px-4 text-sm font-medium rounded-md transition-all duration-200 ${
-                activeTab === tab
-                  ? 'bg-white text-blue-600 shadow-sm transform scale-[1.02]'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              {tab}
-              {tab === 'Teams' && (
-                <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-blue-600 bg-blue-100 rounded-full">
-                  {conversations.filter(c => c.name.includes('Team') || c.name.includes('Project') || c.isBroadcast).length}
-                </span>
-              )}
-            </button>
-          ))}
+          {['All', 'Personal', 'Teams'].map((tab) => {
+            const getUnreadCount = () => {
+              if (tab === 'Personal') return personalUnreadCount;
+              if (tab === 'Teams') return teamsUnreadCount;
+              return 0; // No count for 'All' tab as requested
+            };
+            
+            const unreadCount = getUnreadCount();
+            
+            return (
+              <button
+                key={tab}
+                onClick={() => {
+                  setActiveTab(tab);
+                  setShowBroadcastFeed(false);
+                }}
+                className={`flex-1 py-2.5 px-4 text-sm font-medium rounded-md transition-all duration-200 flex items-center justify-center gap-2 ${
+                  activeTab === tab
+                    ? 'bg-white text-blue-600 shadow-sm transform scale-[1.02]'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                {tab}
+                {unreadCount > 0 && (
+                  <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full animate-pulse">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 

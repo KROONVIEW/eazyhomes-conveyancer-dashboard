@@ -562,10 +562,34 @@ const ChatWindow = ({ chat, onVideoCall, onVoiceCall, onUserProfileClick }) => {
       >
         {allMessages.map((message, index) => {
           const isOwn = message.isSent || message.sender === 'You';
-          const showAvatar = !isOwn && (index === 0 || allMessages[index - 1]?.senderAvatar !== message.senderAvatar);
+          // Show avatar for all non-own messages (simpler and more reliable)
+          const showAvatar = !isOwn;
+          
+          // Check if this is the start of new messages
+          const isFirstNewMessage = message.isNewNotification && 
+            (index === 0 || !allMessages[index - 1]?.isNewNotification);
+          
+          // Count consecutive new messages from this point
+          let newMessageCount = 0;
+          if (isFirstNewMessage) {
+            for (let i = index; i < allMessages.length && allMessages[i]?.isNewNotification; i++) {
+              newMessageCount++;
+            }
+          }
           
           return (
             <div key={message.id} className="group">
+              {/* New Messages Line Breaker */}
+              {isFirstNewMessage && (
+                <div className="flex items-center justify-center my-6">
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-red-300 to-transparent"></div>
+                  <div className="px-4 py-2 bg-red-500 text-white text-xs font-semibold rounded-full shadow-lg animate-pulse">
+                    {newMessageCount} new message{newMessageCount > 1 ? 's' : ''}
+                  </div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-red-300 via-transparent to-transparent"></div>
+                </div>
+              )}
+              
               <MemoizedMessageBubble
                 message={{
                   ...message,

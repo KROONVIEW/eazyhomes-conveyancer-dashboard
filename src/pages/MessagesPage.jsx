@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import ConversationList from "../components/messaging/ConversationList.jsx";
 import ChatWindow from "../components/messaging/ChatWindow.js";
 import CallModal from "../components/messaging/CallModal";
@@ -873,6 +873,138 @@ const chatData = {
   }
 };
 
+// Mock message pools for specific conversations (clean format, no ** formatting)
+const conversationMessages = {
+  0: [ // Firm-Wide Broadcast
+    "Team Meeting scheduled for tomorrow at 10 AM in Conference Room A",
+    "New document retention guidelines are now in effect",
+    "Congratulations to Sarah for completing her advanced certification!",
+    "System Maintenance will occur this weekend from 2-6 AM",
+    "Advanced Property Law seminar available next Friday",
+    "Our team exceeded client satisfaction targets this month",
+    "New client onboarding process starts Monday",
+    "Please update your passwords by end of week"
+  ],
+  
+  1: [ // John Carlo
+    "Can you review the Henderson file when you have a moment?",
+    "The client called about expediting their transfer",
+    "Draft deed is ready for your review and approval",
+    "Running 10 minutes late for our 2 PM meeting",
+    "Completed the FICA verification for new client",
+    "Need status update on the Patel property transfer",
+    "Client wants to schedule consultation this week",
+    "Have you received the updated deed of sale?"
+  ],
+  
+  2: [ // Jessica Wu
+    "I've updated the compliance checklist - please check",
+    "Are you free for lunch today? Want to discuss new procedures",
+    "Perfect! I'll see you there. Have some questions about FICA requirements",
+    "Thanks! You're always so helpful. Looking forward to it!",
+    "Can we go through the new compliance procedures together?",
+    "I need help with the Williams matter documentation",
+    "The client submitted all required documents this morning",
+    "Meeting went well - client is very satisfied with our service"
+  ],
+  
+  3: [ // Project Alpha
+    "Phase 2 development is ahead of schedule",
+    "Need approval for additional frontend resources",
+    "Mobile optimization testing completed successfully",
+    "User interface improvements are ready for review",
+    "Client feedback on new features is very positive",
+    "Ready to deploy the latest updates to production",
+    "Team meeting scheduled for tomorrow at 3 PM",
+    "Budget review needed for next quarter planning"
+  ],
+  
+  4: [ // Client: Mr. Patel
+    "Thank you for the update on my property registration",
+    "When can I expect the municipal clearance certificate?",
+    "I have some questions about the transfer process",
+    "The documentation you provided was very helpful",
+    "Can we schedule a meeting to discuss next steps?",
+    "I'm very satisfied with EasyHomes service so far",
+    "Do I need to provide any additional documents?",
+    "Looking forward to completing this transaction soon"
+  ],
+  
+  5: [ // Team Marketing
+    "New campaign metrics are exceeding expectations",
+    "Website conversion rates have improved by 35%",
+    "Social media engagement is at an all-time high",
+    "Need approval for additional marketing budget",
+    "Client testimonials are coming in very positive",
+    "Ready to launch the next phase of our campaign",
+    "Analytics dashboard shows strong ROI trends",
+    "Competitor analysis report is ready for review"
+  ],
+  
+  6: [ // Anna Kim
+    "Contract review for Johannesburg project is complete",
+    "Found some optimization opportunities in the agreement",
+    "Risk management clauses need minor adjustments",
+    "Client is very happy with our legal expertise",
+    "Ready to finalize the development contract terms",
+    "Compliance check completed - everything looks good",
+    "Meeting with stakeholders went very well today",
+    "Legal documentation is ready for your signature"
+  ],
+  
+  7: [ // Support Desk
+    "Your IT ticket has been resolved successfully",
+    "Network performance improvements are now active",
+    "New software updates are available for installation",
+    "Printer configuration has been optimized",
+    "Security patches have been applied to all systems",
+    "Backup systems are functioning perfectly",
+    "Help desk is available 24/7 for any issues",
+    "System maintenance completed ahead of schedule"
+  ],
+  
+  8: [ // Jane Doe
+    "Sandton property listing is getting great interest",
+    "Three serious buyers are considering offers",
+    "Property viewing scheduled for this afternoon",
+    "Market analysis shows excellent pricing strategy",
+    "Client is very impressed with our service quality",
+    "New listing photos have increased inquiry rates",
+    "Ready to present the latest offer to the seller",
+    "Property market trends are very favorable right now"
+  ],
+  
+  9: [ // Michael Chen
+    "Title deed search completed for Rosebank property",
+    "Legal documentation review is finished",
+    "Found no issues with the property ownership history",
+    "Transfer documents are ready for processing",
+    "Client meeting went very well this morning",
+    "All compliance requirements have been met",
+    "Ready to proceed with the next phase",
+    "Legal team is standing by for any questions"
+  ]
+};
+
+// Active conversations that can receive messages (all visible conversations)
+const activeConversations = [
+  { id: 0, name: "Firm-Wide Broadcast", sender: "System" },
+  { id: 1, name: "John Carlo", sender: "John Carlo" },
+  { id: 2, name: "Jessica Wu", sender: "Jessica Wu" },
+  { id: 3, name: "Project Alpha", sender: "Project Alpha" },
+  { id: 4, name: "Client: Mr. Patel", sender: "Mr. Patel" },
+  { id: 5, name: "Team Marketing", sender: "Team Marketing" },
+  { id: 6, name: "Anna Kim", sender: "Anna Kim" },
+  { id: 7, name: "Support Desk", sender: "Support Desk" },
+  { id: 8, name: "Jane Doe", sender: "Jane Doe" },
+  { id: 9, name: "Michael Chen", sender: "Michael Chen" }
+];
+
+// Track last message sender to ensure fair distribution
+let lastMessageSenders = [];
+
+// All conversations are now in the main chatData object
+
 const MessagesPage = () => {
   // Start with test conversation for diagnostics
   const [activeConversationId, setActiveConversationId] = useState(99);
@@ -881,9 +1013,164 @@ const MessagesPage = () => {
   const [showVideoCall, setShowVideoCall] = useState(false);
   const [showVoiceCall, setShowVoiceCall] = useState(false);
   const [dynamicChatData, setDynamicChatData] = useState(chatData);
+  
+  // Notification system state
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [unreadCounts, setUnreadCounts] = useState({});
+  const [newMessageCounters, setNewMessageCounters] = useState({});
+  const [lastReadMessages, setLastReadMessages] = useState({});
 
   // User role for broadcast permissions (in real app, this would come from auth context)
   const userRole = 'admin'; // or 'user', 'conveyancer', etc.
+
+  // Notification sound function
+  const playNotificationSound = useCallback(() => {
+    try {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      // Create a pleasant notification sound (two-tone chime)
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (error) {
+      console.log('Audio context not available:', error);
+    }
+  }, []);
+
+  // Generate new message notification with fair distribution
+  const generateNotification = useCallback(() => {
+    // Get available conversations (exclude those that sent last 2 messages for fair distribution)
+    let availableConversations = activeConversations.filter(conv => 
+      !lastMessageSenders.slice(-2).includes(conv.id)
+    );
+    
+    // If all conversations are in recent senders, reset and use all
+    if (availableConversations.length === 0) {
+      availableConversations = activeConversations;
+      lastMessageSenders = [];
+    }
+    
+    // Randomly select a conversation
+    const selectedConversation = availableConversations[Math.floor(Math.random() * availableConversations.length)];
+    const conversationId = selectedConversation.id;
+    
+    // Get message pool for this conversation
+    const messagePool = conversationMessages[conversationId];
+    const randomMessage = messagePool[Math.floor(Math.random() * messagePool.length)];
+    
+    // Get conversation data for proper sender info
+    const conversationData = dynamicChatData[conversationId];
+    
+    const newMessage = {
+      id: Date.now() + Math.random(),
+      text: randomMessage,
+      sender: selectedConversation.sender,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      isSent: false,
+      senderAvatar: conversationData?.avatarUrl || "/images/avatars/face_1 (1).jpg",
+      status: "delivered",
+      isNewNotification: true,
+      isBroadcast: conversationId === 0 // Only firm broadcast is broadcast type
+    };
+
+    // Debug logging
+    console.log('🖼️ New message avatar info:', {
+      conversationId,
+      sender: selectedConversation.sender,
+      avatarUrl: conversationData?.avatarUrl,
+      senderAvatar: newMessage.senderAvatar
+    });
+
+    // Update chat data with new message
+    setDynamicChatData(prevData => {
+      const updatedData = { ...prevData };
+      if (updatedData[conversationId]) {
+        // Add new message to the beginning (newest first)
+        updatedData[conversationId].messages = [newMessage, ...(updatedData[conversationId].messages || [])];
+        
+        // Update last activity timestamp for sorting
+        updatedData[conversationId].lastActivity = Date.now();
+      }
+      return updatedData;
+    });
+
+    // Update unread counts
+    setUnreadCounts(prev => ({
+      ...prev,
+      [conversationId]: (prev[conversationId] || 0) + 1
+    }));
+
+    // Update new message counter for line breakers
+    setNewMessageCounters(prev => ({
+      ...prev,
+      [conversationId]: (prev[conversationId] || 0) + 1
+    }));
+
+    // Track this sender for fair distribution
+    lastMessageSenders.push(conversationId);
+    if (lastMessageSenders.length > 3) {
+      lastMessageSenders.shift(); // Keep only last 3
+    }
+
+    // Play notification sound
+    playNotificationSound();
+
+    console.log(`📢 New message from ${selectedConversation.name}:`, randomMessage);
+  }, [playNotificationSound, dynamicChatData]);
+
+  // Auto-clear unread messages when conversation is opened
+  useEffect(() => {
+    if (activeConversationId && unreadCounts[activeConversationId] > 0) {
+      // Clear unread count for active conversation
+      setUnreadCounts(prev => ({
+        ...prev,
+        [activeConversationId]: 0
+      }));
+
+      // Mark messages as read and remove new notification flags
+      setDynamicChatData(prevData => {
+        const updatedData = { ...prevData };
+        if (updatedData[activeConversationId]) {
+          updatedData[activeConversationId].messages = updatedData[activeConversationId].messages.map(msg => ({
+            ...msg,
+            isNewNotification: false
+          }));
+        }
+        return updatedData;
+      });
+
+      // Reset new message counter
+      setNewMessageCounters(prev => ({
+        ...prev,
+        [activeConversationId]: 0
+      }));
+    }
+  }, [activeConversationId, unreadCounts]);
+
+  // Single notification interval with random conversation selection
+  useEffect(() => {
+    if (!notificationsEnabled) return;
+
+    // Generate notifications every 45 seconds with random conversation selection
+    const interval = setInterval(() => {
+      generateNotification();
+    }, 45000); // 45 seconds for demo (adjust as needed)
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [notificationsEnabled, generateNotification]);
 
   // Enhanced call handlers with better UX feedback and iOS ringing sound
   const handleVideoCall = useCallback((chat) => {
@@ -1031,6 +1318,24 @@ const MessagesPage = () => {
 
   return (
     <div className="h-screen flex bg-gray-50 font-['Poppins']">
+      {/* Notification Toggle - Repositioned to bottom right */}
+      <div className="fixed bottom-20 right-4 z-50">
+        <div className="bg-white rounded-lg shadow-lg p-3 border border-gray-200">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-gray-700">Demo Notifications</span>
+            <input
+              type="checkbox"
+              checked={notificationsEnabled}
+              onChange={(e) => setNotificationsEnabled(e.target.checked)}
+              className="rounded border-gray-300"
+            />
+          </div>
+          <div className="text-xs text-gray-500 mt-1">
+            Random messages every 45 seconds from 10 conversations
+          </div>
+        </div>
+      </div>
+
       {/* Conversation List */}
       <div className="w-80 border-r border-gray-200 bg-white shadow-sm">
         <ConversationList
@@ -1040,6 +1345,8 @@ const MessagesPage = () => {
           chatData={dynamicChatData}
           userRole={userRole}
           onSendBroadcast={handleSendBroadcast}
+          unreadCounts={unreadCounts}
+          newMessageCounters={newMessageCounters}
         />
       </div>
 
