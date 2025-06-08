@@ -7,10 +7,11 @@
     "npm": "9.x"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "react-scripts eject",
+    "vercel-build": "craco build"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
@@ -36,6 +37,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@craco/craco": "^7.1.0",
     "@testing-library/jest-dom": "^6.6.3",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.4.31",
