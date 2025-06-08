@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=1200, initial-scale=1.0, user-scalable=yes" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
@@ -25,68 +25,11 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <title>React App</title>
+    <title>EazyHomes Dashboard</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root">
-      <input type="text" placeholder="Search messages, contacts..." class="search-input">
-      <!-- Example Contact List Item: Broadcast -->
-      <div class="contact-item active broadcast-channel">
-        <img src="/images/avatars/face_1.jpg" alt="Firm-Wide Broadcast" class="contact-avatar">
-        <div class="contact-info">
-          <div class="contact-name"><i class="fas fa-bullhorn broadcast-icon"></i> Firm-Wide Broadcast</div>
-          <div class="last-message">System update scheduled for 2 AM, June 2nd.</div>
-        </div>
-        <div class="message-time">2m ago</div>
-      </div>
-      <!-- Example Contact List Item: Group Chat -->
-      <div class="contact-item group-chat">
-        <img src="/images/avatars/face_2.jpg" alt="Team Transfers" class="contact-avatar">
-        <div class="contact-info">
-          <div class="contact-name">Team Transfers <i class="fas fa-users group-icon"></i></div>
-          <div class="last-message">New transfer assigned to you.</div>
-        </div>
-        <div class="message-time">1h ago</div>
-      </div>
-      <!-- Example Contact List Item: Unread Badge -->
-      <div class="contact-item has-unread">
-        <img src="/images/avatars/face_3.jpg" alt="Contact" class="contact-avatar">
-        <div class="unread-badge show-badge">3</div>
-        <div class="contact-info">
-          <div class="contact-name">John Carlo</div>
-          <div class="last-message">See you at the office tomorrow!</div>
-        </div>
-        <div class="message-time">5m ago</div>
-      </div>
-      <!-- Example Message Bubble: Incoming with Attachment -->
-      <div class="message-bubble incoming">
-        <img src="/images/avatars/face_4.jpg" alt="User" class="message-sender-avatar">
-        <div class="attachment-preview pdf">
-          <div class="attachment-icon"><i class="fas fa-file-pdf"></i></div>
-          <div class="attachment-details">
-            <span class="attachment-name">ImportantDocument.pdf</span>
-            <span class="attachment-size">850 KB</span>
-          </div>
-          <a href="/docs/ImportantDocument.pdf" download class="attachment-download-icon"><i class="fas fa-download"></i></a>
-        </div>
-        <div class="message-meta">
-          <span class="message-time">09:02 AM</span>
-        </div>
-      </div>
-      <!-- Example Message Bubble: Outgoing with Status -->
-      <div class="message-bubble outgoing">
-        <p>Here is the signed contract.</p>
-        <div class="message-meta">
-          <span class="message-time">09:01 AM</span>
-          <span class="message-status-icons show-sent">
-            <i class="fas fa-check status-icon sent"></i>
-            <i class="fas fa-check-double status-icon delivered"></i>
-            <i class="fas fa-check-double status-icon read"></i>
-          </span>
-        </div>
-      </div>
-    </div>
+    <div id="root"></div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

@@ -130,12 +130,16 @@ class AuthService {
   init() {
     return new Promise((resolve) => {
       if (this.useMockAuth) {
-        console.log('🔧 Using mock authentication for testing - ALWAYS SHOW LOGIN');
-        // TESTING MODE: Always clear stored auth data to force login screen
-        localStorage.removeItem('mockUser');
-        sessionStorage.removeItem('session_start_time');
-        console.log('🧹 Cleared stored auth data - login screen will appear');
-        resolve(null); // Always resolve with null to force login
+        console.log('🔧 Using mock authentication for testing');
+        // Check if user is already logged in (from localStorage)
+        const savedUser = localStorage.getItem('mockUser');
+        if (savedUser) {
+          const userData = JSON.parse(savedUser);
+          this.currentUser = { uid: userData.profile.id, email: userData.profile.email };
+          this.userProfile = userData.profile;
+          this.authStateListeners.forEach(listener => listener(this.currentUser, this.userProfile));
+        }
+        resolve(this.currentUser);
         return;
       }
 
@@ -266,8 +270,8 @@ class AuthService {
     };
     this.userProfile = mockAccount.profile;
     
-    // TESTING MODE: Do NOT save to localStorage to force login on refresh
-    console.log('🧪 TESTING MODE: Not saving auth data - login required on refresh');
+    // Save to localStorage for persistence
+    localStorage.setItem('mockUser', JSON.stringify(mockAccount));
     
     // Notify listeners
     this.authStateListeners.forEach(listener => listener(this.currentUser, this.userProfile));
@@ -366,8 +370,8 @@ class AuthService {
     this.currentUser = { uid: newProfile.id, email: newProfile.email };
     this.userProfile = newProfile;
     
-    // TESTING MODE: Do NOT save to localStorage to force login on refresh
-    console.log('🧪 TESTING MODE: Not saving signup data - login required on refresh');
+    // Save to localStorage
+    localStorage.setItem('mockUser', JSON.stringify(newAccount));
     
     console.log('✅ Mock sign up successful:', this.userProfile);
     

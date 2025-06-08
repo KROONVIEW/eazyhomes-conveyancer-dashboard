@@ -1,29 +1,31 @@
 import React, { useState, useRef } from 'react';
 import ReactDOM from 'react-dom';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './ProtectedRoute';
 import { FiMenu, FiChevronDown, FiUser, FiLogOut, FiSun, FiMoon, FiFileText, FiGrid, FiUsers, FiUpload, FiSettings, FiPlus } from 'react-icons/fi';
 
 const menuSections = [
   {
     title: 'Navigation',
     items: [
-      { label: 'Dashboard Overview', icon: <FiGrid />, href: '/dashboard' },
-      { label: 'Matters', icon: <FiFileText />, href: '/matters' },
-      { label: 'Clients', icon: <FiUsers />, href: '/clients' },
-      { label: 'Documents', icon: <FiUpload />, href: '/documents' },
-      { label: 'Settings', icon: <FiSettings />, href: '/settings' },
+      { label: 'Dashboard Overview', icon: <FiGrid />, route: '/' },
+      { label: 'Matters', icon: <FiFileText />, route: '/matters' },
+      { label: 'Clients', icon: <FiUsers />, route: '/clients' },
+      { label: 'Documents', icon: <FiUpload />, route: '/documents' },
+      { label: 'Settings', icon: <FiSettings />, route: '/settings' },
     ],
   },
   {
     title: 'Quick Actions',
     items: [
-      { label: 'Add New Matter', icon: <FiPlus />, href: '/matters/new' },
-      { label: 'Upload Document', icon: <FiUpload />, href: '/documents/upload' },
+      { label: 'Add New Matter', icon: <FiPlus />, route: '/matters/new' },
+      { label: 'Upload Document', icon: <FiUpload />, route: '/documents/upload' },
     ],
   },
   {
     title: 'User Options',
     items: [
-      { label: 'View Profile', icon: <FiUser />, href: '/profile' },
+      { label: 'View Profile', icon: <FiUser />, action: 'viewProfile' },
       { label: 'Toggle Light/Dark Mode', icon: <FiSun />, action: 'toggleTheme' },
       { label: 'Logout', icon: <FiLogOut />, action: 'logout' },
     ],
@@ -32,16 +34,34 @@ const menuSections = [
 
 const MENU_WIDTH = 320;
 
-const HamburgerMenu = ({ onToggleTheme, onLogout, triggerIcon }) => {
+const HamburgerMenu = ({ onToggleTheme, triggerIcon }) => {
   const [open, setOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 56, left: 0 });
   const btnRef = useRef(null);
   const hoverTimeout = useRef();
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
 
   // Handle menu actions
-  const handleMenuAction = (item) => {
-    if (item.action === 'toggleTheme' && onToggleTheme) onToggleTheme();
-    if (item.action === 'logout' && onLogout) onLogout();
+  const handleMenuAction = async (item) => {
+    if (item.action === 'toggleTheme' && onToggleTheme) {
+      onToggleTheme();
+    } else if (item.action === 'logout') {
+      try {
+        await signOut();
+        navigate('/login');
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    } else if (item.action === 'viewProfile') {
+      navigate('/settings'); // Navigate to settings page where profile can be managed
+    }
+    setOpen(false);
+  };
+
+  // Handle navigation
+  const handleNavigation = (route) => {
+    navigate(route);
     setOpen(false);
   };
 
@@ -100,28 +120,15 @@ const HamburgerMenu = ({ onToggleTheme, onLogout, triggerIcon }) => {
               <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                 {section.items.map((item) => (
                   <li key={item.label} style={{ marginBottom: 4 }}>
-                    {item.href ? (
-                      <a
-                        href={item.href}
-                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 8, color: '#222', textDecoration: 'none', fontWeight: 500, fontSize: 15, transition: 'background 0.2s' }}
-                        onClick={() => setOpen(false)}
-                        onMouseOver={e => e.currentTarget.style.background = '#f1f5f9'}
-                        onMouseOut={e => e.currentTarget.style.background = 'transparent'}
-                      >
-                        <span style={{ fontSize: 20 }}>{item.icon}</span>
-                        <span>{item.label}</span>
-                      </a>
-                    ) : (
-                      <button
-                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 8, color: '#222', background: 'none', border: 'none', fontWeight: 500, fontSize: 15, width: '100%', textAlign: 'left', transition: 'background 0.2s', cursor: 'pointer' }}
-                        onClick={() => handleMenuAction(item)}
-                        onMouseOver={e => e.currentTarget.style.background = '#f1f5f9'}
-                        onMouseOut={e => e.currentTarget.style.background = 'transparent'}
-                      >
-                        <span style={{ fontSize: 20 }}>{item.icon}</span>
-                        <span>{item.label}</span>
-                      </button>
-                    )}
+                    <button
+                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 8, color: '#222', background: 'none', border: 'none', fontWeight: 500, fontSize: 15, width: '100%', textAlign: 'left', transition: 'background 0.2s', cursor: 'pointer' }}
+                      onClick={() => item.route ? handleNavigation(item.route) : handleMenuAction(item)}
+                      onMouseOver={e => e.currentTarget.style.background = '#f1f5f9'}
+                      onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <span style={{ fontSize: 20 }}>{item.icon}</span>
+                      <span>{item.label}</span>
+                    </button>
                   </li>
                 ))}
               </ul>
