@@ -6,12 +6,6 @@
     "CI": "false",
     "INLINE_RUNTIME_CHUNK": "false"
   },
-  "analytics": {
-    "enable": true
-  },
-  "speedInsights": {
-    "enable": true
-  },
   "headers": [
     {
       "source": "/static/(.*)",

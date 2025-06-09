@@ -1,19 +1,10 @@
-// Simplified web vitals implementation to avoid import issues
-const reportWebVitals = (onPerfEntry) => {
-  if (onPerfEntry && onPerfEntry instanceof Function) {
-    import('web-vitals').then(({ onCLS, onFCP, onLCP, onTTFB }) => {
-      onCLS(onPerfEntry);
-      onFCP(onPerfEntry);
-      onLCP(onPerfEntry);
-      onTTFB(onPerfEntry);
-    });
-  }
-};
+// Web Vitals implementation for performance monitoring
+import { onCLS, onFCP, onLCP, onTTFB, onINP } from 'web-vitals';
 
 // Web Vitals thresholds (Google's recommended values)
 const THRESHOLDS = {
   CLS: { good: 0.1, poor: 0.25 },
-  FID: { good: 100, poor: 300 },
+  INP: { good: 200, poor: 500 }, // Updated from FID to INP
   FCP: { good: 1800, poor: 3000 },
   LCP: { good: 2500, poor: 4000 },
   TTFB: { good: 800, poor: 1800 }
@@ -25,22 +16,33 @@ function sendToAnalytics(metric) {
   // eslint-disable-next-line no-console
   console.log('Web Vitals Metric:', metric);
   
-  // Example: Send to Google Analytics
-  // gtag('event', metric.name, {
-  //   value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
-  //   event_category: 'Web Vitals',
-  //   event_label: metric.id,
-  //   non_interaction: true,
-  // });
+  // Example: Send to Google Analytics 4
+  if (typeof gtag !== 'undefined') {
+    gtag('event', metric.name, {
+      value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+      event_category: 'Web Vitals',
+      event_label: metric.id,
+      non_interaction: true,
+    });
+  }
+
+  // Example: Send to Vercel Analytics
+  if (typeof window !== 'undefined' && window.va) {
+    window.va('track', 'Web Vitals', {
+      metric: metric.name,
+      value: metric.value,
+      rating: getPerformanceRating(metric.name, metric.value)
+    });
+  }
 }
 
 // Function to get performance rating
 function getPerformanceRating(metricName, value) {
   const threshold = THRESHOLDS[metricName];
-  if (!threshold) {return 'unknown';}
+  if (!threshold) return 'unknown';
   
-  if (value <= threshold.good) {return 'good';}
-  if (value <= threshold.poor) {return 'needs-improvement';}
+  if (value <= threshold.good) return 'good';
+  if (value <= threshold.poor) return 'needs-improvement';
   return 'poor';
 }
 
@@ -68,6 +70,9 @@ function reportMetric(metric) {
         threshold: THRESHOLDS[metric.name],
         suggestions: getPerformanceSuggestions(metric.name)
       });
+    } else if (rating === 'good') {
+      // eslint-disable-next-line no-console
+      console.log(`✅ Good ${metric.name} performance:`, metric.value);
     }
   }
 }
@@ -80,10 +85,11 @@ function getPerformanceSuggestions(metricName) {
       'Avoid inserting content above existing content',
       'Use CSS transforms instead of changing layout properties'
     ],
-    FID: [
+    INP: [
       'Reduce JavaScript execution time',
       'Break up long tasks',
-      'Use web workers for heavy computations'
+      'Use web workers for heavy computations',
+      'Optimize event handlers'
     ],
     FCP: [
       'Reduce server response times',
@@ -107,7 +113,20 @@ function getPerformanceSuggestions(metricName) {
 
 // Main function to initialize Web Vitals monitoring
 export function initWebVitals() {
-  reportWebVitals(reportMetric);
+  try {
+    // Register all Core Web Vitals
+    onCLS(reportMetric);
+    onFCP(reportMetric);
+    onLCP(reportMetric);
+    onTTFB(reportMetric);
+    onINP(reportMetric);
+
+    // eslint-disable-next-line no-console
+    console.log('✅ Web Vitals monitoring initialized');
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('❌ Failed to initialize Web Vitals:', error);
+  }
 }
 
 // Function to manually report custom metrics
@@ -134,4 +153,16 @@ export function measureComponentPerformance(componentName, fn) {
   return result;
 }
 
+// Legacy support for the old reportWebVitals function
+const reportWebVitals = (onPerfEntry) => {
+  if (onPerfEntry && onPerfEntry instanceof Function) {
+    onCLS(onPerfEntry);
+    onFCP(onPerfEntry);
+    onLCP(onPerfEntry);
+    onTTFB(onPerfEntry);
+    onINP(onPerfEntry);
+  }
+};
+
+export { reportWebVitals };
 export default initWebVitals; 
