@@ -69,7 +69,7 @@ export const useMatterWorkflow = () => {
       // But we can also update local state immediately for better UX
       setMatters(prev => {
         const exists = prev.find(m => m.id === newMatter.id || m.firebaseId === newMatter.firebaseId);
-        if (exists) return prev; // Avoid duplicates
+        if (exists) {return prev;} // Avoid duplicates
         return [newMatter, ...prev];
       });
       
@@ -218,7 +218,7 @@ export const useMatterRealtime = (matterId) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!matterId) return;
+    if (!matterId) {return;}
 
     let unsubscribeMessages;
 
@@ -275,7 +275,7 @@ export const useFicaWorkflow = (matterId) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!matterId) return;
+    if (!matterId) {return;}
 
     const loadFicaStatus = async () => {
       try {

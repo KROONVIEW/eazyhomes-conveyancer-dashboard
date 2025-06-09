@@ -34,7 +34,7 @@ const CURRENT_USER_AVATAR = '/images/avatars/face 2 (2).jpg';
 
 // Enhanced Message Status Component (WhatsApp-like)
 const MessageStatus = memo(({ status, isSent }) => {
-  if (!isSent) return null;
+  if (!isSent) {return null;}
   
   const getStatusIcon = () => {
     switch (status) {
@@ -181,7 +181,7 @@ const FilePreview = memo(({ file, onRemove }) => (
 
 // Format file size utility (moved outside component to prevent recreation)
 const formatFileSize = (bytes) => {
-  if (bytes === 0) return '0 Bytes';
+  if (bytes === 0) {return '0 Bytes';}
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -233,7 +233,7 @@ const ChatWindow = ({ chat, onVideoCall, onVoiceCall, onUserProfileClick }) => {
   // Enhanced message sending with better UX
   const handleSendMessage = useCallback((e) => {
     e.preventDefault();
-    if (!input.trim() && attachedFiles.length === 0) return;
+    if (!input.trim() && attachedFiles.length === 0) {return;}
 
     const newMessage = {
       id: Date.now(),
@@ -461,7 +461,7 @@ const ChatWindow = ({ chat, onVideoCall, onVoiceCall, onUserProfileClick }) => {
   }, []);
 
   // Enhanced empty state
-  if (!chat) return (
+  if (!chat) {return (
     <div className="flex flex-col h-full bg-gradient-to-br from-gray-50 to-white w-full items-center justify-center text-gray-400 text-lg">
       <div className="text-center p-8 max-w-md">
         <div className="text-6xl mb-6 opacity-50 animate-pulse">💬</div>
@@ -471,7 +471,7 @@ const ChatWindow = ({ chat, onVideoCall, onVoiceCall, onUserProfileClick }) => {
         </div>
       </div>
     </div>
-  );
+  );}
 
   return (
     <div className="flex flex-col h-full bg-white w-full font-['Poppins']">

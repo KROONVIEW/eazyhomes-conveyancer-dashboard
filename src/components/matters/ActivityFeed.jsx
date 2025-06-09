@@ -4,9 +4,9 @@ function timeAgo(date) {
   const now = new Date();
   const then = new Date(date);
   const diff = Math.floor((now - then) / 1000);
-  if (diff < 60) return `${diff}s ago`;
-  if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+  if (diff < 60) {return `${diff}s ago`;}
+  if (diff < 3600) {return `${Math.floor(diff/60)}m ago`;}
+  if (diff < 86400) {return `${Math.floor(diff/3600)}h ago`;}
   return then.toLocaleDateString();
 }
 

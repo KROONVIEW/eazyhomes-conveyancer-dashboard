@@ -78,7 +78,7 @@ class NotificationService {
 
   // Show browser notification
   showBrowserNotification(notification) {
-    if (this.permission !== 'granted') return;
+    if (this.permission !== 'granted') {return;}
 
     try {
       const browserNotification = new Notification(notification.title, {

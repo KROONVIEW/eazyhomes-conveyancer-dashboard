@@ -73,7 +73,7 @@ const HamburgerMenu = ({ onToggleTheme, triggerIcon }) => {
       if (left + MENU_WIDTH > window.innerWidth - 8) {
         // Align right edge of menu with right edge of icon
         left = rect.right + window.scrollX - MENU_WIDTH;
-        if (left < 8) left = 8; // Prevent going off the left edge
+        if (left < 8) {left = 8;} // Prevent going off the left edge
       }
       // Add a 10px gap below the icon
       setMenuPos({ top: rect.bottom + window.scrollY + 10, left });

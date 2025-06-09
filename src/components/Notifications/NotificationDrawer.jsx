@@ -20,8 +20,8 @@ export default function NotificationDrawer({ open, onClose }) {
   const [notifications, setNotifications] = useState(mockNotifications);
 
   const filtered = notifications.filter(n => {
-    if (filter === 'all') return true;
-    if (filter === 'unread') return !n.read;
+    if (filter === 'all') {return true;}
+    if (filter === 'unread') {return !n.read;}
     return n.type === filter;
   });
 

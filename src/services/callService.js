@@ -201,7 +201,7 @@ class CallService {
   // Call quality monitoring
   async updateCallQuality(callId, qualityMetrics) {
     const callSession = this.activeCalls.get(callId);
-    if (!callSession) return;
+    if (!callSession) {return;}
 
     callSession.metadata.quality = qualityMetrics.overall;
     callSession.metadata.latency = qualityMetrics.latency;

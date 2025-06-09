@@ -58,7 +58,7 @@ export const useEventListener = (eventName, handler, element = window) => {
 
   useEffect(() => {
     const isSupported = element && element.addEventListener;
-    if (!isSupported) return;
+    if (!isSupported) {return;}
 
     const eventListener = (event) => savedHandler.current(event);
     element.addEventListener(eventName, eventListener);
@@ -78,7 +78,7 @@ export const useInterval = (callback, delay) => {
   }, [callback]);
 
   useEffect(() => {
-    if (delay === null) return;
+    if (delay === null) {return;}
 
     const id = setInterval(() => savedCallback.current(), delay);
     return () => clearInterval(id);

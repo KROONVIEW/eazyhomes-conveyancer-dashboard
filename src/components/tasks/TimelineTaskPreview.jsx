@@ -51,7 +51,7 @@ const statusText = {
 };
 
 function formatDate(dateStr) {
-  if (!dateStr) return "";
+  if (!dateStr) {return "";}
   const date = new Date(dateStr);
   return date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) +
     " at " + date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });

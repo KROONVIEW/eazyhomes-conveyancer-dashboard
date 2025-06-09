@@ -118,7 +118,7 @@ export const useMemoryOptimizedEventListener = (eventName, handler, element = wi
 
   useEffect(() => {
     const targetElement = elementRef.current;
-    if (!targetElement?.addEventListener) return;
+    if (!targetElement?.addEventListener) {return;}
 
     const eventListener = (event) => {
       if (savedHandler.current) {
@@ -153,7 +153,7 @@ export const useMemoryOptimizedInterval = (callback, delay) => {
   }, [callback]);
 
   useEffect(() => {
-    if (delay === null || delay === undefined) return;
+    if (delay === null || delay === undefined) {return;}
 
     const tick = () => {
       if (savedCallback.current) {
@@ -420,7 +420,7 @@ export const useMemoryOptimizedIntersectionObserver = (
 
   useEffect(() => {
     const element = elementRef.current;
-    if (!element) return;
+    if (!element) {return;}
 
     const observer = new IntersectionObserver(
       (entries) => {

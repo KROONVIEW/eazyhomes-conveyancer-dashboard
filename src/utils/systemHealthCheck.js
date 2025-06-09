@@ -17,7 +17,7 @@ class SystemHealthCheck {
 
   // Start continuous health monitoring
   startMonitoring(interval = 30000) { // 30 seconds
-    if (this.isRunning) return;
+    if (this.isRunning) {return;}
     
     this.isRunning = true;
     this.runHealthCheck();
@@ -241,7 +241,7 @@ class SystemHealthCheck {
 
     try {
       // Check for JavaScript errors
-      if (!this.errorCount) this.errorCount = 0;
+      if (!this.errorCount) {this.errorCount = 0;}
       
       // Set up error listeners if not already done
       if (!this.errorListenersSet) {
@@ -289,11 +289,11 @@ class SystemHealthCheck {
     this.healthMetrics.overall.score = Math.round(averageScore);
 
     // Assign grade
-    if (averageScore >= 90) this.healthMetrics.overall.grade = 'A';
-    else if (averageScore >= 80) this.healthMetrics.overall.grade = 'B';
-    else if (averageScore >= 70) this.healthMetrics.overall.grade = 'C';
-    else if (averageScore >= 60) this.healthMetrics.overall.grade = 'D';
-    else this.healthMetrics.overall.grade = 'F';
+    if (averageScore >= 90) {this.healthMetrics.overall.grade = 'A';}
+    else if (averageScore >= 80) {this.healthMetrics.overall.grade = 'B';}
+    else if (averageScore >= 70) {this.healthMetrics.overall.grade = 'C';}
+    else if (averageScore >= 60) {this.healthMetrics.overall.grade = 'D';}
+    else {this.healthMetrics.overall.grade = 'F';}
   }
 
   // Log health report

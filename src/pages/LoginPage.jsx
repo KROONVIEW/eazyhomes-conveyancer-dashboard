@@ -58,7 +58,7 @@ export default function LoginPage() {
       [name]: value
     }));
     // Clear error when user starts typing
-    if (error) setError('');
+    if (error) {setError('');}
   };
 
   const handleSubmit = async (e) => {
@@ -320,7 +320,8 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                {accessType === 'conveyancer' && (
+                {/* Temporarily disabled conveyancer fields */}
+                {false && (
                   <>
                     <div>
                       <label htmlFor="firmName" className="block text-sm font-medium text-gray-700 mb-1">

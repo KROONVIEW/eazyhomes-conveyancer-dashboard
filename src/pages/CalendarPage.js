@@ -146,7 +146,7 @@ const CalendarPage = () => {
 
   // Event handlers
   const handleCreateEvent = () => {
-    if (!modalFields.title || !modalFields.date) return;
+    if (!modalFields.title || !modalFields.date) {return;}
     
     const newEvent = {
       id: Date.now(),
@@ -173,7 +173,7 @@ const CalendarPage = () => {
   };
 
   const handleEditEvent = () => {
-    if (!modalFields.title || !modalFields.date || !selectedEvent) return;
+    if (!modalFields.title || !modalFields.date || !selectedEvent) {return;}
     
     const updatedEvent = {
       ...selectedEvent,
@@ -207,7 +207,7 @@ const CalendarPage = () => {
   };
 
   const handleEditButtonClick = () => {
-    if (!selectedEvent) return;
+    if (!selectedEvent) {return;}
     
     // Populate modal fields with selected event data
     setModalFields({

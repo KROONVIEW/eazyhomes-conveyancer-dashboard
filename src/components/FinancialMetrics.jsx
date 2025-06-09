@@ -16,8 +16,8 @@ const MetricCard = ({ title, value, previousValue, growth, icon, format = 'curre
   };
 
   const getGrowthColor = (growth) => {
-    if (growth > 0) return 'text-green-600';
-    if (growth < 0) return 'text-red-600';
+    if (growth > 0) {return 'text-green-600';}
+    if (growth < 0) {return 'text-red-600';}
     return 'text-gray-600';
   };
 

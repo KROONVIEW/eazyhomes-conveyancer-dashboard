@@ -26,7 +26,7 @@ const tabs = ["Overview", "Checklist", "Documents", "Activity Log"];
 
 const MatterDetailsDrawer = ({ open, onClose, matter }) => {
   const [tab, setTab] = useState("Overview");
-  if (!matter) return null;
+  if (!matter) {return null;}
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="fixed inset-0 z-50 overflow-hidden" onClose={onClose}>

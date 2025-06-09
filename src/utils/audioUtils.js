@@ -36,7 +36,7 @@ class AudioManager {
     ];
     
     let currentPatternIndex = 0;
-    let patternStartTime = audioContext.currentTime;
+    const patternStartTime = audioContext.currentTime;
     
     // Use sine wave for smooth, pleasant sound
     oscillator.type = 'sine';
@@ -59,7 +59,7 @@ class AudioManager {
     
     // Create the smooth "dring dring" pattern
     const playDringPattern = () => {
-      if (!this.isRinging) return;
+      if (!this.isRinging) {return;}
       
       const currentStep = dringPattern[currentPatternIndex];
       const currentTime = audioContext.currentTime;
@@ -140,7 +140,7 @@ class AudioManager {
     
     // Create a simple beep pattern as fallback
     const beepPattern = () => {
-      if (!this.isRinging) return;
+      if (!this.isRinging) {return;}
       
       // Create short beep
       const audioContext = this.initAudioContext();

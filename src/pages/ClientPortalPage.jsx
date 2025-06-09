@@ -168,7 +168,7 @@ export default function ClientPortalPage() {
 
   // Demo notification system - sends message every 2 minutes
   useEffect(() => {
-    if (!demoNotifications) return;
+    if (!demoNotifications) {return;}
 
     const interval = setInterval(() => {
       // Pick a random client to receive a message
@@ -259,8 +259,8 @@ export default function ClientPortalPage() {
     // Smart sorting: Unread messages first, then recent activity, then alphabetical
     return filtered.sort((a, b) => {
       // Priority 1: Unread messages (clients with unread messages come first)
-      if (a.unreadMessages > 0 && b.unreadMessages === 0) return -1;
-      if (a.unreadMessages === 0 && b.unreadMessages > 0) return 1;
+      if (a.unreadMessages > 0 && b.unreadMessages === 0) {return -1;}
+      if (a.unreadMessages === 0 && b.unreadMessages > 0) {return 1;}
       
       // Priority 2: If both have unread messages, sort by count (more unread first)
       if (a.unreadMessages > 0 && b.unreadMessages > 0) {
@@ -269,14 +269,14 @@ export default function ClientPortalPage() {
       
       // Priority 3: Recent activity (convert lastActivity to comparable format)
       const getActivityTime = (activity) => {
-        if (activity === 'N/A') return 0;
+        if (activity === 'N/A') {return 0;}
         return new Date(activity).getTime() || 0;
       };
       
       const aTime = getActivityTime(a.lastActivity);
       const bTime = getActivityTime(b.lastActivity);
       
-      if (aTime !== bTime) return bTime - aTime;
+      if (aTime !== bTime) {return bTime - aTime;}
       
       // Priority 4: Alphabetical by name
       return a.name.localeCompare(b.name);
@@ -285,7 +285,7 @@ export default function ClientPortalPage() {
 
   const sendMessage = (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim()) {return;}
     
     const newMessage = {
       id: Date.now(),
@@ -370,7 +370,7 @@ export default function ClientPortalPage() {
 
   const markDocumentAsUploaded = (clientId, documentName) => {
     const doc = clientDocuments[clientId].needed.find(d => d.name === documentName);
-    if (!doc) return;
+    if (!doc) {return;}
 
     // Move from needed to uploaded
     setClientDocuments(prev => ({
@@ -402,7 +402,7 @@ export default function ClientPortalPage() {
   };
 
   const handleAddDocument = () => {
-    if (!newDocumentName.trim()) return;
+    if (!newDocumentName.trim()) {return;}
     
     addRequiredDocument(selectedClient.id, newDocumentName, false);
     setNewDocumentName('');

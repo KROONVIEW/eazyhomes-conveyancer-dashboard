@@ -1160,7 +1160,7 @@ const MessagesPage = () => {
 
   // Single notification interval with random conversation selection
   useEffect(() => {
-    if (!notificationsEnabled) return;
+    if (!notificationsEnabled) {return;}
 
     // Generate notifications every 45 seconds with random conversation selection
     const interval = setInterval(() => {

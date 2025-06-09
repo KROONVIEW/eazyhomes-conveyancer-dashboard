@@ -287,9 +287,9 @@ export const MessageListUtils = {
   calculateItemHeight: (message) => {
     let baseHeight = 60; // Base height for simple messages
     
-    if (message.attachment) baseHeight += 40;
-    if (message.text && message.text.length > 100) baseHeight += 20;
-    if (message.isBroadcast) baseHeight += 10;
+    if (message.attachment) {baseHeight += 40;}
+    if (message.text && message.text.length > 100) {baseHeight += 20;}
+    if (message.isBroadcast) {baseHeight += 10;}
     
     return Math.max(baseHeight, 50);
   },

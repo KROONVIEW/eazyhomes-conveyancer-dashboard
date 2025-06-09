@@ -72,7 +72,7 @@ const IOSEmojiPicker = ({
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {return null;}
 
   return (
     <div className="relative z-50 font-['Poppins']">

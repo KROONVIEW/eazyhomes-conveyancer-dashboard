@@ -27,9 +27,9 @@ const ArchivePage = () => {
 
   const renderTable = () => {
     let data = [];
-    if (activeTab === "transfers") data = dummyTransfers;
-    if (activeTab === "clients") data = dummyClients;
-    if (activeTab === "documents") data = dummyDocuments;
+    if (activeTab === "transfers") {data = dummyTransfers;}
+    if (activeTab === "clients") {data = dummyClients;}
+    if (activeTab === "documents") {data = dummyDocuments;}
     return (
       <div className="bg-white rounded-lg shadow p-4 mt-4">
         <table className="min-w-full divide-y divide-gray-200">

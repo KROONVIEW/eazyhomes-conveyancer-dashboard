@@ -152,15 +152,15 @@ class GlobalSearchService {
     let priority = 1;
     
     // Urgent matters get higher priority
-    if (matter.urgent) priority += 2;
+    if (matter.urgent) {priority += 2;}
     
     // Recent matters get higher priority
     const daysSinceUpdate = (Date.now() - new Date(matter.updatedAt).getTime()) / (1000 * 60 * 60 * 24);
-    if (daysSinceUpdate < 1) priority += 2;
-    else if (daysSinceUpdate < 7) priority += 1;
+    if (daysSinceUpdate < 1) {priority += 2;}
+    else if (daysSinceUpdate < 7) {priority += 1;}
     
     // Active status gets higher priority
-    if (matter.status === 'In Progress' || matter.status === 'Active') priority += 1;
+    if (matter.status === 'In Progress' || matter.status === 'Active') {priority += 1;}
     
     return priority;
   }
@@ -288,7 +288,7 @@ class GlobalSearchService {
 
     // Check for word matches
     queryWords.forEach(word => {
-      if (word.length < 2) return;
+      if (word.length < 2) {return;}
       
       // Title word match
       if (title.includes(word)) {
@@ -305,8 +305,8 @@ class GlobalSearchService {
 
     // Boost recent items
     const daysSinceUpdate = (Date.now() - new Date(item.updatedAt).getTime()) / (1000 * 60 * 60 * 24);
-    if (daysSinceUpdate < 1) score += 10;
-    else if (daysSinceUpdate < 7) score += 5;
+    if (daysSinceUpdate < 1) {score += 10;}
+    else if (daysSinceUpdate < 7) {score += 5;}
 
     return score;
   }
@@ -314,7 +314,7 @@ class GlobalSearchService {
   // Generate highlight for search results
   generateHighlight(text, query) {
     const index = text.toLowerCase().indexOf(query);
-    if (index === -1) return query.split(' ')[0];
+    if (index === -1) {return query.split(' ')[0];}
     return text.substring(index, index + query.length);
   }
 
@@ -373,7 +373,7 @@ class GlobalSearchService {
   // Add search to history
   addToSearchHistory(query) {
     const trimmedQuery = query.trim();
-    if (trimmedQuery.length < 2) return;
+    if (trimmedQuery.length < 2) {return;}
 
     // Remove if already exists
     this.searchHistory = this.searchHistory.filter(item => item !== trimmedQuery);

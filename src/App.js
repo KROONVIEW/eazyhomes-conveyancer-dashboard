@@ -1,29 +1,38 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
-import MattersPage from "./pages/MattersPage";
-import MessagesPage from "./pages/MessagesPage";
-import Documents from "./pages/Documents.jsx";
-import TransfersPage from "./pages/TransfersPage";
-import ClientsPage from "./pages/ClientsPage";
-import SettingsPage from "./pages/SettingsPage";
-import ArchivePage from "./pages/ArchivePage";
-import InvoicePage from "./pages/InvoicePage";
-import CalendarPage from "./pages/CalendarPage";
-import SchedulingPage from "./pages/SchedulingPage";
-import TasksPage from "./pages/TasksPage";
-import Upload from './pages/documents/Upload.jsx';
-import Download from './pages/documents/Download.jsx';
-import KnowledgeBasePage from './pages/KnowledgeBasePage';
-import AuditTrailPage from './pages/AuditTrailPage';
-import ClientPortalPage from './pages/ClientPortalPage';
-import TestHooks from './pages/TestHooks';
+
+// Lazy load heavy components to improve initial load time
+const MattersPage = React.lazy(() => import("./pages/MattersPage"));
+const MessagesPage = React.lazy(() => import("./pages/MessagesPage"));
+const Documents = React.lazy(() => import("./pages/Documents.jsx"));
+const TransfersPage = React.lazy(() => import("./pages/TransfersPage"));
+const ClientsPage = React.lazy(() => import("./pages/ClientsPage"));
+const SettingsPage = React.lazy(() => import("./pages/SettingsPage"));
+const ArchivePage = React.lazy(() => import("./pages/ArchivePage"));
+const InvoicePage = React.lazy(() => import("./pages/InvoicePage"));
+const CalendarPage = React.lazy(() => import("./pages/CalendarPage"));
+const SchedulingPage = React.lazy(() => import("./pages/SchedulingPage"));
+const TasksPage = React.lazy(() => import("./pages/TasksPage"));
+const Upload = React.lazy(() => import('./pages/documents/Upload.jsx'));
+const Download = React.lazy(() => import('./pages/documents/Download.jsx'));
+const KnowledgeBasePage = React.lazy(() => import('./pages/KnowledgeBasePage'));
+const AuditTrailPage = React.lazy(() => import('./pages/AuditTrailPage'));
+const ClientPortalPage = React.lazy(() => import('./pages/ClientPortalPage'));
+const TestHooks = React.lazy(() => import('./pages/TestHooks'));
 
 // Import authentication service
 import authService from './services/authService';
+
+// Loading component for Suspense fallback
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+);
 
 function App() {
   // Simplified initialization without complex memory management
@@ -53,7 +62,8 @@ function App() {
       <Route path="/*" element={
         <ProtectedRoute>
           <Layout>
-            <Routes>
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
               <Route path="/" element={<DashboardPage />} />
               <Route path="/matters" element={<MattersPage />} />
               <Route path="/messages" element={<MessagesPage />} />
@@ -76,7 +86,8 @@ function App() {
               } />
               <Route path="/client-portal" element={<ClientPortalPage />} />
               <Route path="/test-hooks" element={<TestHooks />} />
-            </Routes>
+              </Routes>
+            </Suspense>
           </Layout>
         </ProtectedRoute>
       } />

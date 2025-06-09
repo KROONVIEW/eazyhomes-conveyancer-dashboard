@@ -51,7 +51,7 @@ const FilePreview = memo(({ file, onRemove }) => (
 
 // Format file size utility (moved outside component to prevent recreation)
 const formatFileSize = (bytes) => {
-  if (bytes === 0) return '0 Bytes';
+  if (bytes === 0) {return '0 Bytes';}
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -89,7 +89,7 @@ const OptimizedChatWindow = memo(({ chat, onVideoCall, onVoiceCall }) => {
   // Optimized message sending with useCallback
   const handleSendMessage = useCallback((e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim()) {return;}
 
     const newMessage = {
       id: Date.now(),
@@ -215,7 +215,7 @@ const OptimizedChatWindow = memo(({ chat, onVideoCall, onVoiceCall }) => {
     };
   }, [attachedFiles]);
 
-  if (!chat) return (
+  if (!chat) {return (
     <div className="flex flex-col h-full bg-gray-50 w-full items-center justify-center text-gray-400 text-lg">
       <div className="text-center">
         <div className="text-6xl mb-4">💬</div>
@@ -223,7 +223,7 @@ const OptimizedChatWindow = memo(({ chat, onVideoCall, onVoiceCall }) => {
         <div className="text-sm">Choose a contact from the list to begin messaging</div>
       </div>
     </div>
-  );
+  );}
 
   return (
     <div className="flex flex-col h-full bg-gray-50 w-full">

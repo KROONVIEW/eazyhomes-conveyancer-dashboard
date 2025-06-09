@@ -69,7 +69,7 @@ export class StatusProgressionService {
             : 'Missing basic matter information'
         };
 
-      case 'ficaCompleted':
+      case "ficaCompleted": {
         const buyerFica = matter.ficaStatus?.buyer?.completed || false;
         const sellerFica = matter.ficaStatus?.seller?.completed || false;
         return {
@@ -79,7 +79,7 @@ export class StatusProgressionService {
             : `FICA pending: ${!buyerFica ? 'buyer' : ''} ${!sellerFica ? 'seller' : ''}`.trim()
         };
 
-      case 'documentsSignedAndVerified':
+      case "documentsSignedAndVerified": {
         const requiredDocs = ['Offer to Purchase', 'Sale Agreement'];
         const availableDocs = matter.documents || [];
         const signedDocs = availableDocs.filter(doc => 
@@ -194,7 +194,7 @@ export class StatusProgressionService {
           description: 'Add client, address, and matter type'
         });
         break;
-
+      }
       case MATTER_STATUS.IN_PROGRESS:
         if (!matter.ficaStatus?.buyer?.completed) {
           actions.push({
@@ -211,7 +211,7 @@ export class StatusProgressionService {
           });
         }
         break;
-
+      }
       case MATTER_STATUS.AWAITING_SIGNATURE:
         actions.push({
           type: 'request_signatures',
@@ -224,7 +224,7 @@ export class StatusProgressionService {
           description: 'Test: Mark documents as signed'
         });
         break;
-
+      }
       case MATTER_STATUS.REGISTERED:
         actions.push({
           type: 'finalize_transfer',
@@ -232,6 +232,7 @@ export class StatusProgressionService {
           description: 'Complete the property transfer process'
         });
         break;
+      }
     }
 
     return actions;
@@ -242,17 +243,17 @@ export class StatusProgressionService {
     console.log(`🎬 Executing action: ${actionType} on matter ${matter.id}`);
 
     switch (actionType) {
-      case 'complete_buyer_fica':
+      case "complete_buyer_fica": {
         const updatedMatterBuyer = this.simulateFicaCompletion(matter, 'buyer');
         await matterService.updateFicaStatus(matter.id, 'buyer', true, ['ID Copy', 'Proof of Address', 'Bank Statement']);
         return updatedMatterBuyer;
 
-      case 'complete_seller_fica':
+      case "complete_seller_fica": {
         const updatedMatterSeller = this.simulateFicaCompletion(matter, 'seller');
         await matterService.updateFicaStatus(matter.id, 'seller', true, ['ID Copy', 'Proof of Address', 'Bank Statement']);
         return updatedMatterSeller;
 
-      case 'simulate_signing':
+      case "simulate_signing": {
         let updatedMatter = this.simulateDocumentSigning(matter, 'Offer to Purchase');
         updatedMatter = this.simulateDocumentSigning(updatedMatter, 'Sale Agreement');
         // Update the matter with signed documents

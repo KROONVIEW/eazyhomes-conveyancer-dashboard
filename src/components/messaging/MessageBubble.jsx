@@ -72,7 +72,7 @@ const MessageBubble = ({
 
   // Format message text with basic markdown support
   const formatMessageText = useCallback((text) => {
-    if (!text) return '';
+    if (!text) {return '';}
     
     // Bold text **text**
     text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -88,7 +88,7 @@ const MessageBubble = ({
 
   // Get status indicator
   const getStatusIndicator = useCallback(() => {
-    if (!isOwn) return null;
+    if (!isOwn) {return null;}
     
     switch (message.status) {
       case 'sent':

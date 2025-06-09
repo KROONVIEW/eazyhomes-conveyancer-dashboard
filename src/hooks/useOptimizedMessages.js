@@ -25,7 +25,7 @@ export const useOptimizedMessages = (initialMessages = []) => {
 
   // Batch updates for better performance
   const flushUpdates = useCallback(() => {
-    if (updateQueueRef.current.length === 0) return;
+    if (updateQueueRef.current.length === 0) {return;}
 
     const updates = updateQueueRef.current;
     updateQueueRef.current = [];

@@ -71,7 +71,7 @@ export default function ProtectedRoute({
     });
 
     return () => {
-      if (unsubscribe) unsubscribe();
+      if (unsubscribe) {unsubscribe();}
     };
   }, [requiredRole, requiredPermission]);
 

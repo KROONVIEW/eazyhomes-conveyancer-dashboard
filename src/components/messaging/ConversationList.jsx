@@ -143,8 +143,8 @@ const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, us
     lastActivity: chat.lastActivity || 0
   })).sort((a, b) => {
     // First: Pinned items (Firm Broadcast) always at top
-    if (a.isPinned && !b.isPinned) return -1;
-    if (!a.isPinned && b.isPinned) return 1;
+    if (a.isPinned && !b.isPinned) {return -1;}
+    if (!a.isPinned && b.isPinned) {return 1;}
     
     // Then: Sort by last activity (newest first)
     if (a.lastActivity !== b.lastActivity) {
@@ -169,7 +169,7 @@ const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, us
     const matchesSearch = conv.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          conv.lastMessage.toLowerCase().includes(searchQuery.toLowerCase());
     
-    if (!matchesSearch) return false;
+    if (!matchesSearch) {return false;}
     
     switch (activeTab) {
       case 'Personal':
@@ -291,8 +291,8 @@ const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, us
         <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
           {['All', 'Personal', 'Teams'].map((tab) => {
             const getUnreadCount = () => {
-              if (tab === 'Personal') return personalUnreadCount;
-              if (tab === 'Teams') return teamsUnreadCount;
+              if (tab === 'Personal') {return personalUnreadCount;}
+              if (tab === 'Teams') {return teamsUnreadCount;}
               return 0; // No count for 'All' tab as requested
             };
             

@@ -36,7 +36,7 @@ export const useFinancialAnalytics = (dataType = 'all', autoRefresh = false) => 
 
   // Auto-refresh setup
   useEffect(() => {
-    if (!autoRefresh) return;
+    if (!autoRefresh) {return;}
 
     const interval = setInterval(() => {
       loadData(true);

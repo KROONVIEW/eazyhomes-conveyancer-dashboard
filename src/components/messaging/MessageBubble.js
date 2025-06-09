@@ -15,7 +15,7 @@ const DoubleCheckIcon = (props) => (
 );
 
 function getAttachmentPreview(attachment) {
-  if (!attachment) return null;
+  if (!attachment) {return null;}
   if (attachment.type === 'image') {
     return (
       <div className="attachment-preview image">
@@ -49,7 +49,7 @@ function getConsistentFace(senderKey) {
   // Simple hash: sum char codes, mod faceImages.length
   let hash = 0;
   if (typeof senderKey === 'string') {
-    for (let i = 0; i < senderKey.length; i++) hash += senderKey.charCodeAt(i);
+    for (let i = 0; i < senderKey.length; i++) {hash += senderKey.charCodeAt(i);}
   } else if (typeof senderKey === 'number') {
     hash = senderKey;
   }

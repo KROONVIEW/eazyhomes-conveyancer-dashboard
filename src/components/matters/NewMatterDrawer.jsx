@@ -110,11 +110,11 @@ export default function NewMatterDrawer({ open, onClose, onNext, onCreateMatter 
 
   // Auto-fill deeds office based on address (mocked)
   React.useEffect(() => {
-    if (propertyStep.address.includes("Sandton")) setPropertyStep(s => ({ ...s, deedsOffice: "Johannesburg" }));
-    else if (propertyStep.address.includes("Pretoria")) setPropertyStep(s => ({ ...s, deedsOffice: "Pretoria" }));
-    else if (propertyStep.address.includes("Cape Town")) setPropertyStep(s => ({ ...s, deedsOffice: "Cape Town" }));
-    else if (propertyStep.address.includes("Bloemfontein")) setPropertyStep(s => ({ ...s, deedsOffice: "Bloemfontein" }));
-    else if (propertyStep.address.includes("Durban")) setPropertyStep(s => ({ ...s, deedsOffice: "Durban" }));
+    if (propertyStep.address.includes("Sandton")) {setPropertyStep(s => ({ ...s, deedsOffice: "Johannesburg" }));}
+    else if (propertyStep.address.includes("Pretoria")) {setPropertyStep(s => ({ ...s, deedsOffice: "Pretoria" }));}
+    else if (propertyStep.address.includes("Cape Town")) {setPropertyStep(s => ({ ...s, deedsOffice: "Cape Town" }));}
+    else if (propertyStep.address.includes("Bloemfontein")) {setPropertyStep(s => ({ ...s, deedsOffice: "Bloemfontein" }));}
+    else if (propertyStep.address.includes("Durban")) {setPropertyStep(s => ({ ...s, deedsOffice: "Durban" }));}
   }, [propertyStep.address]);
 
   const isStep3Valid = propertyStep.address && propertyStep.propertyType && propertyStep.erf && propertyStep.deedsOffice;
@@ -124,7 +124,7 @@ export default function NewMatterDrawer({ open, onClose, onNext, onCreateMatter 
     e.preventDefault();
     if (step === 1) {
       setTouched({ title: true, matterType: true, status: true });
-      if (!isStep1Valid) return;
+      if (!isStep1Valid) {return;}
       setMatterData({ title, matterType, status, urgent });
       setStep(2);
     } else if (step === 2) {
@@ -137,17 +137,17 @@ export default function NewMatterDrawer({ open, onClose, onNext, onCreateMatter 
       setStep(3);
     } else if (step === 3) {
       setPropertyTouched({ address: true, propertyType: true, erf: true, deedsOffice: true });
-      if (!isStep3Valid) return;
+      if (!isStep3Valid) {return;}
       setMatterData(prev => ({ ...prev, property: propertyStep }));
       setStep(4);
     } else if (step === 4) {
       setAssignTouched({ staff: true, supervisor: true });
-      if (!isStep4Valid) return;
+      if (!isStep4Valid) {return;}
       setMatterData(prev => ({ ...prev, assignment }));
       setStep(5);
     } else if (step === 5) {
       setTemplateTouched(true);
-      if (!isStep5Valid) return;
+      if (!isStep5Valid) {return;}
       setMatterData(prev => ({ ...prev, template: selectedTemplate }));
       setStep(6);
     } else if (step === 6) {
@@ -229,11 +229,11 @@ export default function NewMatterDrawer({ open, onClose, onNext, onCreateMatter 
   }
 
   function handleBack() {
-    if (step === 2) setStep(1);
-    else if (step === 3) setStep(2);
-    else if (step === 4) setStep(3);
-    else if (step === 5) setStep(4);
-    else if (step === 6) setStep(5);
+    if (step === 2) {setStep(1);}
+    else if (step === 3) {setStep(2);}
+    else if (step === 4) {setStep(3);}
+    else if (step === 5) {setStep(4);}
+    else if (step === 6) {setStep(5);}
   }
 
   function handleAddExistingClient(client) {
@@ -245,7 +245,7 @@ export default function NewMatterDrawer({ open, onClose, onNext, onCreateMatter 
   }
 
   function handleAddNewClient() {
-    if (!newClient.name.trim() || !newClient.idNumber.trim()) return;
+    if (!newClient.name.trim() || !newClient.idNumber.trim()) {return;}
     setClients(prev => [
       ...prev,
       { ...newClient, id: `NEW${Date.now()}`, primary: clients.length === 0 }

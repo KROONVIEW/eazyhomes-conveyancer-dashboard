@@ -21,7 +21,7 @@ const PerformanceMonitor = ({ enabled = process.env.NODE_ENV === 'development' }
 
   // Monitor performance metrics
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) {return;}
 
     const updateMetrics = () => {
       // Memory usage (if available)
@@ -92,30 +92,30 @@ const PerformanceMonitor = ({ enabled = process.env.NODE_ENV === 'development' }
     let score = 100;
 
     // More lenient memory usage scoring
-    if (memory.percentage > 95) score -= 30;
-    else if (memory.percentage > 85) score -= 15;
-    else if (memory.percentage > 75) score -= 5;
+    if (memory.percentage > 95) {score -= 30;}
+    else if (memory.percentage > 85) {score -= 15;}
+    else if (memory.percentage > 75) {score -= 5;}
 
     // More lenient render time scoring (capped at 1000ms)
     const cappedRenderTime = Math.min(renderTime, 1000);
-    if (cappedRenderTime > 800) score -= 15;
-    else if (cappedRenderTime > 500) score -= 8;
-    else if (cappedRenderTime > 200) score -= 3;
+    if (cappedRenderTime > 800) {score -= 15;}
+    else if (cappedRenderTime > 500) {score -= 8;}
+    else if (cappedRenderTime > 200) {score -= 3;}
 
     // Deduct points for errors
     score -= errors * 3; // Reduced penalty
 
     // More lenient grading scale
-    if (score >= 85) return { grade: 'A', color: 'text-green-600', bg: 'bg-green-50' };
-    if (score >= 70) return { grade: 'B', color: 'text-blue-600', bg: 'bg-blue-50' };
-    if (score >= 55) return { grade: 'C', color: 'text-yellow-600', bg: 'bg-yellow-50' };
+    if (score >= 85) {return { grade: 'A', color: 'text-green-600', bg: 'bg-green-50' };}
+    if (score >= 70) {return { grade: 'B', color: 'text-blue-600', bg: 'bg-blue-50' };}
+    if (score >= 55) {return { grade: 'C', color: 'text-yellow-600', bg: 'bg-yellow-50' };}
     return { grade: 'D', color: 'text-red-600', bg: 'bg-red-50' };
   };
 
   const performanceGrade = getPerformanceGrade();
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) {return;}
 
     const updatePerformanceMetrics = () => {
       const now = performance.now();
@@ -148,19 +148,19 @@ const PerformanceMonitor = ({ enabled = process.env.NODE_ENV === 'development' }
     };
   }, [enabled]);
 
-  if (!enabled) return null;
+  if (!enabled) {return null;}
 
   const getFpsColor = (fps) => {
-    if (fps >= 55) return '#4CAF50'; // Green - Excellent
-    if (fps >= 45) return '#FFC107'; // Yellow - Good
-    if (fps >= 30) return '#FF9800'; // Orange - Acceptable
+    if (fps >= 55) {return '#4CAF50';} // Green - Excellent
+    if (fps >= 45) {return '#FFC107';} // Yellow - Good
+    if (fps >= 30) {return '#FF9800';} // Orange - Acceptable
     return '#F44336'; // Red - Poor
   };
 
   const getPerformanceStatus = (fps) => {
-    if (fps >= 55) return 'EXCELLENT';
-    if (fps >= 45) return 'GOOD';
-    if (fps >= 30) return 'ACCEPTABLE';
+    if (fps >= 55) {return 'EXCELLENT';}
+    if (fps >= 45) {return 'GOOD';}
+    if (fps >= 30) {return 'ACCEPTABLE';}
     return 'POOR';
   };
 

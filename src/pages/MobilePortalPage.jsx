@@ -111,7 +111,7 @@ const MobilePortalPage = () => {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim()) {return;}
 
     const message = {
       id: Date.now(),
@@ -149,7 +149,7 @@ const MobilePortalPage = () => {
   };
 
   const getProgressSteps = () => {
-    if (!selectedMatter) return [];
+    if (!selectedMatter) {return [];}
     
     const steps = [
       { name: 'Application Started', completed: true, date: '2025-05-25' },
@@ -162,10 +162,10 @@ const MobilePortalPage = () => {
   };
 
   const getDocumentStatus = (docType) => {
-    if (!selectedMatter?.documents) return 'pending';
+    if (!selectedMatter?.documents) {return 'pending';}
     const doc = selectedMatter.documents.find(d => d.type === docType);
-    if (!doc) return 'pending';
-    if (doc.metadata?.signed) return 'signed';
+    if (!doc) {return 'pending';}
+    if (doc.metadata?.signed) {return 'signed';}
     return 'uploaded';
   };
 

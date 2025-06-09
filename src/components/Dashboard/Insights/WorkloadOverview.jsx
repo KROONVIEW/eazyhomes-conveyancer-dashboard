@@ -41,7 +41,7 @@ function useAnimatedCount(target, duration = 1000) {
   useEffect(() => {
     let start = 0;
     const step = (timestamp) => {
-      if (!start) start = timestamp;
+      if (!start) {start = timestamp;}
       const progress = Math.min((timestamp - start) / duration, 1);
       setCount(Math.floor(progress * target));
       if (progress < 1) {

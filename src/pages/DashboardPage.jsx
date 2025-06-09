@@ -37,8 +37,20 @@ import NotificationToast from '../components/Notifications/NotificationToast';
 import { FiMoreHorizontal, FiBell, FiChevronDown, FiChevronRight } from 'react-icons/fi';
 import SearchBar from '../components/SearchBar';
 import { useNavigate } from 'react-router-dom';
+// Import only needed Recharts components to reduce bundle size
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, Legend, PieChart as RePieChart, Pie, Cell
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer, 
+  Area, 
+  Legend, 
+  PieChart as RePieChart, 
+  Pie, 
+  Cell
 } from 'recharts';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import HamburgerMenu from '../components/HamburgerMenu';

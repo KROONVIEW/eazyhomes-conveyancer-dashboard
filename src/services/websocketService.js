@@ -38,7 +38,7 @@ class WebSocketService {
 
   // Setup all WebSocket event listeners
   setupEventListeners() {
-    if (!this.socket) return;
+    if (!this.socket) {return;}
 
     // Connection events
     this.socket.on('connect', () => {
@@ -134,7 +134,7 @@ class WebSocketService {
 
   // Send typing indicator
   sendTyping(conversationId, isTyping = true) {
-    if (!this.isConnected) return;
+    if (!this.isConnected) {return;}
 
     this.socket.emit('typing', {
       conversationId,
@@ -145,7 +145,7 @@ class WebSocketService {
 
   // Join conversation room
   joinConversation(conversationId) {
-    if (!this.isConnected) return;
+    if (!this.isConnected) {return;}
 
     this.socket.emit('join_conversation', { conversationId });
     console.log('🏠 Joined conversation:', conversationId);
@@ -153,7 +153,7 @@ class WebSocketService {
 
   // Leave conversation room
   leaveConversation(conversationId) {
-    if (!this.isConnected) return;
+    if (!this.isConnected) {return;}
 
     this.socket.emit('leave_conversation', { conversationId });
     console.log('🚪 Left conversation:', conversationId);

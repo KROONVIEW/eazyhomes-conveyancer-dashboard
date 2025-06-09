@@ -16,7 +16,7 @@ const EnhancedChatWindow = ({ chat, onVideoCall, onVoiceCall }) => {
   // Handle sending messages
   const handleSendMessage = (e) => {
     e.preventDefault();
-    if (!input.trim() || !chat) return;
+    if (!input.trim() || !chat) {return;}
 
     const newMessage = {
       id: Date.now(),
@@ -124,7 +124,7 @@ const EnhancedChatWindow = ({ chat, onVideoCall, onVoiceCall }) => {
     }
   }, [chat?.id]);
 
-  if (!chat) return (
+  if (!chat) {return (
     <div className="flex flex-col h-full bg-gray-50 w-full items-center justify-center text-gray-400 text-lg">
       <div className="text-center">
         <div className="text-6xl mb-4">💬</div>
@@ -132,7 +132,7 @@ const EnhancedChatWindow = ({ chat, onVideoCall, onVoiceCall }) => {
         <div className="text-sm">Choose a contact from the list to begin messaging</div>
       </div>
     </div>
-  );
+  );}
 
   const allMessages = getAllMessages();
 

@@ -160,7 +160,7 @@ class AuthService {
 
   // Load user profile from Firestore
   async loadUserProfile(uid) {
-    if (this.useMockAuth) return;
+    if (this.useMockAuth) {return;}
 
     try {
       const userDoc = await getDoc(doc(db, 'users', uid));
@@ -436,7 +436,7 @@ class AuthService {
 
   // Update last login time
   async updateLastLogin(uid) {
-    if (this.useMockAuth) return;
+    if (this.useMockAuth) {return;}
 
     try {
       const loginTime = new Date().toISOString();
@@ -454,7 +454,7 @@ class AuthService {
   // Get session duration in minutes
   getSessionDuration() {
     const startTime = sessionStorage.getItem('session_start_time');
-    if (!startTime) return 0;
+    if (!startTime) {return 0;}
     
     const start = new Date(startTime);
     const now = new Date();

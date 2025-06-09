@@ -32,7 +32,7 @@ const MessageThread = ({
 
   const handleSendReply = useCallback(async (e) => {
     e.preventDefault();
-    if (!replyText.trim() || !parentMessage) return;
+    if (!replyText.trim() || !parentMessage) {return;}
 
     setIsTyping(true);
     
@@ -72,7 +72,7 @@ const MessageThread = ({
     console.log('MessageThread props:', { isOpen, parentMessage, threadMessages });
   }, [isOpen, parentMessage, threadMessages]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {return null;}
   
   if (!parentMessage) {
     console.warn('MessageThread: parentMessage is null or undefined');

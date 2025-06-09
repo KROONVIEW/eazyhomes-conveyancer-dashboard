@@ -25,7 +25,7 @@ class AdvancedMemoryManager {
   }
 
   init() {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {return;}
     
     // Start monitoring
     this.startMemoryMonitoring();
@@ -44,11 +44,11 @@ class AdvancedMemoryManager {
 
   // Memory Monitoring
   startMemoryMonitoring() {
-    if (this.isRunning) return;
+    if (this.isRunning) {return;}
     this.isRunning = true;
 
     const monitor = () => {
-      if (!this.isRunning) return;
+      if (!this.isRunning) {return;}
       
       const memoryInfo = this.getMemoryInfo();
       this.performanceMetrics.memoryUsage.push({
@@ -163,10 +163,10 @@ class AdvancedMemoryManager {
 
   getCache(cacheName, key) {
     const cache = this.caches.get(cacheName);
-    if (!cache) return null;
+    if (!cache) {return null;}
     
     const entry = cache.data.get(key);
-    if (!entry) return null;
+    if (!entry) {return null;}
     
     // Check TTL
     if (Date.now() - entry.timestamp > cache.ttl) {
@@ -405,7 +405,7 @@ class AdvancedMemoryManager {
 
   // Performance Observers
   setupPerformanceObservers() {
-    if (!window.PerformanceObserver) return;
+    if (!window.PerformanceObserver) {return;}
     
     // Monitor long tasks
     try {

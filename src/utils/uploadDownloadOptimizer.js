@@ -115,7 +115,7 @@ class UploadDownloadOptimizer {
 
   async simulateUpload(uploadId, file, options) {
     const upload = this.activeUploads.get(uploadId);
-    if (!upload) throw new Error('Upload not found');
+    if (!upload) {throw new Error('Upload not found');}
 
     try {
       upload.status = 'uploading';
@@ -196,7 +196,7 @@ class UploadDownloadOptimizer {
 
   async simulateDownload(downloadId, template, options) {
     const download = this.activeDownloads.get(downloadId);
-    if (!download) throw new Error('Download not found');
+    if (!download) {throw new Error('Download not found');}
 
     try {
       download.status = 'downloading';
@@ -309,7 +309,7 @@ class UploadDownloadOptimizer {
 
   getCachedFile(fileId) {
     const cacheEntry = this.fileCache.get(fileId);
-    if (!cacheEntry) return null;
+    if (!cacheEntry) {return null;}
     
     // Check if cache entry is still valid
     if (Date.now() - cacheEntry.timestamp > cacheEntry.ttl) {

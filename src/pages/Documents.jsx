@@ -46,9 +46,9 @@ const initialTemplates = [
 ];
 
 function formatIcon(format) {
-  if (format === 'PDF') return <DocumentTextIcon className="h-6 w-6 text-red-500" />;
-  if (format === 'DOCX') return <DocumentTextIcon className="h-6 w-6 text-blue-500" />;
-  if (format === 'XLSX') return <DocumentTextIcon className="h-6 w-6 text-green-500" />;
+  if (format === 'PDF') {return <DocumentTextIcon className="h-6 w-6 text-red-500" />;}
+  if (format === 'DOCX') {return <DocumentTextIcon className="h-6 w-6 text-blue-500" />;}
+  if (format === 'XLSX') {return <DocumentTextIcon className="h-6 w-6 text-green-500" />;}
   return <DocumentTextIcon className="h-6 w-6 text-gray-400" />;
 }
 

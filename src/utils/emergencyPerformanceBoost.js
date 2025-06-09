@@ -1,3 +1,4 @@
+import React from "react";
 // Emergency Performance Boost
 // Targets specific issues causing D grade: 86% memory usage and 44030ms render time
 
@@ -130,7 +131,7 @@ export const emergencyPerformanceBoost = {
     window.addEventListener = function(type, listener, options) {
       if (type === 'scroll') {
         const throttledListener = function(e) {
-          if (scrollTimeout) return;
+          if (scrollTimeout) {return;}
           scrollTimeout = setTimeout(() => {
             listener(e);
             scrollTimeout = null;

@@ -118,7 +118,7 @@ const Upload = () => {
 
   // Memory-optimized upload handler
   const handleUpload = useCallback(async () => {
-    if (!uploadFile) return;
+    if (!uploadFile) {return;}
 
     try {
       setError('');
@@ -193,8 +193,8 @@ const Upload = () => {
         valA = new Date(a.date).getTime();
         valB = new Date(b.date).getTime();
       }
-      if (valA < valB) return sortDir === 'asc' ? -1 : 1;
-      if (valA > valB) return sortDir === 'asc' ? 1 : -1;
+      if (valA < valB) {return sortDir === 'asc' ? -1 : 1;}
+      if (valA > valB) {return sortDir === 'asc' ? 1 : -1;}
       return 0;
     });
 

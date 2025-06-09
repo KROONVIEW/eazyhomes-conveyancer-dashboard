@@ -48,8 +48,8 @@ const ProfileSettings = () => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     // Clear messages when user starts typing
-    if (error) setError(null);
-    if (successMessage) setSuccessMessage('');
+    if (error) {setError(null);}
+    if (successMessage) {setSuccessMessage('');}
   };
 
   const handleFileUpload = (e, fieldName) => {

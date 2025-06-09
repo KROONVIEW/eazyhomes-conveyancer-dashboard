@@ -196,7 +196,7 @@ export default function AddTaskDrawer({ open, onClose }) {
   }
 
   function handleAddTag(tag) {
-    if (!tag.trim() || tags.includes(tag)) return;
+    if (!tag.trim() || tags.includes(tag)) {return;}
     setTags([...tags, tag]);
     setTagInput("");
   }

@@ -112,10 +112,10 @@ class InvoicePage extends Component {
     if (invoiceDetails.items.length === 0) {
       errors.push('At least one invoice item is required');
     }
-    if (invoiceDetails.items.some(item => !item.description.trim())) {
+    if (invoiceDetails.items.some(item =>  !item.description.trim())) {
       errors.push('All items must have descriptions');
     }
-    if (invoiceDetails.items.some(item => parseFloat(item.rate) <= 0)) {
+    if (invoiceDetails.items.some(item =>  parseFloat(item.rate) <= 0)) {
       errors.push('All items must have valid rates');
     }
 
@@ -126,7 +126,7 @@ class InvoicePage extends Component {
   // Handle input changes
   handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    this.setState(prevState => ({
+    this.setState(prevState =>  ({
       invoiceDetails: {
         ...prevState.invoiceDetails,
         [name]: type === 'checkbox' ? checked : value,
@@ -137,10 +137,10 @@ class InvoicePage extends Component {
 
   // Handle item changes
   handleItemChange = (id, field, value) => {
-    this.setState(prevState => ({
+    this.setState(prevState =>  ({
       invoiceDetails: {
         ...prevState.invoiceDetails,
-        items: prevState.invoiceDetails.items.map(item => {
+        items: prevState.invoiceDetails.items.map(item =>  {
           if (item.id === id) {
             const updatedItem = { ...item, [field]: value };
             if (field === 'rate' || field === 'qty') {
@@ -164,7 +164,7 @@ class InvoicePage extends Component {
       amount: 0
     };
     
-    this.setState(prevState => ({
+    this.setState(prevState =>  ({
       invoiceDetails: {
         ...prevState.invoiceDetails,
         items: [...prevState.invoiceDetails.items, newItem]
@@ -174,10 +174,10 @@ class InvoicePage extends Component {
 
   // Remove item
   removeItem = (id) => {
-    this.setState(prevState => ({
+    this.setState(prevState =>  ({
       invoiceDetails: {
         ...prevState.invoiceDetails,
-        items: prevState.invoiceDetails.items.filter(item => item.id !== id)
+        items: prevState.invoiceDetails.items.filter(item =>  item.id !== id)
       }
     }));
   };
@@ -188,7 +188,7 @@ class InvoicePage extends Component {
     
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve =>  setTimeout(resolve, 1000));
       
       const draft = {
         ...this.state.invoiceDetails,
@@ -196,7 +196,7 @@ class InvoicePage extends Component {
         id: Date.now()
       };
       
-      this.setState(prevState => ({
+      this.setState(prevState =>  ({
         savedDrafts: [...prevState.savedDrafts, draft],
         isLoading: false
       }));
@@ -279,9 +279,9 @@ class InvoicePage extends Component {
     
     try {
       // Simulate API call to create and send invoice
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve =>  setTimeout(resolve, 1500));
       
-      this.setState(prevState => ({
+      this.setState(prevState =>  ({
         invoiceDetails: {
           ...prevState.invoiceDetails,
           status: 'sent',
@@ -302,7 +302,7 @@ class InvoicePage extends Component {
   // Duplicate invoice
   duplicateInvoice = () => {
     const newInvoiceId = `#EZINV${Math.floor(Math.random() * 10000)}`;
-    this.setState(prevState => ({
+    this.setState(prevState =>  ({
       invoiceDetails: {
         ...prevState.invoiceDetails,
         invoiceId: newInvoiceId,
@@ -324,7 +324,7 @@ class InvoicePage extends Component {
   // Auto-populate client details from selected matter
   handleMatterChange = (e) => {
     const selectedMatter = e.target.value;
-    this.setState(prevState => ({
+    this.setState(prevState =>  ({
       invoiceDetails: {
         ...prevState.invoiceDetails,
         transferMatter: selectedMatter
@@ -333,7 +333,7 @@ class InvoicePage extends Component {
 
     // Auto-populate client details based on selected matter
     if (selectedMatter.includes('A. Smith')) {
-      this.setState(prevState => ({
+      this.setState(prevState =>  ({
         invoiceDetails: {
           ...prevState.invoiceDetails,
           clientName: 'Andrew Smith',
@@ -342,7 +342,7 @@ class InvoicePage extends Component {
         }
       }));
     } else if (selectedMatter.includes('B. Jones')) {
-      this.setState(prevState => ({
+      this.setState(prevState =>  ({
         invoiceDetails: {
           ...prevState.invoiceDetails,
           clientName: 'Barbara Jones',
@@ -607,7 +607,7 @@ class InvoicePage extends Component {
                   id="discount" 
                   name="discount" 
                   value={this.formatNumberForInput(invoiceDetails.discount)} 
-                  onChange={(e) => this.setState(prevState => ({
+                  onChange={(e) => this.setState(prevState =>  ({
                     invoiceDetails: {
                       ...prevState.invoiceDetails,
                       discount: this.parseFormattedNumber(e.target.value)

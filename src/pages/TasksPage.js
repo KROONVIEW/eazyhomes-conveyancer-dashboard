@@ -408,10 +408,10 @@ const TasksPage = () => {
                           const left = startIdx * 64; // 16rem per day
                           const width = Math.max(64, (endIdx - startIdx + 1) * 64);
                           let barColor = 'bg-yellow-500';
-                          if (task.status === 'Running') barColor = 'bg-blue-500';
-                          if (task.status === 'Done') barColor = 'bg-green-500';
+                          if (task.status === 'Running') {barColor = 'bg-blue-500';}
+                          if (task.status === 'Done') {barColor = 'bg-green-500';}
                           // Overdue
-                          if (task.status !== 'Done' && task.end < new Date()) barColor = 'bg-red-500';
+                          if (task.status !== 'Done' && task.end < new Date()) {barColor = 'bg-red-500';}
                           return (
                             <div
                               key={task.id}

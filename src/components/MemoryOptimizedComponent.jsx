@@ -203,12 +203,12 @@ export const MemoryOptimizedImage = memo(({
 
   const handleLoad = React.useCallback((e) => {
     setIsLoaded(true);
-    if (onLoad) onLoad(e);
+    if (onLoad) {onLoad(e);}
   }, [onLoad]);
 
   const handleError = React.useCallback((e) => {
     setHasError(true);
-    if (onError) onError(e);
+    if (onError) {onError(e);}
   }, [onError]);
 
   return (
@@ -381,7 +381,7 @@ export const MemoryOptimizedModal = memo(({
     }
   }, [isOpen, onClose, registerComponent, unregisterComponent]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {return null;}
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget && onClose) {

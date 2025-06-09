@@ -31,9 +31,9 @@ const performGlobalSearch = async (query, options = {}) => {
 };
 
 function highlightMatch(text, match) {
-  if (!match) return text;
+  if (!match) {return text;}
   const idx = text.toLowerCase().indexOf(match.toLowerCase());
-  if (idx === -1) return text;
+  if (idx === -1) {return text;}
   return <>{text.slice(0, idx)}<span className="bg-yellow-200 font-bold">{text.slice(idx, idx + match.length)}</span>{text.slice(idx + match.length)}</>;
 }
 
@@ -137,7 +137,7 @@ export default function SearchBar() {
   // Collapse on Escape
   useEffect(() => {
     function handleKeyDown(e) {
-      if (e.key === 'Escape') setExpanded(false);
+      if (e.key === 'Escape') {setExpanded(false);}
     }
     if (expanded) {
       document.addEventListener('keydown', handleKeyDown);
@@ -153,7 +153,7 @@ export default function SearchBar() {
     setOpen(false);
     setExpanded(false);
     
-    if (!item) return;
+    if (!item) {return;}
     
     console.log('🎯 SearchBar: Navigating to:', item);
     

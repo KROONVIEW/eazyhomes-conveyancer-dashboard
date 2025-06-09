@@ -22,7 +22,7 @@ export function useMatters({ search = '', startDate, endDate } = {}) {
         }
       })
       .finally(() => {
-        if (isMounted) setLoading(false);
+        if (isMounted) {setLoading(false);}
       });
     return () => { isMounted = false; };
   }, [search, startDate, endDate]);

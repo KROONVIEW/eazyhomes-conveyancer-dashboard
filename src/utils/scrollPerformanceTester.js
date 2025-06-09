@@ -104,10 +104,10 @@ class ScrollPerformanceTester {
    * Monitor scroll events
    */
   monitorScrollEvents(container) {
-    if (!container) return;
+    if (!container) {return;}
 
     const scrollHandler = (e) => {
-      if (!this.isRecording) return;
+      if (!this.isRecording) {return;}
       
       const timestamp = performance.now();
       const scrollTop = e.target.scrollTop;
@@ -138,7 +138,7 @@ class ScrollPerformanceTester {
    */
   monitorFrameRate() {
     const frameCallback = (timestamp) => {
-      if (!this.isRecording) return;
+      if (!this.isRecording) {return;}
       
       if (this.lastFrameTime > 0) {
         const frameTime = timestamp - this.lastFrameTime;
@@ -193,7 +193,7 @@ class ScrollPerformanceTester {
     if ('PerformanceObserver' in window) {
       try {
         this.observer = new PerformanceObserver((list) => {
-          if (!this.isRecording) return;
+          if (!this.isRecording) {return;}
           
           for (const entry of list.getEntries()) {
             if (entry.entryType === 'layout-shift') {
@@ -296,7 +296,7 @@ class ScrollPerformanceTester {
    * Calculate scroll smoothness score
    */
   calculateScrollSmoothness() {
-    if (this.metrics.timestamps.length < 2) return 'N/A';
+    if (this.metrics.timestamps.length < 2) {return 'N/A';}
     
     let smoothEvents = 0;
     for (let i = 1; i < this.metrics.timestamps.length; i++) {
@@ -314,10 +314,10 @@ class ScrollPerformanceTester {
    * Get performance grade
    */
   getPerformanceGrade(avgFPS, frameDropPercentage) {
-    if (avgFPS >= 55 && frameDropPercentage < 5) return 'A+ (Excellent)';
-    if (avgFPS >= 45 && frameDropPercentage < 10) return 'A (Very Good)';
-    if (avgFPS >= 35 && frameDropPercentage < 20) return 'B (Good)';
-    if (avgFPS >= 25 && frameDropPercentage < 30) return 'C (Fair)';
+    if (avgFPS >= 55 && frameDropPercentage < 5) {return 'A+ (Excellent)';}
+    if (avgFPS >= 45 && frameDropPercentage < 10) {return 'A (Very Good)';}
+    if (avgFPS >= 35 && frameDropPercentage < 20) {return 'B (Good)';}
+    if (avgFPS >= 25 && frameDropPercentage < 30) {return 'C (Fair)';}
     return 'D (Poor)';
   }
 

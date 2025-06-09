@@ -17,7 +17,7 @@ const DoubleCheckIcon = memo((props) => (
 
 // Memoized attachment preview component
 const AttachmentPreview = memo(({ attachment }) => {
-  if (!attachment) return null;
+  if (!attachment) {return null;}
   
   if (attachment.type === 'image') {
     return (
@@ -59,7 +59,7 @@ const faceImages = Array.from({length: 16}, (_, i) => `/images/avatars/face_1 ($
 const getConsistentFace = (senderKey) => {
   let hash = 0;
   if (typeof senderKey === 'string') {
-    for (let i = 0; i < senderKey.length; i++) hash += senderKey.charCodeAt(i);
+    for (let i = 0; i < senderKey.length; i++) {hash += senderKey.charCodeAt(i);}
   } else if (typeof senderKey === 'number') {
     hash = senderKey;
   }
@@ -111,7 +111,7 @@ const OptimizedMessageBubble = memo(({
 
   // Memoized avatar calculation
   const avatarToShow = useMemo(() => {
-    if (isSent) return senderAvatar || '/images/avatars/face 2 (2).jpg';
+    if (isSent) {return senderAvatar || '/images/avatars/face 2 (2).jpg';}
     return senderAvatar || getConsistentFace(senderName || senderId || 'unknown');
   }, [isSent, senderAvatar, senderName, senderId]);
 

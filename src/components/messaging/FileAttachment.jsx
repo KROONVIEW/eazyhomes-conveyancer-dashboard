@@ -145,9 +145,9 @@ const FileAttachment = ({
 
   // Get file type icon
   const getFileTypeIcon = (fileType) => {
-    if (fileType.startsWith('image/')) return <FiImage className="w-4 h-4" />;
-    if (fileType.startsWith('video/')) return <FiVideo className="w-4 h-4" />;
-    if (fileType.startsWith('audio/')) return <FiMusic className="w-4 h-4" />;
+    if (fileType.startsWith('image/')) {return <FiImage className="w-4 h-4" />;}
+    if (fileType.startsWith('video/')) {return <FiVideo className="w-4 h-4" />;}
+    if (fileType.startsWith('audio/')) {return <FiMusic className="w-4 h-4" />;}
     return <FiFile className="w-4 h-4" />;
   };
 
@@ -316,7 +316,7 @@ const FileAttachment = ({
 
 // File preview modal component
 export const FilePreviewModal = ({ file, isOpen, onClose }) => {
-  if (!isOpen || !file) return null;
+  if (!isOpen || !file) {return null;}
 
   const isImage = file.type.startsWith('image/');
   const isPDF = file.type === 'application/pdf';

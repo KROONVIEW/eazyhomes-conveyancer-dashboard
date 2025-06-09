@@ -72,7 +72,7 @@ const EditProfileModal = ({ isOpen, onClose, profile, onSave }) => {
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {return null;}
 
   return ReactDOM.createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[10000]">
@@ -274,7 +274,7 @@ const Sidebar = ({ isMobileOpen, toggleSidebar, isCollapsed }) => {
 
   // Smart text stacking for long firm names
   const renderBrandingText = (text) => {
-    if (isCollapsed) return null;
+    if (isCollapsed) {return null;}
     
     const words = text.split(' ');
     if (words.length > 2 || text.length > 15) {
@@ -323,10 +323,10 @@ const Sidebar = ({ isMobileOpen, toggleSidebar, isCollapsed }) => {
             className="relative focus:outline-none"
             tabIndex={isCollapsed ? -1 : 0}
             ref={docsButtonRef}
-            onMouseEnter={() => { if (!isCollapsed) setIsDocsOpen(true); }}
+            onMouseEnter={() => { if (!isCollapsed) {setIsDocsOpen(true);} }}
             onClick={e => {
               e.stopPropagation();
-              if (!isCollapsed) setIsDocsOpen((open) => !open);
+              if (!isCollapsed) {setIsDocsOpen((open) => !open);}
             }}
             aria-haspopup="true"
             aria-expanded={isDocsOpen}
@@ -398,7 +398,7 @@ const Sidebar = ({ isMobileOpen, toggleSidebar, isCollapsed }) => {
           style={{ marginTop: "auto" }}
           onClick={(e) => {
             e.stopPropagation();
-            if (!isCollapsed) setIsUserMenuOpen(!isUserMenuOpen);
+            if (!isCollapsed) {setIsUserMenuOpen(!isUserMenuOpen);}
           }}
           title={isCollapsed ? `${getUserDisplayName()} - ${getUserRole()}` : undefined}
         >

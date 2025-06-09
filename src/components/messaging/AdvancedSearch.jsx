@@ -26,7 +26,7 @@ const AdvancedSearch = ({
     const senders = new Set();
     Object.values(chatData).forEach(chat => {
       chat.messages?.forEach(message => {
-        if (message.sender) senders.add(message.sender);
+        if (message.sender) {senders.add(message.sender);}
       });
     });
     return Array.from(senders).sort();
@@ -58,7 +58,7 @@ const AdvancedSearch = ({
           const textMatch = message.text?.toLowerCase().includes(query) ||
                            message.subject?.toLowerCase().includes(query) ||
                            message.sender?.toLowerCase().includes(query);
-          if (!textMatch) matches = false;
+          if (!textMatch) {matches = false;}
         }
 
         // Sender filter
@@ -68,9 +68,9 @@ const AdvancedSearch = ({
 
         // Message type filter
         if (filters.messageType !== 'all') {
-          if (filters.messageType === 'broadcast' && !message.isBroadcast) matches = false;
-          if (filters.messageType === 'text' && message.isBroadcast) matches = false;
-          if (filters.messageType === 'attachment' && !message.hasAttachment) matches = false;
+          if (filters.messageType === 'broadcast' && !message.isBroadcast) {matches = false;}
+          if (filters.messageType === 'text' && message.isBroadcast) {matches = false;}
+          if (filters.messageType === 'attachment' && !message.hasAttachment) {matches = false;}
         }
 
         // Conversation filter
@@ -85,19 +85,19 @@ const AdvancedSearch = ({
           
           switch (filters.dateRange) {
             case 'today':
-              if (messageDate.toDateString() !== now.toDateString()) matches = false;
+              if (messageDate.toDateString() !== now.toDateString()) {matches = false;}
               break;
             case 'week':
               const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-              if (messageDate < weekAgo) matches = false;
+              if (messageDate < weekAgo) {matches = false;}
               break;
             case 'month':
               const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-              if (messageDate < monthAgo) matches = false;
+              if (messageDate < monthAgo) {matches = false;}
               break;
             case 'custom':
-              if (customDateRange.start && messageDate < new Date(customDateRange.start)) matches = false;
-              if (customDateRange.end && messageDate > new Date(customDateRange.end)) matches = false;
+              if (customDateRange.start && messageDate < new Date(customDateRange.start)) {matches = false;}
+              if (customDateRange.end && messageDate > new Date(customDateRange.end)) {matches = false;}
               break;
           }
         }
@@ -118,8 +118,8 @@ const AdvancedSearch = ({
       // Prioritize exact matches
       const aExact = a.text?.toLowerCase() === query;
       const bExact = b.text?.toLowerCase() === query;
-      if (aExact && !bExact) return -1;
-      if (!aExact && bExact) return 1;
+      if (aExact && !bExact) {return -1;}
+      if (!aExact && bExact) {return 1;}
       
       // Then by timestamp (most recent first)
       return b.id - a.id;
@@ -148,7 +148,7 @@ const AdvancedSearch = ({
   }, [onSelectConversation, onSelectMessage, onClose]);
 
   const highlightText = useCallback((text, query) => {
-    if (!query.trim()) return text;
+    if (!query.trim()) {return text;}
     
     const regex = new RegExp(`(${query})`, 'gi');
     const parts = text.split(regex);
@@ -162,7 +162,7 @@ const AdvancedSearch = ({
     );
   }, []);
 
-  if (!isOpen) return null;
+  if (!isOpen) {return null;}
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
