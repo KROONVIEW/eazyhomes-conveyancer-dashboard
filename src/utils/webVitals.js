@@ -1,9 +1,19 @@
-import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals';
+// Simplified web vitals implementation to avoid import issues
+const reportWebVitals = (onPerfEntry) => {
+  if (onPerfEntry && onPerfEntry instanceof Function) {
+    import('web-vitals').then(({ onCLS, onFCP, onLCP, onTTFB }) => {
+      onCLS(onPerfEntry);
+      onFCP(onPerfEntry);
+      onLCP(onPerfEntry);
+      onTTFB(onPerfEntry);
+    });
+  }
+};
 
 // Web Vitals thresholds (Google's recommended values)
 const THRESHOLDS = {
   CLS: { good: 0.1, poor: 0.25 },
-  INP: { good: 200, poor: 500 },
+  FID: { good: 100, poor: 300 },
   FCP: { good: 1800, poor: 3000 },
   LCP: { good: 2500, poor: 4000 },
   TTFB: { good: 800, poor: 1800 }
@@ -12,6 +22,7 @@ const THRESHOLDS = {
 // Function to send metrics to analytics (replace with your analytics service)
 function sendToAnalytics(metric) {
   // In production, send to your analytics service
+  // eslint-disable-next-line no-console
   console.log('Web Vitals Metric:', metric);
   
   // Example: Send to Google Analytics
@@ -51,6 +62,7 @@ function reportMetric(metric) {
   // Log performance issues in development
   if (process.env.NODE_ENV === 'development') {
     if (rating === 'poor') {
+      // eslint-disable-next-line no-console
       console.warn(`⚠️ Poor ${metric.name} performance:`, {
         value: metric.value,
         threshold: THRESHOLDS[metric.name],
@@ -68,7 +80,7 @@ function getPerformanceSuggestions(metricName) {
       'Avoid inserting content above existing content',
       'Use CSS transforms instead of changing layout properties'
     ],
-    INP: [
+    FID: [
       'Reduce JavaScript execution time',
       'Break up long tasks',
       'Use web workers for heavy computations'
@@ -95,11 +107,7 @@ function getPerformanceSuggestions(metricName) {
 
 // Main function to initialize Web Vitals monitoring
 export function initWebVitals() {
-  onCLS(reportMetric);
-  onINP(reportMetric);
-  onFCP(reportMetric);
-  onLCP(reportMetric);
-  onTTFB(reportMetric);
+  reportWebVitals(reportMetric);
 }
 
 // Function to manually report custom metrics
