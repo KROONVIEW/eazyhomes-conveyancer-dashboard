@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   HomeIcon,
   InboxIcon as ChatBubbleBottomCenterIcon,
@@ -147,6 +147,7 @@ const Sidebar = ({ isMobileOpen, toggleSidebar, isCollapsed }) => {
   const userMenuRef = useRef(null);
   const userButtonRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, profile, signOut, updateProfile } = useAuth();
 
   // Click outside logic for popovers
@@ -323,22 +324,38 @@ const Sidebar = ({ isMobileOpen, toggleSidebar, isCollapsed }) => {
             className="relative focus:outline-none"
             tabIndex={isCollapsed ? -1 : 0}
             ref={docsButtonRef}
-            onMouseEnter={() => { if (!isCollapsed) {setIsDocsOpen(true);} }}
+            onMouseEnter={() => { 
+              if (!isCollapsed) {
+                setIsDocsOpen(true);
+              }
+            }}
+            onMouseLeave={() => {
+              if (!isCollapsed && !location.pathname.startsWith('/documents')) {
+                setIsDocsOpen(false);
+              }
+            }}
             onClick={e => {
               e.stopPropagation();
-              if (!isCollapsed) {setIsDocsOpen((open) => !open);}
+              if (!isCollapsed) {
+                navigate('/documents');
+                setIsDocsOpen(false);
+              }
             }}
             aria-haspopup="true"
             aria-expanded={isDocsOpen}
           >
             <div
-              className={`${parentItemClass} ${isDocsOpen && !isCollapsed ? "bg-blue-50" : ""}`}
+              className={`${parentItemClass} ${
+                (isDocsOpen && !isCollapsed) || location.pathname.startsWith('/documents') 
+                  ? "bg-blue-100 text-blue-600" 
+                  : ""
+              }`}
               title={isCollapsed ? 'Documents' : undefined}
             >
               <DocumentIcon className="w-6 h-6 flex-shrink-0" />
               {!isCollapsed && <span className="text-sm truncate">Documents</span>}
             </div>
-            {isDocsOpen && !isCollapsed && ReactDOM.createPortal(
+            {(isDocsOpen || location.pathname.startsWith('/documents')) && !isCollapsed && ReactDOM.createPortal(
               <div
                 ref={docsDropdownRef}
                 className="absolute w-40 bg-white border border-gray-200 rounded-md shadow-lg z-[9999] py-2"
@@ -349,7 +366,11 @@ const Sidebar = ({ isMobileOpen, toggleSidebar, isCollapsed }) => {
                   minWidth: 160,
                 }}
                 onMouseEnter={() => setIsDocsOpen(true)}
-                // Don't close on mouse leave, only on click-outside or button click
+                onMouseLeave={() => {
+                  if (!location.pathname.startsWith('/documents')) {
+                    setIsDocsOpen(false);
+                  }
+                }}
               >
                 <button
                   className={nestedItemClass}

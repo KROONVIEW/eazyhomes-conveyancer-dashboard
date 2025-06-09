@@ -47,33 +47,26 @@ const Layout = ({ children }) => {
   }, []);
 
   const handleMouseEnterSidebar = useCallback(() => {
-    console.log("Layout: Mouse ENTER sidebar area.");
     mouseIsOverSidebarRef.current = true;
     clearTimeout(collapseTimerRef.current); // Cancel any pending collapse
 
     if (ignoreNextMouseEnterRef.current) {
-      console.log("Layout: MouseEnter IGNORED due to ignoreNextMouseEnterRef.");
       ignoreNextMouseEnterRef.current = false; // Consume the flag
       return;
     }
 
     if (isSidebarCollapsed) {
-      console.log("Layout: Expanding sidebar.");
       setIsSidebarCollapsed(false);
     }
   }, [isSidebarCollapsed]);
 
   const handleMouseLeaveSidebar = useCallback(() => {
-    console.log("Layout: Mouse LEAVE sidebar area.");
     mouseIsOverSidebarRef.current = false;
     clearTimeout(collapseTimerRef.current);
     collapseTimerRef.current = setTimeout(() => {
       if (!mouseIsOverSidebarRef.current) {
-        console.log("Layout: Collapse timer finished AND mouse is still outside. Collapsing sidebar.");
         ignoreNextMouseEnterRef.current = true; // Set flag to ignore the potential immediate MouseEnter due to shrink
         setIsSidebarCollapsed(true);
-      } else {
-        console.log("Layout: Collapse timer finished BUT mouse re-entered. No collapse.");
       }
     }, EXPAND_COLLAPSE_DELAY);
   }, []);
@@ -86,9 +79,6 @@ const Layout = ({ children }) => {
   }, []);
 
   const sidebarWrapperWidth = isSidebarCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
-  // console.log(
-  //   `Layout RENDER: isSidebarCollapsed: ${isSidebarCollapsed} -> sidebarWrapperWidth: ${sidebarWrapperWidth}px`
-  // );
 
   const navLinks = [
     { name: "Dashboard", icon: HomeIcon, to: "/" },
@@ -117,11 +107,18 @@ const Layout = ({ children }) => {
       {/* Desktop Sidebar */}
       {isDesktop && (
         <div
-          className="fixed top-0 left-0 h-full z-40 bg-white border-r-2 border-gray-200 shadow-sm transition-all duration-300 flex flex-col items-center py-4"
+          className="sidebar-fixed bg-white border-r-2 border-gray-200 shadow-sm flex flex-col items-center py-4"
           style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
             width: isSidebarCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH,
+            height: '100vh',
             minHeight: '100vh',
-            transition: 'width 0.3s cubic-bezier(.4,0,.2,1)'
+            transition: 'width 0.3s cubic-bezier(.4,0,.2,1)',
+            zIndex: 9999,
+            transform: 'none',
+            willChange: 'width'
           }}
           onMouseEnter={handleMouseEnterSidebar}
           onMouseLeave={handleMouseLeaveSidebar}
@@ -140,14 +137,15 @@ const Layout = ({ children }) => {
       )}
       
       {/* Main Content */}
-      <div
+      <div 
         className="app-container min-h-screen bg-gray-50 transition-all duration-300"
         style={{
-          paddingLeft: isDesktop ? SIDEBAR_COLLAPSED_WIDTH : 0, 
-          transition: 'padding-left 0.3s cubic-bezier(.4,0,.2,1)', 
+          marginLeft: isDesktop ? (isSidebarCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH) : 0,
+          transition: 'margin-left 0.3s cubic-bezier(.4,0,.2,1)',
+          width: `calc(100% - ${isDesktop ? (isSidebarCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH) : 0}px)`
         }}
       >
-        <main className="main-content w-full px-4 py-6">
+        <main className="main-content w-full px-6 py-6 max-w-full overflow-x-hidden">
           {children}
         </main>
       </div>

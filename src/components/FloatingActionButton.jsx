@@ -66,37 +66,31 @@ const FloatingActionButton = () => {
 
   // Quick action handlers with enhanced functionality
   const handleNewTransfer = () => {
-    console.log('🔄 Navigating to Transfers Page');
     navigate('/transfers');
     setIsOpen(false);
   };
 
   const handleUploadDocument = () => {
-    console.log('📄 Navigating to Documents Upload');
     navigate('/documents/upload');
     setIsOpen(false);
   };
 
   const handleInitiateChat = () => {
-    console.log('💬 Navigating to Messages');
     navigate('/messages');
     setIsOpen(false);
   };
 
   const handleAddTask = () => {
-    console.log('📅 Navigating to Calendar Page');
     navigate('/calendar');
     setIsOpen(false);
   };
 
   const handleQuickClient = () => {
-    console.log('👥 Navigating to Clients Page');
     navigate('/clients');
     setIsOpen(false);
   };
 
   const handleQuickMatter = () => {
-    console.log('📋 Navigating to All Matters');
     navigate('/matters');
     setIsOpen(false);
   };
@@ -164,7 +158,17 @@ const FloatingActionButton = () => {
   }
 
   return (
-    <div ref={fabRef} className="fixed bottom-6 right-6 z-50 group">
+    <div 
+      ref={fabRef} 
+      className="group"
+      style={{
+        position: 'fixed',
+        bottom: '24px',
+        right: '24px',
+        zIndex: 10000,
+        transform: 'none'
+      }}
+    >
       {/* Backdrop overlay when menu is open */}
       {isOpen && (
         <div 
