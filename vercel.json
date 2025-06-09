@@ -1,31 +1,16 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build",
-        "framework": null
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
-  "functions": {
-    "app/api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "env": {
     "NODE_ENV": "production",
     "GENERATE_SOURCEMAP": "false",
     "CI": "false",
     "INLINE_RUNTIME_CHUNK": "false"
+  },
+  "analytics": {
+    "enable": true
+  },
+  "speedInsights": {
+    "enable": true
   },
   "headers": [
     {
@@ -51,6 +36,10 @@
         {
           "key": "X-XSS-Protection",
           "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
         }
       ]
     }
