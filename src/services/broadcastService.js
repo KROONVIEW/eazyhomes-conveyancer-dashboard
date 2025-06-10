@@ -110,11 +110,15 @@ class BroadcastService {
       
       // Handle custom recipients or get predefined group
       let targetGroup;
-      if (typeof broadcastData.recipients === 'object' && broadcastData.recipients.groupId === 'custom') {
-        // Custom recipients
+      if (typeof broadcastData.recipients === 'object') {
+        // Custom recipients object
         targetGroup = broadcastData.recipients;
+        // Validate custom group structure
+        if (!targetGroup.groupId || !targetGroup.members || !Array.isArray(targetGroup.members)) {
+          throw new Error('Invalid custom recipient group structure');
+        }
       } else {
-        // Predefined group
+        // Predefined group ID
         targetGroup = this.getUserGroup(broadcastData.recipients);
         if (!targetGroup) {
           throw new Error(`Invalid recipient group: ${broadcastData.recipients}`);

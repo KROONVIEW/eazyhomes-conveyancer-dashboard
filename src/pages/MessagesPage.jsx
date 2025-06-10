@@ -1291,6 +1291,19 @@ const MessagesPage = () => {
     }
   }, []);
 
+  // Handle new chat creation
+  const handleNewChatCreated = useCallback((chatId, chatData) => {
+    console.log('🆕 Adding new chat to conversation list:', { chatId, chatData });
+    
+    setDynamicChatData(prevData => ({
+      ...prevData,
+      [chatId]: {
+        ...chatData,
+        lastActivity: Date.now()
+      }
+    }));
+  }, []);
+
   // COMPREHENSIVE DIAGNOSTIC LOGGING
   console.log('MESSAGING DIAGNOSTICS:');
   console.log('Active Conversation ID:', activeConversationId);
@@ -1318,8 +1331,8 @@ const MessagesPage = () => {
 
   return (
     <div className="h-screen flex bg-gray-50 font-['Poppins']">
-      {/* Notification Toggle - Repositioned to bottom right */}
-      <div className="fixed bottom-20 right-4 z-50">
+      {/* Notification Toggle - Moved higher to avoid send button */}
+      <div className="fixed bottom-32 right-4 z-40">
         <div className="bg-white rounded-lg shadow-lg p-3 border border-gray-200">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-700">Demo Notifications</span>
@@ -1347,6 +1360,7 @@ const MessagesPage = () => {
           onSendBroadcast={handleSendBroadcast}
           unreadCounts={unreadCounts}
           newMessageCounters={newMessageCounters}
+          onNewChatCreated={handleNewChatCreated}
         />
       </div>
 

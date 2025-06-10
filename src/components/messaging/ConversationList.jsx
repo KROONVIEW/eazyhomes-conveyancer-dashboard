@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiPlus, FiSearch, FiMoreHorizontal } from 'react-icons/fi';
+import { FiPlus, FiSearch, FiMoreHorizontal, FiX } from 'react-icons/fi';
 import BroadcastComposer from './BroadcastComposer';
 import '../../styles/optimized-scroll.css';
 
@@ -112,7 +112,7 @@ const conversations = [
   }
 ];
 
-const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, userRole = 'admin', onSendBroadcast, unreadCounts = {}, newMessageCounters = {} }) => {
+const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, userRole = 'admin', onSendBroadcast, unreadCounts = {}, newMessageCounters = {}, onNewChatCreated }) => {
   const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [showNewChatMenu, setShowNewChatMenu] = useState(false);
@@ -199,14 +199,170 @@ const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, us
     }
   };
 
+  const [showNewPersonalChatModal, setShowNewPersonalChatModal] = useState(false);
+  const [showNewTeamChatModal, setShowNewTeamChatModal] = useState(false);
+  const [newChatForm, setNewChatForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    role: 'Client',
+    avatar: ''
+  });
+  const [newTeamForm, setNewTeamForm] = useState({
+    name: '',
+    description: '',
+    members: [],
+    isPrivate: false
+  });
+
+  // Mock team members for selection
+  const availableTeamMembers = [
+    { id: 'sarah.johnson', name: 'Sarah Johnson', role: 'Senior Conveyancer', avatar: '/images/avatars/face_1 (1).jpg' },
+    { id: 'mike.chen', name: 'Mike Chen', role: 'Legal Assistant', avatar: '/images/avatars/face_1 (2).jpg' },
+    { id: 'emma.davis', name: 'Emma Davis', role: 'Property Manager', avatar: '/images/avatars/face_1 (3).jpg' },
+    { id: 'james.wilson', name: 'James Wilson', role: 'Compliance Officer', avatar: '/images/avatars/face_1 (4).jpg' },
+    { id: 'lisa.brown', name: 'Lisa Brown', role: 'Client Relations', avatar: '/images/avatars/face_1 (5).jpg' },
+    { id: 'david.taylor', name: 'David Taylor', role: 'Finance Manager', avatar: '/images/avatars/face_1 (6).jpg' }
+  ];
+
   const handleNewPersonalChat = () => {
-    console.log('Creating new personal chat...');
+    setShowNewPersonalChatModal(true);
     setShowNewChatMenu(false);
   };
 
   const handleNewTeamChat = () => {
-    console.log('Creating new team chat...');
+    setShowNewTeamChatModal(true);
     setShowNewChatMenu(false);
+  };
+
+  const handleAddTeamMember = (member) => {
+    if (!newTeamForm.members.find(m => m.id === member.id)) {
+      setNewTeamForm(prev => ({
+        ...prev,
+        members: [...prev.members, member]
+      }));
+    }
+  };
+
+  const handleRemoveTeamMember = (memberId) => {
+    setNewTeamForm(prev => ({
+      ...prev,
+      members: prev.members.filter(m => m.id !== memberId)
+    }));
+  };
+
+  const handleCreatePersonalChat = () => {
+    if (!newChatForm.name.trim()) {
+      alert('Please enter a contact name');
+      return;
+    }
+
+    // Generate new chat ID
+    const newChatId = Object.keys(chatData).length + 1;
+    
+    // Generate avatar URL first
+    const avatarUrl = newChatForm.avatar || `/images/avatars/face_1 (${Math.floor(Math.random() * 20) + 1}).jpg`;
+    
+    // Create new chat object
+    const newChat = {
+      id: newChatId,
+      name: newChatForm.name.trim(),
+      email: newChatForm.email.trim() || `${newChatForm.name.toLowerCase().replace(/\s+/g, '.')}@example.com`,
+      phone: newChatForm.phone.trim() || '+27 11 000 0000',
+      role: newChatForm.role,
+      avatarUrl: avatarUrl,
+      online: Math.random() > 0.5, // Random online status
+      messages: [
+        {
+          id: 1,
+          text: `Hi! I'm ${newChatForm.name}. Looking forward to working with you.`,
+          sender: newChatForm.name,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isSent: false,
+          senderAvatar: avatarUrl,
+          status: 'delivered'
+        }
+      ],
+      verificationStatus: {
+        identity: false,
+        address: false,
+        employment: false,
+        fica: false
+      }
+    };
+
+    // Add to chat data via parent callback
+    console.log('Creating new personal chat:', newChat);
+    
+    // Call parent callback to add the new chat
+    if (onNewChatCreated) {
+      onNewChatCreated(newChatId, newChat);
+    }
+    
+    // Reset form and close modal
+    setNewChatForm({ name: '', email: '', phone: '', role: 'Client', avatar: '' });
+    setShowNewPersonalChatModal(false);
+    
+    // Select the new chat
+    onSelect(newChatId);
+    
+    // Show success message
+    alert(`New conversation with ${newChat.name} created successfully!`);
+  };
+
+  const handleCreateTeamChat = () => {
+    if (!newTeamForm.name.trim()) {
+      alert('Please enter a team name');
+      return;
+    }
+
+    // Generate new team chat ID
+    const newTeamId = Object.keys(chatData).length + 1;
+    
+    // Generate avatar URL first
+    const avatarUrl = `/images/avatars/face 2 (${Math.floor(Math.random() * 16) + 1}).jpg`;
+    
+    // Create new team chat object
+    const newTeamChat = {
+      id: newTeamId,
+      name: newTeamForm.name.trim(),
+      description: newTeamForm.description.trim(),
+      avatarUrl: avatarUrl,
+      isTeam: true,
+      isPrivate: newTeamForm.isPrivate,
+      members: newTeamForm.members,
+      online: true,
+      role: 'Team Chat',
+      messages: [
+        {
+          id: 1,
+          text: `Welcome to ${newTeamForm.name}! This team chat has been created for collaboration.`,
+          sender: 'System',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isSent: false,
+          senderAvatar: avatarUrl,
+          isSystem: true,
+          status: 'delivered'
+        }
+      ]
+    };
+
+    console.log('Creating new team chat:', newTeamChat);
+    
+    // Call parent callback to add the new team chat
+    if (onNewChatCreated) {
+      onNewChatCreated(newTeamId, newTeamChat);
+    }
+    
+    // Reset form and close modal
+    setNewTeamForm({ name: '', description: '', members: [], isPrivate: false });
+    setShowNewTeamChatModal(false);
+    
+    // Select the new team chat
+    onSelect(newTeamId);
+    
+    // Show success message
+    alert(`Team chat "${newTeamChat.name}" created successfully!`);
   };
 
   const handleComposeBroadcast = () => {
@@ -529,6 +685,197 @@ const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, us
         onSendBroadcast={handleSendBroadcast}
         userRole={userRole}
       />
+
+      {/* New Personal Chat Modal */}
+      {showNewPersonalChatModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-gray-900">New Personal Chat</h3>
+              <button 
+                onClick={() => setShowNewPersonalChatModal(false)}
+                className="text-gray-400 hover:text-gray-600 p-1"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Contact Name *</label>
+                <input
+                  type="text"
+                  value={newChatForm.name}
+                  onChange={(e) => setNewChatForm({...newChatForm, name: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter contact name"
+                  autoFocus
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input
+                  type="email"
+                  value={newChatForm.email}
+                  onChange={(e) => setNewChatForm({...newChatForm, email: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="contact@example.com"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                <input
+                  type="tel"
+                  value={newChatForm.phone}
+                  onChange={(e) => setNewChatForm({...newChatForm, phone: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="+27 11 000 0000"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                <select
+                  value={newChatForm.role}
+                  onChange={(e) => setNewChatForm({...newChatForm, role: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="Client">Client</option>
+                  <option value="Colleague">Colleague</option>
+                  <option value="Partner">Partner</option>
+                  <option value="Vendor">Vendor</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowNewPersonalChatModal(false)}
+                className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreatePersonalChat}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                Create Chat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* New Team Chat Modal */}
+      {showNewTeamChatModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-gray-900">Create Team Chat</h3>
+              <button 
+                onClick={() => setShowNewTeamChatModal(false)}
+                className="text-gray-400 hover:text-gray-600 p-1"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Team Name *</label>
+                <input
+                  type="text"
+                  value={newTeamForm.name}
+                  onChange={(e) => setNewTeamForm({...newTeamForm, name: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter team name"
+                  autoFocus
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <textarea
+                  value={newTeamForm.description}
+                  onChange={(e) => setNewTeamForm({...newTeamForm, description: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Brief description of the team purpose"
+                  rows={3}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Team Members</label>
+                
+                {/* Selected Members */}
+                {newTeamForm.members.length > 0 && (
+                  <div className="mb-3">
+                    <div className="text-xs text-gray-500 mb-2">Selected ({newTeamForm.members.length})</div>
+                    <div className="flex flex-wrap gap-2">
+                      {newTeamForm.members.map((member) => (
+                        <div key={member.id} className="flex items-center gap-2 bg-blue-50 px-2 py-1 rounded-lg">
+                          <img src={member.avatar} alt={member.name} className="w-5 h-5 rounded-full" />
+                          <span className="text-xs text-blue-700">{member.name}</span>
+                          <button
+                            onClick={() => handleRemoveTeamMember(member.id)}
+                            className="text-blue-400 hover:text-blue-600"
+                          >
+                            <FiX className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Available Members */}
+                <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg">
+                  {availableTeamMembers.filter(member => !newTeamForm.members.find(m => m.id === member.id)).map((member) => (
+                    <div key={member.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 cursor-pointer" onClick={() => handleAddTeamMember(member)}>
+                      <img src={member.avatar} alt={member.name} className="w-8 h-8 rounded-full object-cover" />
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-gray-900">{member.name}</div>
+                        <div className="text-xs text-gray-500">{member.role}</div>
+                      </div>
+                      <button className="text-blue-600 hover:text-blue-700 text-sm">Add</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={newTeamForm.isPrivate}
+                    onChange={(e) => setNewTeamForm({...newTeamForm, isPrivate: e.target.checked})}
+                    className="rounded border-gray-300"
+                  />
+                  <span className="text-sm text-gray-700">Private team (invite only)</span>
+                </label>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowNewTeamChatModal(false)}
+                className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateTeamChat}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                Create Team
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

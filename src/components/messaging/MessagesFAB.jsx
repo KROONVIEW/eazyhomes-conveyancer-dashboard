@@ -200,7 +200,7 @@ const MessagesFAB = ({
 
   return (
     <>
-      <div ref={fabRef} className="fixed bottom-6 right-6 z-50 group">
+      <div ref={fabRef} className="fixed bottom-24 right-6 z-50 group">
         {/* Backdrop overlay when menu is open */}
         {isOpen && (
           <div 
