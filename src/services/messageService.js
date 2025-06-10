@@ -43,10 +43,7 @@ apiClient.interceptors.response.use(
 class MessageService {
   // Send a text message
   async sendMessage(messageData) {
-    try {
-      console.log('📤 Sending message:', messageData);
-      
-      // Simulate API call for now - replace with actual endpoint
+    try {// Simulate API call for now - replace with actual endpoint
       const response = await new Promise((resolve) => {
         setTimeout(() => {
           resolve({
@@ -60,22 +57,15 @@ class MessageService {
             }
           });
         }, 500); // Simulate network delay
-      });
-
-      console.log('✅ Message sent successfully:', response.data);
-      return response.data;
-    } catch (error) {
-      console.error('❌ Failed to send message:', error);
-      throw new Error(`Failed to send message: ${error.message}`);
+      });return response.data;
+    } catch (error) { // Error logging removed for production
+throw new Error(`Failed to send message: ${error.message}`);
     }
   }
 
   // Upload file attachment
   async uploadAttachment(file, onProgress) {
-    try {
-      console.log('📎 Uploading attachment:', file.name);
-      
-      const formData = new FormData();
+    try {const formData = new FormData();
       formData.append('file', file);
       formData.append('type', file.type);
       formData.append('size', file.size);
@@ -97,10 +87,7 @@ class MessageService {
               size: file.size,
               url: URL.createObjectURL(file), // Create blob URL for preview
               uploadedAt: new Date().toISOString()
-            };
-            
-            console.log('✅ File uploaded successfully:', uploadResponse);
-            resolve(uploadResponse);
+            };resolve(uploadResponse);
           }
           
           if (onProgress) {
@@ -126,161 +113,116 @@ class MessageService {
       });
       return response.data;
       */
-    } catch (error) {
-      console.error('❌ Failed to upload attachment:', error);
-      throw new Error(`Failed to upload file: ${error.message}`);
+    } catch (error) { // Error logging removed for production
+throw new Error(`Failed to upload file: ${error.message}`);
     }
   }
 
   // Send message with attachment
   async sendMessageWithAttachment(messageData, attachment) {
-    try {
-      console.log('📤 Sending message with attachment:', { messageData, attachment });
-      
-      // First upload the attachment
-      const uploadedFile = await this.uploadAttachment(attachment.file);
-      
-      // Then send the message with attachment reference
-      const messageWithAttachment = {
-        ...messageData,
-        attachment: {
-          id: uploadedFile.id,
-          name: uploadedFile.name,
-          type: uploadedFile.type,
-          size: uploadedFile.size,
-          url: uploadedFile.url
-        }
-      };
-      
-      return await this.sendMessage(messageWithAttachment);
-    } catch (error) {
-      console.error('❌ Failed to send message with attachment:', error);
-      throw error;
-    }
+    // First upload the attachment
+    const uploadedFile = await this.uploadAttachment(attachment.file);
+    
+    // Then send the message with attachment reference
+    const messageWithAttachment = {
+      ...messageData,
+      attachment: {
+        id: uploadedFile.id,
+        name: uploadedFile.name,
+        type: uploadedFile.type,
+        size: uploadedFile.size,
+        url: uploadedFile.url
+      }
+    };
+    
+    return await this.sendMessage(messageWithAttachment);
   }
 
   // Update message status (delivered, read, etc.)
   async updateMessageStatus(messageId, status) {
-    try {
-      console.log(`📊 Updating message ${messageId} status to: ${status}`);
-      
-      // Simulate API call
-      const response = await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            data: {
-              messageId,
-              status,
-              timestamp: new Date().toISOString()
-            }
-          });
-        }, 200);
-      });
-
-      console.log('✅ Message status updated:', response.data);
-      return response.data;
-    } catch (error) {
-      console.error('❌ Failed to update message status:', error);
-      throw error;
-    }
+    // Simulate API call
+    const response = await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          data: {
+            messageId,
+            status,
+            timestamp: new Date().toISOString()
+          }
+        });
+      }, 200);
+    });
+    
+    return response.data;
   }
 
   // Get conversation messages
   async getConversationMessages(conversationId, page = 1, limit = 50) {
-    try {
-      console.log(`📥 Fetching messages for conversation ${conversationId}`);
-      
-      // Simulate API call
-      const response = await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            data: {
-              messages: [], // Would contain actual messages from backend
-              pagination: {
-                page,
-                limit,
-                total: 0,
-                hasMore: false
-              }
+    // Simulate API call
+    const response = await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          data: {
+            messages: [], // Would contain actual messages from backend
+            pagination: {
+              page,
+              limit,
+              total: 0,
+              hasMore: false
             }
-          });
-        }, 300);
-      });
+          }
+        });
+      }, 300);
+    });
 
-      return response.data;
-    } catch (error) {
-      console.error('❌ Failed to fetch messages:', error);
-      throw error;
-    }
+    return response.data;
   }
 
   // Mark messages as read
   async markMessagesAsRead(messageIds) {
-    try {
-      console.log('👁️ Marking messages as read:', messageIds);
-      
-      // Simulate API call
-      const response = await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            data: {
-              messageIds,
-              readAt: new Date().toISOString()
-            }
-          });
-        }, 200);
-      });
+    // Simulate API call
+    const response = await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          data: {
+            messageIds,
+            readAt: new Date().toISOString()
+          }
+        });
+      }, 200);
+    });
 
-      return response.data;
-    } catch (error) {
-      console.error('❌ Failed to mark messages as read:', error);
-      throw error;
-    }
+    return response.data;
   }
 
   // Search messages
   async searchMessages(query, conversationId = null) {
-    try {
-      console.log('🔍 Searching messages:', { query, conversationId });
-      
-      // Simulate API call
-      const response = await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            data: {
-              results: [], // Would contain search results
-              query,
-              total: 0
-            }
-          });
-        }, 400);
-      });
+    // Simulate API call
+    const response = await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          data: {
+            results: [], // Would contain search results
+            query,
+            total: 0
+          }
+        });
+      }, 400);
+    });
 
-      return response.data;
-    } catch (error) {
-      console.error('❌ Failed to search messages:', error);
-      throw error;
-    }
+    return response.data;
   }
 
   // Delete message
   async deleteMessage(messageId) {
-    try {
-      console.log('🗑️ Deleting message:', messageId);
-      
-      // Simulate API call
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({ data: { success: true } });
-        }, 300);
-      });
-
-      console.log('✅ Message deleted successfully');
-      return { success: true };
-    } catch (error) {
-      console.error('❌ Failed to delete message:', error);
-      throw error;
-    }
+    // Simulate API call
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({ data: { success: true } });
+      }, 300);
+    });
+    
+    return { success: true };
   }
 
   // Get supported file types

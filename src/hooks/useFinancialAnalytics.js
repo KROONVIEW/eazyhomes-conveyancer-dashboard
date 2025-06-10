@@ -16,9 +16,8 @@ export const useFinancialAnalytics = (dataType = 'all', autoRefresh = false) => 
       const result = await financialAnalyticsService.getData(dataType, forceRefresh);
       setData(result);
       setLastUpdated(new Date());
-    } catch (err) {
-      console.error('Error loading financial analytics data:', err);
-      setError(err.message || 'Failed to load financial data');
+    } catch (err) { // Error logging removed for production
+setError(err.message || 'Failed to load financial data');
     } finally {
       setLoading(false);
     }

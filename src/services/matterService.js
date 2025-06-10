@@ -7,7 +7,6 @@ import {
   getDoc, 
   addDoc, 
   updateDoc, 
-  deleteDoc, 
   query, 
   where, 
   orderBy, 
@@ -15,7 +14,6 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
-
 // Matter Status Constants
 export const MATTER_STATUS = {
   DRAFT: 'Draft',
@@ -27,7 +25,6 @@ export const MATTER_STATUS = {
   COMPLETED: 'Completed',
   CANCELLED: 'Cancelled'
 };
-
 // Matter Stages Constants
 export const MATTER_STAGES = {
   INITIAL_CONSULTATION: 'Initial Consultation',
@@ -38,7 +35,6 @@ export const MATTER_STAGES = {
   TRANSFER_DOCUMENTS: 'Transfer Documents',
   FINAL_REGISTRATION: 'Final Registration'
 };
-
 // Matter Types
 export const MATTER_TYPES = {
   SECTIONAL_TITLE: 'Sectional Title',
@@ -47,7 +43,6 @@ export const MATTER_TYPES = {
   ESTATE: 'Estate',
   COMMERCIAL: 'Commercial'
 };
-
 class MatterService {
   constructor() {
     this.collection = 'matters';
@@ -55,7 +50,6 @@ class MatterService {
     this.listeners = []; // Store listeners for mock real-time updates
     this.initializeMockData();
   }
-
   // Initialize mock data
   initializeMockData() {
     this.mockMatters = [
@@ -168,20 +162,13 @@ class MatterService {
       }
     ];
   }
-
   // Notify all listeners of changes (for mock real-time updates)
-  notifyListeners() {
-    console.log('🔔 Notifying', this.listeners.length, 'listeners of data change');
-    this.listeners.forEach((callback, index) => {
-      try {
-        console.log('📡 Sending update to listener', index + 1);
-        callback([...this.mockMatters]);
-      } catch (error) {
-        console.error('Error notifying listener:', error);
-      }
+  notifyListeners() {this.listeners.forEach((callback, index) => {
+      try {callback([...this.mockMatters]);
+      } catch (error) { // Error logging removed for production
+}
     });
   }
-
   // Create new matter
   async createMatter(matterData) {
     try {
@@ -201,23 +188,16 @@ class MatterService {
           seller: { completed: false, documents: [] }
         }
       };
-
-      if (!db) {
-        console.log('📝 Creating matter with mock data');
-        const newMatter = { ...matter, firebaseId: `mock-${matter.id}` };
+      if (!db) {const newMatter = { ...matter, firebaseId: `mock-${matter.id}` };
         this.mockMatters.unshift(newMatter);
-        
         // Notify listeners of the change
         setTimeout(() => this.notifyListeners(), 100);
-        
         return newMatter;
       }
-
       const docRef = await addDoc(collection(db, this.collection), matter);
       return { ...matter, firebaseId: docRef.id };
-    } catch (error) {
-      console.error('Error creating matter:', error);
-      // Fallback to mock creation
+    } catch (error) { // Error logging removed for production
+// Fallback to mock creation
       const matter = {
         id: `MAT-${Date.now()}`,
         ...matterData,
@@ -237,16 +217,12 @@ class MatterService {
       return { ...matter, firebaseId: `mock-${matter.id}` };
     }
   }
-
   // Get all matters
   async getAllMatters() {
     try {
       // Check if Firebase is available
-      if (!db) {
-        console.log('📋 Using mock data for matters');
-        return [...this.mockMatters];
+      if (!db) {return [...this.mockMatters];
       }
-
       const q = query(
         collection(db, this.collection),
         orderBy('updatedAt', 'desc')
@@ -256,204 +232,139 @@ class MatterService {
         firebaseId: doc.id,
         ...doc.data()
       }));
-    } catch (error) {
-      console.error('Error fetching matters:', error);
-      // Return mock data if Firebase fails
+    } catch (error) { // Error logging removed for production
+// Return mock data if Firebase fails
       return this.getMockMatters();
     }
   }
-
   // Get matter by ID
   async getMatterById(matterId) {
-    try {
-      const docRef = doc(db, this.collection, matterId);
-      const docSnap = await getDoc(docRef);
-      
-      if (docSnap.exists()) {
-        return { firebaseId: docSnap.id, ...docSnap.data() };
-      } else {
-        throw new Error('Matter not found');
-      }
-    } catch (error) {
-      console.error('Error fetching matter:', error);
-      throw error;
+    const docRef = doc(db, this.collection, matterId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return { firebaseId: docSnap.id, ...docSnap.data() };
+    } else {
+      throw new Error('Matter not found');
     }
   }
-
   // Update matter
   async updateMatter(matterId, updates) {
-    try {
-      if (!db) {
-        console.log('📝 Updating matter with mock data:', matterId);
-        const updateData = {
-          ...updates,
-          updatedAt: new Date().toISOString()
-        };
-        
-        // Update mock data
-        const index = this.mockMatters.findIndex(m => m.id === matterId || m.firebaseId === matterId);
-        if (index !== -1) {
-          console.log('📝 Found matter at index', index, 'updating with:', updateData);
-          this.mockMatters[index] = { ...this.mockMatters[index], ...updateData };
-          
-          // Notify listeners of the change
-          console.log('⏰ Scheduling listener notification in 100ms');
-          setTimeout(() => this.notifyListeners(), 100);
-        } else {
-          console.warn('⚠️ Matter not found for update:', matterId);
-        }
-        
-        return updateData;
-      }
-
-      const docRef = doc(db, this.collection, matterId);
+    if (!db) {
       const updateData = {
         ...updates,
-        updatedAt: serverTimestamp()
+        updatedAt: new Date().toISOString()
       };
-      
-      await updateDoc(docRef, updateData);
+      // Update mock data
+      const index = this.mockMatters.findIndex(m => m.id === matterId || m.firebaseId === matterId);
+      if (index !== -1) {
+        this.mockMatters[index] = { ...this.mockMatters[index], ...updateData };
+        // Notify listeners of the change
+        setTimeout(() => this.notifyListeners(), 100);
+      } else {
+        // Matter not found in mock data - silently handle
+      }
       return updateData;
-    } catch (error) {
-      console.error('Error updating matter:', error);
-      throw error;
     }
+    const docRef = doc(db, this.collection, matterId);
+    const updateData = {
+      ...updates,
+      updatedAt: serverTimestamp()
+    };
+    await updateDoc(docRef, updateData);
+    return updateData;
   }
-
   // Update matter status and progress
   async updateMatterProgress(matterId, status, stage, progress) {
-    try {
-      return await this.updateMatter(matterId, {
-        status,
-        stage,
-        progress: Math.min(100, Math.max(0, progress))
-      });
-    } catch (error) {
-      console.error('Error updating matter progress:', error);
-      throw error;
-    }
+    return await this.updateMatter(matterId, {
+      status,
+      stage,
+      progress: Math.min(100, Math.max(0, progress))
+    });
   }
-
   // Add document to matter
   async addDocumentToMatter(matterId, documentData) {
-    try {
-      if (!db) {
-        console.log('📎 Adding document to mock matter:', matterId);
-        const newDocument = {
-          id: uuidv4(),
-          ...documentData,
-          uploadedAt: new Date().toISOString()
-        };
-
-        // Update mock data
-        const index = this.mockMatters.findIndex(m => m.id === matterId || m.firebaseId === matterId);
-        if (index !== -1) {
-          this.mockMatters[index].documents = [...(this.mockMatters[index].documents || []), newDocument];
-          this.mockMatters[index].updatedAt = new Date().toISOString();
-          
-          // Notify listeners of the change
-          setTimeout(() => this.notifyListeners(), 100);
-        }
-
-        return newDocument;
-      }
-
-      const matter = await this.getMatterById(matterId);
+    if (!db) {
       const newDocument = {
         id: uuidv4(),
         ...documentData,
         uploadedAt: new Date().toISOString()
       };
-
-      const updatedDocuments = [...(matter.documents || []), newDocument];
-      
-      await this.updateMatter(matterId, {
-        documents: updatedDocuments
-      });
-
+      // Update mock data
+      const index = this.mockMatters.findIndex(m => m.id === matterId || m.firebaseId === matterId);
+      if (index !== -1) {
+        this.mockMatters[index].documents = [...(this.mockMatters[index].documents || []), newDocument];
+        this.mockMatters[index].updatedAt = new Date().toISOString();
+        // Notify listeners of the change
+        setTimeout(() => this.notifyListeners(), 100);
+      }
       return newDocument;
-    } catch (error) {
-      console.error('Error adding document to matter:', error);
-      throw error;
     }
+    const matter = await this.getMatterById(matterId);
+    const newDocument = {
+      id: uuidv4(),
+      ...documentData,
+      uploadedAt: new Date().toISOString()
+    };
+    const updatedDocuments = [...(matter.documents || []), newDocument];
+    await this.updateMatter(matterId, {
+      documents: updatedDocuments
+    });
+    return newDocument;
   }
-
   // Add communication to matter
   async addCommunication(matterId, communicationData) {
-    try {
-      const matter = await this.getMatterById(matterId);
-      const newCommunication = {
-        id: uuidv4(),
-        ...communicationData,
-        timestamp: new Date().toISOString(),
-        read: false
-      };
-
-      const updatedCommunications = [...(matter.communications || []), newCommunication];
-      
-      await this.updateMatter(matterId, {
-        communications: updatedCommunications
-      });
-
-      return newCommunication;
-    } catch (error) {
-      console.error('Error adding communication:', error);
-      throw error;
-    }
+    const matter = await this.getMatterById(matterId);
+    const newCommunication = {
+      id: uuidv4(),
+      ...communicationData,
+      timestamp: new Date().toISOString(),
+      read: false
+    };
+    const updatedCommunications = [...(matter.communications || []), newCommunication];
+    await this.updateMatter(matterId, {
+      communications: updatedCommunications
+    });
+    return newCommunication;
   }
-
   // Update FICA status
   async updateFicaStatus(matterId, party, status, documents = []) {
-    try {
-      if (!db) {
-        console.log('📝 Updating FICA status with mock data:', matterId, party, status);
-        
-        // Update mock data
-        const index = this.mockMatters.findIndex(m => m.id === matterId || m.firebaseId === matterId);
-        if (index !== -1) {
-          const updatedFicaStatus = {
-            ...this.mockMatters[index].ficaStatus,
-            [party]: {
-              completed: status,
-              documents: documents,
-              updatedAt: new Date().toISOString()
-            }
-          };
-          
-          this.mockMatters[index] = {
-            ...this.mockMatters[index],
-            ficaStatus: updatedFicaStatus,
+    if (!db) {
+      // Update mock data
+      const index = this.mockMatters.findIndex(m => m.id === matterId || m.firebaseId === matterId);
+      if (index !== -1) {
+        const updatedFicaStatus = {
+          ...this.mockMatters[index].ficaStatus,
+          [party]: {
+            completed: status,
+            documents: documents,
             updatedAt: new Date().toISOString()
-          };
-          
-          // Notify listeners of the change
-          setTimeout(() => this.notifyListeners(), 100);
-          return updatedFicaStatus;
-        }
-        return null;
-      }
-
-      const matter = await this.getMatterById(matterId);
-      const updatedFicaStatus = {
-        ...matter.ficaStatus,
-        [party]: {
-          completed: status,
-          documents: documents,
+          }
+        };
+        this.mockMatters[index] = {
+          ...this.mockMatters[index],
+          ficaStatus: updatedFicaStatus,
           updatedAt: new Date().toISOString()
-        }
-      };
-
-      await this.updateMatter(matterId, {
-        ficaStatus: updatedFicaStatus
-      });
-
-      return updatedFicaStatus;
-    } catch (error) {
-      console.error('Error updating FICA status:', error);
-      throw error;
+        };
+        // Notify listeners of the change
+        setTimeout(() => this.notifyListeners(), 100);
+        return updatedFicaStatus;
+      }
+      return null;
     }
+    const matter = await this.getMatterById(matterId);
+    const updatedFicaStatus = {
+      ...matter.ficaStatus,
+      [party]: {
+        completed: status,
+        documents: documents,
+        updatedAt: new Date().toISOString()
+      }
+    };
+    await this.updateMatter(matterId, {
+      ficaStatus: updatedFicaStatus
+    });
+    return updatedFicaStatus;
   }
-
   // Get matters by status
   async getMattersByStatus(status) {
     try {
@@ -467,61 +378,43 @@ class MatterService {
         firebaseId: doc.id,
         ...doc.data()
       }));
-    } catch (error) {
-      console.error('Error fetching matters by status:', error);
-      return [];
+    } catch (error) { // Error logging removed for production
+return [];
     }
   }
-
   // Real-time listener for matters
   subscribeToMatters(callback) {
     try {
       // Check if Firebase is available
-      if (!db) {
-        console.log('📡 Setting up mock real-time sync');
-        
-        // Add callback to listeners array
+      if (!db) {// Add callback to listeners array
         this.listeners.push(callback);
-        
         // Immediately call with current data
         callback([...this.mockMatters]);
-        
         // Return unsubscribe function that removes the listener
-        return () => {
-          console.log('🔌 Mock listener unsubscribed');
-          const index = this.listeners.indexOf(callback);
+        return () => {const index = this.listeners.indexOf(callback);
           if (index > -1) {
             this.listeners.splice(index, 1);
           }
         };
       }
-
       const q = query(
         collection(db, this.collection),
         orderBy('updatedAt', 'desc')
-      );
-      
-      console.log('📡 Setting up Firebase real-time listener');
-      return onSnapshot(q, (querySnapshot) => {
+      );return onSnapshot(q, (querySnapshot) => {
         const matters = querySnapshot.docs.map(doc => ({
           firebaseId: doc.id,
           ...doc.data()
-        }));
-        console.log('📡 Firebase real-time update:', matters.length, 'matters');
-        callback(matters);
-      }, (error) => {
-        console.error('Firebase listener error:', error);
-        // Fallback to mock data on error
+        }));callback(matters);
+      }, (error) => { // Error logging removed for production
+// Fallback to mock data on error
         callback(this.getMockMatters());
       });
-    } catch (error) {
-      console.error('Error setting up matters listener:', error);
-      // Fallback to mock data
+    } catch (error) { // Error logging removed for production
+// Fallback to mock data
       callback(this.getMockMatters());
       return () => {}; // Return empty unsubscribe function
     }
   }
-
   // Mock data fallback (preserves existing UI data)
   getMockMatters() {
     return [
@@ -596,7 +489,6 @@ class MatterService {
     ];
   }
 }
-
 // Mock Matter Service for Overview Page
 const mockMatters = [
   {
@@ -640,7 +532,6 @@ const mockMatters = [
   },
   // Add more mock matters as needed
 ];
-
 export async function fetchMatters({ search = '', startDate, endDate } = {}) {
   // Simulate network delay
   await new Promise(res => setTimeout(res, 500));
@@ -660,8 +551,6 @@ export async function fetchMatters({ search = '', startDate, endDate } = {}) {
   }
   return filtered;
 }
-
 // Create and export singleton instance
 const matterService = new MatterService();
-
 export default matterService; 

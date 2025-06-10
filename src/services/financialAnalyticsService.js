@@ -328,9 +328,8 @@ class FinancialAnalyticsService {
     this.listeners.forEach(callback => {
       try {
         callback(data);
-      } catch (error) {
-        console.error('Error in financial analytics listener:', error);
-      }
+      } catch (error) { // Error logging removed for production
+}
     });
   }
 

@@ -47,56 +47,56 @@ class InvoicePage extends Component {
   }
 
   // Utility method to calculate due date
-  calculateDueDate = (days) => {
+  calculateDueDate(days) {
     const date = new Date();
     date.setDate(date.getDate() + days);
     return date.toISOString().substring(0, 10);
-  };
+  }
 
   // Calculate subtotal
-  calculateSubtotal = () => {
+  calculateSubtotal() {
     return this.state.invoiceDetails.items.reduce((sum, item) => 
       sum + (parseFloat(item.rate) || 0) * (parseFloat(item.qty) || 0), 0
     );
-  };
+  }
 
   // Calculate VAT amount
-  calculateVAT = () => {
+  calculateVAT() {
     if (!this.state.invoiceDetails.includeVat) return 0;
     const subtotal = this.calculateSubtotal() - (parseFloat(this.state.invoiceDetails.discount) || 0);
     return subtotal * (this.state.invoiceDetails.vatRate / 100);
-  };
+  }
 
   // Calculate total including VAT
-  calculateTotal = () => {
+  calculateTotal() {
     const subtotal = this.calculateSubtotal();
     const discount = parseFloat(this.state.invoiceDetails.discount) || 0;
     const vat = this.calculateVAT();
     return subtotal - discount + vat;
-  };
+  }
 
   // Format numbers with South African thousand separators (spaces)
-  formatCurrency = (amount) => {
+  formatCurrency(amount) {
     const num = parseFloat(amount) || 0;
     return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-  };
+  }
 
   // Format numbers for input display (without decimals if whole number)
-  formatNumberForInput = (amount) => {
+  formatNumberForInput(amount) {
     const num = parseFloat(amount) || 0;
     if (num % 1 === 0) {
       return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     }
     return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-  };
+  }
 
   // Parse formatted number back to regular number for calculations
-  parseFormattedNumber = (formattedNumber) => {
+  parseFormattedNumber(formattedNumber) {
     return parseFloat(formattedNumber.toString().replace(/\s/g, '')) || 0;
-  };
+  }
 
   // Validate invoice data
-  validateInvoice = () => {
+  validateInvoice() {
     const errors = [];
     const { invoiceDetails } = this.state;
 
@@ -112,35 +112,35 @@ class InvoicePage extends Component {
     if (invoiceDetails.items.length === 0) {
       errors.push('At least one invoice item is required');
     }
-    if (invoiceDetails.items.some(item =>  !item.description.trim())) {
+    if (invoiceDetails.items.some(item => !item.description.trim())) {
       errors.push('All items must have descriptions');
     }
-    if (invoiceDetails.items.some(item =>  parseFloat(item.rate) <= 0)) {
+    if (invoiceDetails.items.some(item => parseFloat(item.rate) <= 0)) {
       errors.push('All items must have valid rates');
     }
 
     this.setState({ validationErrors: errors });
     return errors.length === 0;
-  };
+  }
 
   // Handle input changes
-  handleChange = (e) => {
+  handleChange(e) {
     const { name, value, type, checked } = e.target;
-    this.setState(prevState =>  ({
+    this.setState(prevState => ({
       invoiceDetails: {
         ...prevState.invoiceDetails,
         [name]: type === 'checkbox' ? checked : value,
         ...(name === 'paymentTerms' && { dueDate: this.calculateDueDate(parseInt(value) || 30) })
       }
     }));
-  };
+  }
 
   // Handle item changes
-  handleItemChange = (id, field, value) => {
-    this.setState(prevState =>  ({
+  handleItemChange(id, field, value) {
+    this.setState(prevState => ({
       invoiceDetails: {
         ...prevState.invoiceDetails,
-        items: prevState.invoiceDetails.items.map(item =>  {
+        items: prevState.invoiceDetails.items.map(item => {
           if (item.id === id) {
             const updatedItem = { ...item, [field]: value };
             if (field === 'rate' || field === 'qty') {
@@ -152,10 +152,10 @@ class InvoicePage extends Component {
         })
       }
     }));
-  };
+  }
 
   // Add new item
-  addItem = () => {
+  addItem() {
     const newItem = {
       id: Date.now(),
       description: '',
@@ -164,31 +164,31 @@ class InvoicePage extends Component {
       amount: 0
     };
     
-    this.setState(prevState =>  ({
+    this.setState(prevState => ({
       invoiceDetails: {
         ...prevState.invoiceDetails,
         items: [...prevState.invoiceDetails.items, newItem]
       }
     }));
-  };
+  }
 
   // Remove item
-  removeItem = (id) => {
-    this.setState(prevState =>  ({
+  removeItem(id) {
+    this.setState(prevState => ({
       invoiceDetails: {
         ...prevState.invoiceDetails,
-        items: prevState.invoiceDetails.items.filter(item =>  item.id !== id)
+        items: prevState.invoiceDetails.items.filter(item => item.id !== id)
       }
     }));
-  };
+  }
 
   // Save draft functionality
-  saveDraft = async () => {
+  async saveDraft() {
     this.setState({ isLoading: true });
     
     try {
       // Simulate API call
-      await new Promise(resolve =>  setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       const draft = {
         ...this.state.invoiceDetails,
@@ -196,7 +196,7 @@ class InvoicePage extends Component {
         id: Date.now()
       };
       
-      this.setState(prevState =>  ({
+      this.setState(prevState => ({
         savedDrafts: [...prevState.savedDrafts, draft],
         isLoading: false
       }));
@@ -206,10 +206,10 @@ class InvoicePage extends Component {
       this.setState({ isLoading: false });
       this.showNotification('Failed to save draft', 'error');
     }
-  };
+  }
 
   // Generate PDF functionality
-  generatePDF = async () => {
+  async generatePDF() {
     if (!this.validateInvoice()) {
       this.showNotification('Please fix validation errors before generating PDF', 'error');
       return;
@@ -262,14 +262,14 @@ class InvoicePage extends Component {
       this.setState({ isLoading: false });
       this.showNotification('PDF generated and downloaded successfully!', 'success');
     } catch (error) {
-      console.error('PDF generation error:', error);
+      // Error logging removed for production
       this.setState({ isLoading: false });
       this.showNotification('Failed to generate PDF. Please try again.', 'error');
     }
-  };
+  }
 
   // Create and send invoice
-  createAndSendInvoice = async () => {
+  async createAndSendInvoice() {
     if (!this.validateInvoice()) {
       this.showNotification('Please fix validation errors before sending invoice', 'error');
       return;
@@ -279,9 +279,9 @@ class InvoicePage extends Component {
     
     try {
       // Simulate API call to create and send invoice
-      await new Promise(resolve =>  setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      this.setState(prevState =>  ({
+      this.setState(prevState => ({
         invoiceDetails: {
           ...prevState.invoiceDetails,
           status: 'sent',
@@ -295,14 +295,12 @@ class InvoicePage extends Component {
       this.setState({ isLoading: false });
       this.showNotification('Failed to send invoice', 'error');
     }
-  };
-
-
+  }
 
   // Duplicate invoice
-  duplicateInvoice = () => {
+  duplicateInvoice() {
     const newInvoiceId = `#EZINV${Math.floor(Math.random() * 10000)}`;
-    this.setState(prevState =>  ({
+    this.setState(prevState => ({
       invoiceDetails: {
         ...prevState.invoiceDetails,
         invoiceId: newInvoiceId,
@@ -312,19 +310,19 @@ class InvoicePage extends Component {
       }
     }));
     this.showNotification('Invoice duplicated successfully!', 'success');
-  };
+  }
 
   // Show notification
-  showNotification = (message, type) => {
+  showNotification(message, type) {
     // In a real app, this would use a toast notification system
     const icon = type === 'success' ? '✅' : '❌';
     alert(`${icon} ${message}`);
-  };
+  }
 
   // Auto-populate client details from selected matter
-  handleMatterChange = (e) => {
+  handleMatterChange(e) {
     const selectedMatter = e.target.value;
-    this.setState(prevState =>  ({
+    this.setState(prevState => ({
       invoiceDetails: {
         ...prevState.invoiceDetails,
         transferMatter: selectedMatter
@@ -333,7 +331,7 @@ class InvoicePage extends Component {
 
     // Auto-populate client details based on selected matter
     if (selectedMatter.includes('A. Smith')) {
-      this.setState(prevState =>  ({
+      this.setState(prevState => ({
         invoiceDetails: {
           ...prevState.invoiceDetails,
           clientName: 'Andrew Smith',
@@ -342,7 +340,7 @@ class InvoicePage extends Component {
         }
       }));
     } else if (selectedMatter.includes('B. Jones')) {
-      this.setState(prevState =>  ({
+      this.setState(prevState => ({
         invoiceDetails: {
           ...prevState.invoiceDetails,
           clientName: 'Barbara Jones',
@@ -351,7 +349,7 @@ class InvoicePage extends Component {
         }
       }));
     }
-  };
+  }
 
   render() {
     const { invoiceDetails, isLoading, validationErrors } = this.state;

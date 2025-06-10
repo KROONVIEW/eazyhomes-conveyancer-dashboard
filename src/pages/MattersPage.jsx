@@ -13,10 +13,7 @@ const MattersPage = () => {
   const [newMatterOpen, setNewMatterOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   
-  // Debug log to check initial state
-  console.log('🔍 MattersPage - newMatterOpen state:', newMatterOpen);
-  
-  // Backend integration - preserves existing UI behavior
+  // Debug log to check initial state// Backend integration - preserves existing UI behavior
   const { matters, loading, error, createMatter, updateMatterStatus } = useMatterWorkflow();
 
   const handleRowClick = (matter) => {
@@ -24,14 +21,10 @@ const MattersPage = () => {
     setDrawerOpen(true);
   };
 
-  const handleNewMatterClick = () => {
-    console.log('🔍 New Matter button clicked - opening drawer');
-    setNewMatterOpen(true);
+  const handleNewMatterClick = () => {setNewMatterOpen(true);
   };
 
-  const handleNewMatterClose = () => {
-    console.log('🔍 New Matter drawer closing');
-    setNewMatterOpen(false);
+  const handleNewMatterClose = () => {setNewMatterOpen(false);
   };
 
   return (
@@ -67,19 +60,14 @@ const MattersPage = () => {
                   // Test real-time sync by updating a matter
                   if (matters.length > 0) {
                     const firstMatter = matters[0];
-                    const newProgress = Math.min(100, (firstMatter.progress || 0) + 10);
-                    console.log('🧪 Test Sync clicked - updating progress from', firstMatter.progress, 'to', newProgress);
-                    await updateMatterStatus(
+                    const newProgress = Math.min(100, (firstMatter.progress || 0) + 10);await updateMatterStatus(
                       firstMatter.id || firstMatter.firebaseId, 
                       firstMatter.status, 
                       firstMatter.stage, 
                       newProgress
-                    );
-                    console.log('🧪 Test update completed - check real-time sync!');
-                  }
-                } catch (err) {
-                  console.error('Test update failed:', err);
-                } finally {
+                    );}
+                } catch (err) { // Error logging removed for production
+} finally {
                   setTimeout(() => setIsUpdating(false), 1000); // Reset after 1 second
                 }
               }}

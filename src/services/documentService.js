@@ -1,221 +1,1 @@
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  doc, 
-  getDocs, 
-  query, 
-  where, 
-  orderBy,
-  serverTimestamp 
-} from 'firebase/firestore';
-import { 
-  ref, 
-  uploadBytes, 
-  getDownloadURL 
-} from 'firebase/storage';
-import { db, storage } from './firebase';
-
-class DocumentService {
-  constructor() {
-    this.mockDocuments = new Map();
-    this.initializeMockData();
-  }
-
-  initializeMockData() {
-    // Initialize some mock documents for testing
-    this.mockDocuments.set('matter-1', [
-      {
-        id: 'doc-1',
-        fileName: 'Offer_to_Purchase.pdf',
-        fileType: 'application/pdf',
-        fileSize: 245760,
-        documentType: 'Offer to Purchase',
-        category: 'legal',
-        uploadedAt: new Date().toISOString(),
-        uploadedBy: 'conveyancer-1',
-        status: 'uploaded',
-        downloadUrl: '/mock/documents/offer_to_purchase.pdf'
-      }
-    ]);
-  }
-
-  // Upload a general document
-  async uploadDocument(file, matterId, documentType, category = 'general') {
-    try {
-      console.log('📎 Uploading document:', file.name, 'for matter:', matterId);
-
-      // Mock implementation for development
-      const mockDocument = {
-        id: `doc-${Date.now()}`,
-        fileName: file.name,
-        fileType: file.type,
-        fileSize: file.size,
-        documentType,
-        category,
-        matterId,
-        uploadedAt: new Date().toISOString(),
-        uploadedBy: 'current-user',
-        status: 'uploaded',
-        downloadUrl: `/mock/documents/${file.name}`,
-        metadata: {
-          originalName: file.name,
-          uploadSource: 'web'
-        }
-      };
-
-      // Store in mock data
-      if (!this.mockDocuments.has(matterId)) {
-        this.mockDocuments.set(matterId, []);
-      }
-      this.mockDocuments.get(matterId).push(mockDocument);
-
-      console.log('✅ Document uploaded successfully:', mockDocument.fileName);
-      return mockDocument;
-
-    } catch (error) {
-      console.error('Error uploading document:', error);
-      throw new Error(`Failed to upload document: ${error.message}`);
-    }
-  }
-
-  // Upload FICA document with specific party and type
-  async uploadFicaDocument(file, matterId, party, documentType) {
-    try {
-      console.log('📋 Uploading FICA document:', documentType, 'for', party, 'in matter:', matterId);
-
-      const document = await this.uploadDocument(file, matterId, documentType, 'fica');
-      
-      // Add FICA-specific metadata
-      const ficaDocument = {
-        ...document,
-        party, // 'buyer' or 'seller'
-        ficaType: documentType,
-        category: 'fica',
-        requiresVerification: true,
-        verificationStatus: 'pending'
-      };
-
-      console.log('✅ FICA document uploaded successfully:', ficaDocument.fileName);
-      return ficaDocument;
-
-    } catch (error) {
-      console.error('Error uploading FICA document:', error);
-      throw new Error(`Failed to upload FICA document: ${error.message}`);
-    }
-  }
-
-  // Check FICA completion status for a party
-  async checkFicaCompletion(matterId, party) {
-    try {
-      console.log('🔍 Checking FICA completion for', party, 'in matter:', matterId);
-
-      const requiredDocuments = [
-        'ID Copy',
-        'Proof of Address', 
-        'Bank Statement'
-      ];
-
-      // Mock implementation
-      const mockCompletedDocs = party === 'buyer' 
-        ? ['ID Copy', 'Proof of Address'] 
-        : ['ID Copy'];
-
-      const missingDocuments = requiredDocuments.filter(
-        req => !mockCompletedDocs.includes(req)
-      );
-
-      const ficaStatus = {
-        completed: missingDocuments.length === 0,
-        completedCount: mockCompletedDocs.length,
-        totalRequired: requiredDocuments.length,
-        completedDocuments: mockCompletedDocs,
-        missingDocuments,
-        documents: mockCompletedDocs.map(docType => ({
-          id: `fica-${party}-${docType.toLowerCase().replace(' ', '-')}`,
-          ficaType: docType,
-          party,
-          verificationStatus: 'verified',
-          uploadedAt: new Date().toISOString()
-        }))
-      };
-
-      console.log('📊 FICA status for', party, ':', ficaStatus);
-      return ficaStatus;
-
-    } catch (error) {
-      console.error('Error checking FICA completion:', error);
-      return {
-        completed: false,
-        completedCount: 0,
-        totalRequired: 3,
-        completedDocuments: [],
-        missingDocuments: ['ID Copy', 'Proof of Address', 'Bank Statement'],
-        documents: []
-      };
-    }
-  }
-
-  // Get all documents for a matter
-  async getDocumentsByMatter(matterId) {
-    try {
-      console.log('📁 Fetching documents for matter:', matterId);
-
-      // Mock implementation
-      const documents = this.mockDocuments.get(matterId) || [];
-      console.log('📄 Found', documents.length, 'mock documents for matter:', matterId);
-      return documents;
-
-    } catch (error) {
-      console.error('Error fetching documents:', error);
-      return [];
-    }
-  }
-
-  // Get mock documents (fallback)
-  getMockDocuments(matterId) {
-    const mockDocs = [
-      {
-        id: `mock-doc-1-${matterId}`,
-        fileName: 'Sample_Document.pdf',
-        fileType: 'application/pdf',
-        fileSize: 156789,
-        documentType: 'General',
-        category: 'general',
-        matterId,
-        uploadedAt: new Date().toISOString(),
-        uploadedBy: 'system',
-        status: 'uploaded',
-        downloadUrl: '/mock/documents/sample.pdf'
-      }
-    ];
-
-    console.log('📄 Returning mock documents for matter:', matterId);
-    return mockDocs;
-  }
-
-  // Verify a FICA document
-  async verifyFicaDocument(documentId, verifiedBy) {
-    try {
-      console.log('✅ Verifying FICA document:', documentId, 'by:', verifiedBy);
-
-      // Mock implementation - just log the verification
-      console.log('✅ FICA document verified successfully:', documentId);
-      
-      return {
-        id: documentId,
-        verificationStatus: 'verified',
-        verifiedBy,
-        verifiedAt: new Date().toISOString()
-      };
-
-    } catch (error) {
-      console.error('Error verifying FICA document:', error);
-      throw new Error(`Failed to verify document: ${error.message}`);
-    }
-  }
-}
-
-// Export singleton instance
-const documentService = new DocumentService();
-export default documentService; 
+import {   serverTimestamp } from 'firebase/firestore';import {   getDownloadURL } from 'firebase/storage';import { db, storage } from './firebase';class DocumentService {  constructor() {    this.mockDocuments = new Map();    this.initializeMockData();  }  initializeMockData() {    // Initialize some mock documents for testing    this.mockDocuments.set('matter-1', [      {        id: 'doc-1',        fileName: 'Offer_to_Purchase.pdf',        fileType: 'application/pdf',        fileSize: 245760,        documentType: 'Offer to Purchase',        category: 'legal',        uploadedAt: new Date().toISOString(),        uploadedBy: 'conveyancer-1',        status: 'uploaded',        downloadUrl: '/mock/documents/offer_to_purchase.pdf'      }    ]);  }  // Upload a general document  async uploadDocument(file, matterId, documentType, category = 'general') {    try {      console.log('📎 Uploading document:', file.name, 'for matter:', matterId);      // Mock implementation for development      const mockDocument = {        id: `doc-${Date.now()}`,        fileName: file.name,        fileType: file.type,        fileSize: file.size,        documentType,        category,        matterId,        uploadedAt: new Date().toISOString(),        uploadedBy: 'current-user',        status: 'uploaded',        downloadUrl: `/mock/documents/${file.name}`,        metadata: {          originalName: file.name,          uploadSource: 'web'        }      };      // Store in mock data      if (!this.mockDocuments.has(matterId)) {        this.mockDocuments.set(matterId, []);      }      this.mockDocuments.get(matterId).push(mockDocument);      console.log('✅ Document uploaded successfully:', mockDocument.fileName);      return mockDocument;    } catch (error) {      console.error('Error uploading document:', error);      throw new Error(`Failed to upload document: ${error.message}`);    }  }  // Upload FICA document with specific party and type  async uploadFicaDocument(file, matterId, party, documentType) {    try {      console.log('📋 Uploading FICA document:', documentType, 'for', party, 'in matter:', matterId);      const document = await this.uploadDocument(file, matterId, documentType, 'fica');      // Add FICA-specific metadata      const ficaDocument = {        ...document,        party, // 'buyer' or 'seller'        ficaType: documentType,        category: 'fica',        requiresVerification: true,        verificationStatus: 'pending'      };      console.log('✅ FICA document uploaded successfully:', ficaDocument.fileName);      return ficaDocument;    } catch (error) {      console.error('Error uploading FICA document:', error);      throw new Error(`Failed to upload FICA document: ${error.message}`);    }  }  // Check FICA completion status for a party  async checkFicaCompletion(matterId, party) {    try {      console.log('🔍 Checking FICA completion for', party, 'in matter:', matterId);      const requiredDocuments = [        'ID Copy',        'Proof of Address',         'Bank Statement'      ];      // Mock implementation      const mockCompletedDocs = party === 'buyer'         ? ['ID Copy', 'Proof of Address']         : ['ID Copy'];      const missingDocuments = requiredDocuments.filter(        req => !mockCompletedDocs.includes(req)      );      const ficaStatus = {        completed: missingDocuments.length === 0,        completedCount: mockCompletedDocs.length,        totalRequired: requiredDocuments.length,        completedDocuments: mockCompletedDocs,        missingDocuments,        documents: mockCompletedDocs.map(docType => ({          id: `fica-${party}-${docType.toLowerCase().replace(' ', '-')}`,          ficaType: docType,          party,          verificationStatus: 'verified',          uploadedAt: new Date().toISOString()        }))      };      console.log('📊 FICA status for', party, ':', ficaStatus);      return ficaStatus;    } catch (error) {      console.error('Error checking FICA completion:', error);      return {        completed: false,        completedCount: 0,        totalRequired: 3,        completedDocuments: [],        missingDocuments: ['ID Copy', 'Proof of Address', 'Bank Statement'],        documents: []      };    }  }  // Get all documents for a matter  async getDocumentsByMatter(matterId) {    try {      console.log('📁 Fetching documents for matter:', matterId);      // Mock implementation      const documents = this.mockDocuments.get(matterId) || [];      console.log('📄 Found', documents.length, 'mock documents for matter:', matterId);      return documents;    } catch (error) {      console.error('Error fetching documents:', error);      return [];    }  }  // Get mock documents (fallback)  getMockDocuments(matterId) {    const mockDocs = [      {        id: `mock-doc-1-${matterId}`,        fileName: 'Sample_Document.pdf',        fileType: 'application/pdf',        fileSize: 156789,        documentType: 'General',        category: 'general',        matterId,        uploadedAt: new Date().toISOString(),        uploadedBy: 'system',        status: 'uploaded',        downloadUrl: '/mock/documents/sample.pdf'      }    ];    console.log('📄 Returning mock documents for matter:', matterId);    return mockDocs;  }  // Verify a FICA document  async verifyFicaDocument(documentId, verifiedBy) {    try {      console.log('✅ Verifying FICA document:', documentId, 'by:', verifiedBy);      // Mock implementation - just log the verification      console.log('✅ FICA document verified successfully:', documentId);      return {        id: documentId,        verificationStatus: 'verified',        verifiedBy,        verifiedAt: new Date().toISOString()      };    } catch (error) {      console.error('Error verifying FICA document:', error);      throw new Error(`Failed to verify document: ${error.message}`);    }  }}// Export singleton instanceconst documentService = new DocumentService();export default documentService; 

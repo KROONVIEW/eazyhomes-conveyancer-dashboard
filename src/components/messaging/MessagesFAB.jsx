@@ -69,9 +69,7 @@ const MessagesFAB = ({
   };
 
   // Quick action handlers
-  const handleNewConversation = () => {
-    console.log('💬 Creating New Conversation');
-    // Create a simple new conversation modal or trigger
+  const handleNewConversation = () => {// Create a simple new conversation modal or trigger
     const newContactName = prompt('Enter contact name for new conversation:');
     if (newContactName && newContactName.trim()) {
       console.log(`💬 New conversation started with: ${newContactName.trim()}`);
@@ -88,27 +86,25 @@ const MessagesFAB = ({
 
   const handleVideoCall = () => {
     if (activeChat) {
-      console.log(`📹 Initiating Video Call with ${activeChat.name}`);
       onVideoCall?.(activeChat);
     } else {
-      console.log('📹 No active chat selected for video call');
+      // No active chat selected
+      alert('Please select a conversation first to start a video call.');
     }
     setIsOpen(false);
   };
 
   const handleVoiceCall = () => {
     if (activeChat) {
-      console.log(`📞 Initiating Voice Call with ${activeChat.name}`);
       onVoiceCall?.(activeChat);
     } else {
-      console.log('📞 No active chat selected for voice call');
+      // No active chat selected
+      alert('Please select a conversation first to start a voice call.');
     }
     setIsOpen(false);
   };
 
-  const handleGlobalSearch = () => {
-    console.log('🔍 Opening Global Message Search');
-    // Simple search implementation
+  const handleGlobalSearch = () => {// Simple search implementation
     const searchTerm = prompt('Enter search term to find in messages:');
     if (searchTerm && searchTerm.trim()) {
       console.log(`🔍 Searching for: "${searchTerm.trim()}"`);
@@ -118,9 +114,7 @@ const MessagesFAB = ({
     setIsOpen(false);
   };
 
-  const handleShareDocument = () => {
-    console.log('📎 Opening Document Share');
-    // Trigger file input
+  const handleShareDocument = () => {// Trigger file input
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.multiple = true;
@@ -139,9 +133,7 @@ const MessagesFAB = ({
         
         // Here you would normally handle the actual file upload logic
         // For now, we'll just show success feedback
-        setTimeout(() => {
-          console.log('📎 Files successfully processed for sharing');
-        }, 1000);
+        setTimeout(() => {}, 1000);
       }
     };
     fileInput.click();
@@ -311,10 +303,6 @@ const MessagesFAB = ({
           </div>
         )}
       </div>
-
-
-
-
 
       {/* Global Search Modal */}
       {showSearchModal && (

@@ -119,9 +119,7 @@ const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, us
   const [showBroadcastComposer, setShowBroadcastComposer] = useState(false);
   const [showBroadcastFeed, setShowBroadcastFeed] = useState(false);
 
-  // Debug logging
-  console.log('ConversationList - chatData:', chatData);
-  console.log('ConversationList - activeId:', activeId);
+  // Debug logging removed for production
 
   // Convert chatData to conversations format with proper sorting
   const conversationsFromChatData = Object.values(chatData || {}).map(chat => ({
@@ -292,7 +290,6 @@ const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, us
     };
 
     // Add to chat data via parent callback
-    console.log('Creating new personal chat:', newChat);
     
     // Call parent callback to add the new chat
     if (onNewChatCreated) {
@@ -347,7 +344,7 @@ const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, us
       ]
     };
 
-    console.log('Creating new team chat:', newTeamChat);
+    // Creating new team chat
     
     // Call parent callback to add the new team chat
     if (onNewChatCreated) {
@@ -371,15 +368,15 @@ const ConversationList = ({ activeId, onSelect, onUserProfileClick, chatData, us
   };
 
   const handleSendBroadcast = async (broadcastData) => {
-    console.log('Sending broadcast:', broadcastData);
+    // Sending broadcast
     try {
       // Call the parent's broadcast handler
       await onSendBroadcast?.(broadcastData);
       setShowBroadcastComposer(false);
-    } catch (error) {
-      console.error('Failed to send broadcast:', error);
-      // Keep composer open on error
-    }
+          } catch (error) {
+        // Failed to send broadcast - keep composer open on error
+        alert('Failed to send broadcast. Please try again.');
+      }
   };
 
   const handleShowBroadcastFeed = () => {

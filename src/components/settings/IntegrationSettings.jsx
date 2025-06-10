@@ -53,14 +53,10 @@ const IntegrationSettings = () => {
     }
   ]);
 
-  const handleConnect = (integrationId) => {
-    console.log(`Connecting to ${integrationId}`);
-    // Implement OAuth flow or connection logic
+  const handleConnect = (integrationId) => {// Implement OAuth flow or connection logic
   };
 
-  const handleDisconnect = (integrationId) => {
-    console.log(`Disconnecting from ${integrationId}`);
-    // Implement disconnection logic
+  const handleDisconnect = (integrationId) => {// Implement disconnection logic
   };
 
   return (

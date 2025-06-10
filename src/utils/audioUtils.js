@@ -90,24 +90,18 @@ class AudioManager {
   startIOSRinging() {
     if (this.isRinging) {
       this.stopRinging(); // Stop any existing ringing
-    }
-    
-    console.log('🔊 Starting modern smooth "dring dring" ringback tone...');
-    this.isRinging = true;
+    }this.isRinging = true;
     
     try {
       this.createIOSRingtone();
-    } catch (error) {
-      console.error('Error starting dring dring ringtone:', error);
-      // Fallback to system beep or notification sound
+    } catch (error) { // Error logging removed for production
+// Fallback to system beep or notification sound
       this.playFallbackRingtone();
     }
   }
 
   // Stop ringing sound
-  stopRinging() {
-    console.log('🔇 Stopping modern smooth "dring dring" ringback tone...');
-    this.isRinging = false;
+  stopRinging() {this.isRinging = false;
     
     if (this.ringtoneInterval) {
       clearInterval(this.ringtoneInterval);
@@ -125,7 +119,7 @@ class AudioManager {
         // Stop oscillator
         this.ringtoneOscillator.stop(this.audioContext.currentTime + 0.1);
       } catch (error) {
-        console.warn('Error stopping dring dring ringtone oscillator:', error);
+        // Oscillator already stopped or invalid state - silently handle
       }
       
       // Clean up references
@@ -135,10 +129,7 @@ class AudioManager {
   }
 
   // Fallback ringtone using HTML5 Audio (if Web Audio API fails)
-  playFallbackRingtone() {
-    console.log('🔊 Playing fallback ringtone...');
-    
-    // Create a simple beep pattern as fallback
+  playFallbackRingtone() {// Create a simple beep pattern as fallback
     const beepPattern = () => {
       if (!this.isRinging) {return;}
       
@@ -167,10 +158,7 @@ class AudioManager {
   }
 
   // Play call connection sound
-  playCallConnectedSound() {
-    console.log('🔊 Playing call connected sound...');
-    
-    try {
+  playCallConnectedSound() {try {
       const audioContext = this.initAudioContext();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
@@ -188,16 +176,12 @@ class AudioManager {
       
       oscillator.start();
       oscillator.stop(audioContext.currentTime + 0.2);
-    } catch (error) {
-      console.error('Error playing call connected sound:', error);
-    }
+    } catch (error) { // Error logging removed for production
+}
   }
 
   // Play call ended sound
-  playCallEndedSound() {
-    console.log('🔊 Playing call ended sound...');
-    
-    try {
+  playCallEndedSound() {try {
       const audioContext = this.initAudioContext();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
@@ -215,9 +199,8 @@ class AudioManager {
       
       oscillator.start();
       oscillator.stop(audioContext.currentTime + 0.3);
-    } catch (error) {
-      console.error('Error playing call ended sound:', error);
-    }
+    } catch (error) { // Error logging removed for production
+}
   }
 
   // Check if audio is supported

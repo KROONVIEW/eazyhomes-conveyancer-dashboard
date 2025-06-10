@@ -5,31 +5,7 @@ import CallModal from "../components/messaging/CallModal";
 import MessagesFAB from "../components/messaging/MessagesFAB";
 import broadcastService from "../services/broadcastService";
 import audioManager from "../utils/audioUtils";
-
 // Enhanced avatar list with better quality placeholders
-const avatarList = [
-  '/images/avatars/face_1 (1).jpg',
-  '/images/avatars/face_1 (2).jpg',
-  '/images/avatars/face_1 (3).jpg',
-  '/images/avatars/face_1 (4).jpg',
-  '/images/avatars/face_1 (5).jpg',
-  '/images/avatars/face_1 (6).jpg',
-  '/images/avatars/face_1 (7).jpg',
-  '/images/avatars/face_1 (8).jpg',
-  '/images/avatars/face_1 (9).jpg',
-  '/images/avatars/face_1 (10).jpg',
-  '/images/avatars/face_1 (11).jpg',
-  '/images/avatars/face_1 (12).jpg',
-  '/images/avatars/face_1 (13).jpg',
-  '/images/avatars/face_1 (14).jpg',
-  '/images/avatars/face_1 (15).jpg',
-  '/images/avatars/face_1 (16).jpg',
-  '/images/avatars/face_1 (17).jpg',
-  '/images/avatars/face_1 (18).jpg',
-  '/images/avatars/face_1 (19).jpg',
-  '/images/avatars/face_1 (20).jpg',
-];
-
 // ENHANCED MOCK DATA FOR COMPREHENSIVE TESTING
 // This includes all message types, attachments, reactions, and edge cases
 const chatData = {
@@ -872,7 +848,6 @@ const chatData = {
     ]
   }
 };
-
 // Mock message pools for specific conversations (clean format, no ** formatting)
 const conversationMessages = {
   0: [ // Firm-Wide Broadcast
@@ -885,7 +860,6 @@ const conversationMessages = {
     "New client onboarding process starts Monday",
     "Please update your passwords by end of week"
   ],
-  
   1: [ // John Carlo
     "Can you review the Henderson file when you have a moment?",
     "The client called about expediting their transfer",
@@ -896,7 +870,6 @@ const conversationMessages = {
     "Client wants to schedule consultation this week",
     "Have you received the updated deed of sale?"
   ],
-  
   2: [ // Jessica Wu
     "I've updated the compliance checklist - please check",
     "Are you free for lunch today? Want to discuss new procedures",
@@ -907,7 +880,6 @@ const conversationMessages = {
     "The client submitted all required documents this morning",
     "Meeting went well - client is very satisfied with our service"
   ],
-  
   3: [ // Project Alpha
     "Phase 2 development is ahead of schedule",
     "Need approval for additional frontend resources",
@@ -918,7 +890,6 @@ const conversationMessages = {
     "Team meeting scheduled for tomorrow at 3 PM",
     "Budget review needed for next quarter planning"
   ],
-  
   4: [ // Client: Mr. Patel
     "Thank you for the update on my property registration",
     "When can I expect the municipal clearance certificate?",
@@ -929,7 +900,6 @@ const conversationMessages = {
     "Do I need to provide any additional documents?",
     "Looking forward to completing this transaction soon"
   ],
-  
   5: [ // Team Marketing
     "New campaign metrics are exceeding expectations",
     "Website conversion rates have improved by 35%",
@@ -940,7 +910,6 @@ const conversationMessages = {
     "Analytics dashboard shows strong ROI trends",
     "Competitor analysis report is ready for review"
   ],
-  
   6: [ // Anna Kim
     "Contract review for Johannesburg project is complete",
     "Found some optimization opportunities in the agreement",
@@ -951,7 +920,6 @@ const conversationMessages = {
     "Meeting with stakeholders went very well today",
     "Legal documentation is ready for your signature"
   ],
-  
   7: [ // Support Desk
     "Your IT ticket has been resolved successfully",
     "Network performance improvements are now active",
@@ -962,7 +930,6 @@ const conversationMessages = {
     "Help desk is available 24/7 for any issues",
     "System maintenance completed ahead of schedule"
   ],
-  
   8: [ // Jane Doe
     "Sandton property listing is getting great interest",
     "Three serious buyers are considering offers",
@@ -973,7 +940,6 @@ const conversationMessages = {
     "Ready to present the latest offer to the seller",
     "Property market trends are very favorable right now"
   ],
-  
   9: [ // Michael Chen
     "Title deed search completed for Rosebank property",
     "Legal documentation review is finished",
@@ -985,7 +951,6 @@ const conversationMessages = {
     "Legal team is standing by for any questions"
   ]
 };
-
 // Active conversations that can receive messages (all visible conversations)
 const activeConversations = [
   { id: 0, name: "Firm-Wide Broadcast", sender: "System" },
@@ -999,12 +964,9 @@ const activeConversations = [
   { id: 8, name: "Jane Doe", sender: "Jane Doe" },
   { id: 9, name: "Michael Chen", sender: "Michael Chen" }
 ];
-
 // Track last message sender to ensure fair distribution
 let lastMessageSenders = [];
-
 // All conversations are now in the main chatData object
-
 const MessagesPage = () => {
   // Start with test conversation for diagnostics
   const [activeConversationId, setActiveConversationId] = useState(99);
@@ -1013,65 +975,51 @@ const MessagesPage = () => {
   const [showVideoCall, setShowVideoCall] = useState(false);
   const [showVoiceCall, setShowVoiceCall] = useState(false);
   const [dynamicChatData, setDynamicChatData] = useState(chatData);
-  
   // Notification system state
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [unreadCounts, setUnreadCounts] = useState({});
   const [newMessageCounters, setNewMessageCounters] = useState({});
-  const [lastReadMessages, setLastReadMessages] = useState({});
-
   // User role for broadcast permissions (in real app, this would come from auth context)
   const userRole = 'admin'; // or 'user', 'conveyancer', etc.
-
   // Notification sound function
   const playNotificationSound = useCallback(() => {
     try {
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
-      
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
-      
       // Create a pleasant notification sound (two-tone chime)
       oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
       oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
-      
       gainNode.gain.setValueAtTime(0, audioContext.currentTime);
       gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-      
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.3);
     } catch (error) {
-      console.log('Audio context not available:', error);
+      // Audio context not available - silently handle
     }
   }, []);
-
   // Generate new message notification with fair distribution
   const generateNotification = useCallback(() => {
     // Get available conversations (exclude those that sent last 2 messages for fair distribution)
     let availableConversations = activeConversations.filter(conv => 
       !lastMessageSenders.slice(-2).includes(conv.id)
     );
-    
     // If all conversations are in recent senders, reset and use all
     if (availableConversations.length === 0) {
       availableConversations = activeConversations;
       lastMessageSenders = [];
     }
-    
     // Randomly select a conversation
     const selectedConversation = availableConversations[Math.floor(Math.random() * availableConversations.length)];
     const conversationId = selectedConversation.id;
-    
     // Get message pool for this conversation
     const messagePool = conversationMessages[conversationId];
     const randomMessage = messagePool[Math.floor(Math.random() * messagePool.length)];
-    
     // Get conversation data for proper sender info
     const conversationData = dynamicChatData[conversationId];
-    
     const newMessage = {
       id: Date.now() + Math.random(),
       text: randomMessage,
@@ -1083,52 +1031,34 @@ const MessagesPage = () => {
       isNewNotification: true,
       isBroadcast: conversationId === 0 // Only firm broadcast is broadcast type
     };
-
-    // Debug logging
-    console.log('🖼️ New message avatar info:', {
-      conversationId,
-      sender: selectedConversation.sender,
-      avatarUrl: conversationData?.avatarUrl,
-      senderAvatar: newMessage.senderAvatar
-    });
-
-    // Update chat data with new message
+    // Debug logging// Update chat data with new message
     setDynamicChatData(prevData => {
       const updatedData = { ...prevData };
       if (updatedData[conversationId]) {
         // Add new message to the beginning (newest first)
         updatedData[conversationId].messages = [newMessage, ...(updatedData[conversationId].messages || [])];
-        
         // Update last activity timestamp for sorting
         updatedData[conversationId].lastActivity = Date.now();
       }
       return updatedData;
     });
-
     // Update unread counts
     setUnreadCounts(prev => ({
       ...prev,
       [conversationId]: (prev[conversationId] || 0) + 1
     }));
-
     // Update new message counter for line breakers
     setNewMessageCounters(prev => ({
       ...prev,
       [conversationId]: (prev[conversationId] || 0) + 1
     }));
-
     // Track this sender for fair distribution
     lastMessageSenders.push(conversationId);
     if (lastMessageSenders.length > 3) {
       lastMessageSenders.shift(); // Keep only last 3
     }
-
     // Play notification sound
-    playNotificationSound();
-
-    console.log(`📢 New message from ${selectedConversation.name}:`, randomMessage);
-  }, [playNotificationSound, dynamicChatData]);
-
+    playNotificationSound();}, [playNotificationSound, dynamicChatData]);
   // Auto-clear unread messages when conversation is opened
   useEffect(() => {
     if (activeConversationId && unreadCounts[activeConversationId] > 0) {
@@ -1137,7 +1067,6 @@ const MessagesPage = () => {
         ...prev,
         [activeConversationId]: 0
       }));
-
       // Mark messages as read and remove new notification flags
       setDynamicChatData(prevData => {
         const updatedData = { ...prevData };
@@ -1149,7 +1078,6 @@ const MessagesPage = () => {
         }
         return updatedData;
       });
-
       // Reset new message counter
       setNewMessageCounters(prev => ({
         ...prev,
@@ -1157,75 +1085,49 @@ const MessagesPage = () => {
       }));
     }
   }, [activeConversationId, unreadCounts]);
-
   // Single notification interval with random conversation selection
   useEffect(() => {
     if (!notificationsEnabled) {return;}
-
     // Generate notifications every 45 seconds with random conversation selection
     const interval = setInterval(() => {
       generateNotification();
     }, 45000); // 45 seconds for demo (adjust as needed)
-
     return () => {
       clearInterval(interval);
     };
   }, [notificationsEnabled, generateNotification]);
-
   // Enhanced call handlers with better UX feedback and iOS ringing sound
-  const handleVideoCall = useCallback((chat) => {
-    console.log('📹 Initiating video call with:', chat?.name);
-    console.log('🔊 Starting iOS ringing sound for video call...');
-    
-    // Start iOS ringing sound immediately when call is initiated
+  const handleVideoCall = useCallback((chat) => {// Start iOS ringing sound immediately when call is initiated
     audioManager.startIOSRinging();
-    
     setSelectedUserData(chat);
     setShowVideoCall(true);
   }, []);
-
-  const handleVoiceCall = useCallback((chat) => {
-    console.log('📞 Initiating voice call with:', chat?.name);
-    console.log('🔊 Starting iOS ringing sound for voice call...');
-    
-    // Start iOS ringing sound immediately when call is initiated
+  const handleVoiceCall = useCallback((chat) => {// Start iOS ringing sound immediately when call is initiated
     audioManager.startIOSRinging();
-    
     setSelectedUserData(chat);
     setShowVoiceCall(true);
   }, []);
-
-  const handleCallEnd = useCallback(() => {
-    console.log('📞 Ending call and stopping ringing sound...');
-    
-    // Stop any ringing sound when call ends
+  const handleCallEnd = useCallback(() => {// Stop any ringing sound when call ends
     audioManager.stopRinging();
-    
     setShowVideoCall(false);
     setShowVoiceCall(false);
     setSelectedUserData(null);
   }, []);
-
   // User profile modal handlers
   const handleUserProfileClick = useCallback((user) => {
     setSelectedUserData(user);
     setShowUserProfile(true);
   }, []);
-
   const handleCloseUserProfile = useCallback(() => {
     setShowUserProfile(false);
     setSelectedUserData(null);
   }, []);
-
   // Handle broadcast sending - REAL FUNCTIONALITY
   const handleSendBroadcast = useCallback(async (broadcastMessage) => {
-    console.log('Handling broadcast send:', broadcastMessage);
-    
-    try {
+    // Handling broadcast send
       // Add broadcast to the firm-wide broadcast conversation (ID: 0)
       setDynamicChatData(prevData => {
         const updatedData = { ...prevData };
-        
         // Add to broadcast conversation
         if (updatedData[0]) {
           const newBroadcastMsg = {
@@ -1240,14 +1142,11 @@ const MessagesPage = () => {
             status: 'delivered',
             readBy: []
           };
-          
           updatedData[0].messages = [...(updatedData[0].messages || []), newBroadcastMsg];
         }
-
         // If targeting specific group, create/update group conversation
         if (broadcastMessage.recipients.groupId !== 'all') {
           const groupChatId = `group_${broadcastMessage.recipients.groupId}`;
-          
           if (!updatedData[groupChatId]) {
             // Create new group conversation
             updatedData[groupChatId] = {
@@ -1261,7 +1160,6 @@ const MessagesPage = () => {
               messages: []
             };
           }
-          
           // Add broadcast as announcement in group chat
           const groupAnnouncementMsg = {
             id: `${broadcastMessage.id}_group`,
@@ -1275,26 +1173,16 @@ const MessagesPage = () => {
             status: 'delivered',
             readBy: []
           };
-          
           updatedData[groupChatId].messages = [...(updatedData[groupChatId].messages || []), groupAnnouncementMsg];
         }
-
         return updatedData;
       });
-
-      console.log('Broadcast successfully added to conversations');
+      // Broadcast successfully added to conversations
       return true;
-      
-    } catch (error) {
-      console.error('Failed to handle broadcast:', error);
-      throw error;
-    }
   }, []);
-
   // Handle new chat creation
   const handleNewChatCreated = useCallback((chatId, chatData) => {
-    console.log('🆕 Adding new chat to conversation list:', { chatId, chatData });
-    
+    // Adding new chat to conversation list
     setDynamicChatData(prevData => ({
       ...prevData,
       [chatId]: {
@@ -1303,32 +1191,7 @@ const MessagesPage = () => {
       }
     }));
   }, []);
-
-  // COMPREHENSIVE DIAGNOSTIC LOGGING
-  console.log('MESSAGING DIAGNOSTICS:');
-  console.log('Active Conversation ID:', activeConversationId);
-  console.log('Available Chat IDs:', Object.keys(dynamicChatData));
-  console.log('Selected Chat Data:', dynamicChatData[activeConversationId]);
-  console.log('Selected Chat Messages:', dynamicChatData[activeConversationId]?.messages?.length || 0);
-  console.log('User Role:', userRole);
-  console.log('Show User Profile:', showUserProfile);
-  console.log('Show Video Call:', showVideoCall);
-  console.log('Show Voice Call:', showVoiceCall);
-  
   // Component validation
-  if (!dynamicChatData[activeConversationId]) {
-    console.error('ERROR: No chat data found for ID:', activeConversationId);
-  }
-  
-  // Feature availability check
-  console.log('FEATURE AVAILABILITY CHECK:');
-  console.log('ConversationList Component: Loaded');
-  console.log('ChatWindow Component: Loaded');
-  console.log('CallModal Component: Loaded');
-  console.log('BroadcastService: Loaded');
-  console.log('Dynamic Chat Data: Real-time updates enabled');
-  console.log('Test Conversation (ID 99): Available for feature testing');
-
   return (
     <div className="h-screen flex bg-gray-50 font-['Poppins']">
       {/* Notification Toggle - Moved higher to avoid send button */}
@@ -1348,7 +1211,6 @@ const MessagesPage = () => {
           </div>
         </div>
       </div>
-
       {/* Conversation List */}
       <div className="w-80 border-r border-gray-200 bg-white shadow-sm">
         <ConversationList
@@ -1363,7 +1225,6 @@ const MessagesPage = () => {
           onNewChatCreated={handleNewChatCreated}
         />
       </div>
-
       {/* Right Panel: Enhanced Chat Window */}
       <div className="flex-1 h-full min-w-0 flex flex-col bg-white relative">
         <ChatWindow 
@@ -1373,7 +1234,6 @@ const MessagesPage = () => {
           onUserProfileClick={handleUserProfileClick}
         />
       </div>
-
       {/* Enhanced Call Modal with Better Animations */}
       <CallModal
         isOpen={showVideoCall || showVoiceCall}
@@ -1381,14 +1241,13 @@ const MessagesPage = () => {
         contact={selectedUserData}
         callType={showVideoCall ? 'video' : 'voice'}
         onCallStart={(contact, type) => {
-          console.log(`Call started: ${type} call with ${contact.name}`);
+          // Call started
         }}
         onCallEnd={(contact, type, duration) => {
-          console.log(`Call ended: ${type} call with ${contact.name}, duration: ${duration}s`);
+          // Call ended
           handleCallEnd();
         }}
       />
-
       {/* User Profile Modal - Phase 2 Implementation */}
       {showUserProfile && selectedUserData && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -1403,7 +1262,6 @@ const MessagesPage = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              
               {/* User Avatar - Large and Prominent */}
               <div className="flex flex-col items-center">
                 <div className="relative">
@@ -1416,13 +1274,11 @@ const MessagesPage = () => {
                     <div className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-3 border-white rounded-full"></div>
                   )}
                 </div>
-                
                 {/* User Info */}
                 <h2 className="text-2xl font-bold text-gray-900 mt-4">{selectedUserData.name}</h2>
                 <p className="text-sm text-blue-600 font-medium">{selectedUserData.role}</p>
               </div>
             </div>
-
             {/* Contact Information */}
             <div className="p-6 space-y-4">
               <div>
@@ -1442,7 +1298,6 @@ const MessagesPage = () => {
                   </div>
                 </div>
               </div>
-
               {/* Verification Status - Key Feature */}
               <div>
                 <h3 className="text-sm font-semibold text-gray-700 mb-3">Verification Status</h3>
@@ -1470,7 +1325,6 @@ const MessagesPage = () => {
                   ))}
                 </div>
               </div>
-
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
                 <button 
@@ -1496,7 +1350,6 @@ const MessagesPage = () => {
           </div>
         </div>
       )}
-
       {/* Messages FAB for quick messaging actions */}
       <MessagesFAB 
         activeChat={dynamicChatData[activeConversationId]}
@@ -1506,5 +1359,4 @@ const MessagesPage = () => {
     </div>
   );
 };
-
 export default MessagesPage; 
