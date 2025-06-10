@@ -44,6 +44,19 @@ class InvoicePage extends Component {
       savedDrafts: [],
       validationErrors: []
     };
+
+    // Bind methods to ensure proper 'this' context
+    this.handleChange = this.handleChange.bind(this);
+    this.handleItemChange = this.handleItemChange.bind(this);
+    this.addItem = this.addItem.bind(this);
+    this.removeItem = this.removeItem.bind(this);
+    this.saveDraft = this.saveDraft.bind(this);
+    this.generatePDF = this.generatePDF.bind(this);
+    this.createAndSendInvoice = this.createAndSendInvoice.bind(this);
+    this.duplicateInvoice = this.duplicateInvoice.bind(this);
+    this.showNotification = this.showNotification.bind(this);
+    this.handleMatterChange = this.handleMatterChange.bind(this);
+    this.validateInvoice = this.validateInvoice.bind(this);
   }
 
   // Utility method to calculate due date
