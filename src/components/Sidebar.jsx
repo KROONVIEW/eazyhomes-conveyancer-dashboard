@@ -23,9 +23,17 @@ import {
 import { FiArchive } from "react-icons/fi";
 import { useAuth } from "./ProtectedRoute";
 
+// Modern Brain Logo SVG Component
+const BrainIcon = ({ className = "w-6 h-6" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2C10.89 2 10 2.89 10 4C10 4.74 10.4 5.4 11 5.73V6.27C10.4 6.6 10 7.26 10 8C10 8.74 10.4 9.4 11 9.73V10.27C10.4 10.6 10 11.26 10 12C10 12.74 10.4 13.4 11 13.73V14.27C10.4 14.6 10 15.26 10 16C10 17.11 10.89 18 12 18C13.11 18 14 17.11 14 16C14 15.26 13.6 14.6 13 14.27V13.73C13.6 13.4 14 12.74 14 12C14 11.26 13.6 10.6 13 10.27V9.73C13.6 9.4 14 8.74 14 8C14 7.26 13.6 6.6 13 6.27V5.73C13.6 5.4 14 4.74 14 4C14 2.89 13.11 2 12 2M8 6C6.89 6 6 6.89 6 8C6 8.74 6.4 9.4 7 9.73V10.27C6.4 10.6 6 11.26 6 12C6 12.74 6.4 13.4 7 13.73V14.27C6.4 14.6 6 15.26 6 16C6 17.11 6.89 18 8 18C8.74 18 9.4 17.6 9.73 17H10.27C10.6 17.6 11.26 18 12 18C12.74 18 13.4 17.6 13.73 17H14.27C14.6 17.6 15.26 18 16 18C17.11 18 18 17.11 18 16C18 15.26 17.6 14.6 17 14.27V13.73C17.6 13.4 18 12.74 18 12C18 11.26 17.6 10.6 17 10.27V9.73C17.6 9.4 18 8.74 18 8C18 6.89 17.11 6 16 6C15.26 6 14.6 6.4 14.27 7H13.73C13.4 6.4 12.74 6 12 6C11.26 6 10.6 6.4 10.27 7H9.73C9.4 6.4 8.74 6 8 6Z"/>
+  </svg>
+);
+
 const navLinks = [
   { name: "Dashboard", icon: HomeIcon, to: "/" },
   { name: "Messages", icon: ChatBubbleBottomCenterIcon, to: "/messages" },
+  { name: "Brains", icon: BrainIcon, to: "/eazycopilot", isSpecial: true },
   { name: "Calendar", icon: CalendarIcon, to: "/calendar" },
   { name: "Tasks", icon: ClipboardDocumentListIcon, to: "/tasks" },
   { name: "Scheduling", icon: ClockIcon, to: "/scheduling" },
@@ -309,13 +317,20 @@ const Sidebar = ({ isMobileOpen, toggleSidebar, isCollapsed }) => {
             <NavLink
               to={link.to}
               key={link.name}
-              className={({ isActive }) =>
-                `${parentItemClass} ${isActive ? "bg-blue-100 text-blue-600" : ""}`
-              }
+              className={({ isActive }) => {
+                if (link.isSpecial) {
+                  return `${parentItemClass} ${
+                    isActive 
+                      ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg" 
+                      : "bg-gradient-to-r from-purple-400 to-purple-500 text-white hover:from-purple-500 hover:to-purple-600 shadow-md"
+                  }`;
+                }
+                return `${parentItemClass} ${isActive ? "bg-blue-100 text-blue-600" : ""}`;
+              }}
               title={isCollapsed ? link.name : undefined}
             >
               <link.icon className="w-6 h-6 flex-shrink-0" />
-              {!isCollapsed && <span className="text-sm truncate">{link.name}</span>}
+              {!isCollapsed && <span className={`text-sm truncate ${link.isSpecial ? 'font-medium' : ''}`}>{link.name}</span>}
             </NavLink>
           ))}
           {/* Documents popover nav item */}

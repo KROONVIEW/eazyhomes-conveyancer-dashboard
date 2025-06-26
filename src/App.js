@@ -22,6 +22,7 @@ const Download = React.lazy(() => import('./pages/documents/Download.jsx'));
 const KnowledgeBasePage = React.lazy(() => import('./pages/KnowledgeBasePage'));
 const AuditTrailPage = React.lazy(() => import('./pages/AuditTrailPage'));
 const ClientPortalPage = React.lazy(() => import('./pages/ClientPortalPage'));
+const EazyCopilotPage = React.lazy(() => import('./pages/EazyCopilotPage'));
 const TestHooks = React.lazy(() => import('./pages/TestHooks'));
 
 // Import authentication service
@@ -67,6 +68,7 @@ function App() {
               <Route path="/" element={<DashboardPage />} />
               <Route path="/matters" element={<MattersPage />} />
               <Route path="/messages" element={<MessagesPage />} />
+              <Route path="/eazycopilot" element={<EazyCopilotPage />} />
               <Route path="/documents" element={<Documents />} />
               <Route path="/documents/upload" element={<Upload />} />
               <Route path="/documents/download" element={<Download />} />
